@@ -7,63 +7,55 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="post">
-  <!-- === Header === -->
   <header>
     <div class="header-inner">
+      <span id="dateTime"></span>
       <img src="logo.svg" alt="JobPulse Logo" width="40">
-      <nav>
+
+      <button id="menuToggle" class="menu-toggle">☰</button>
+      <nav id="mainNav" class="hidden">
         <a href="index.html">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html">News</a>
-        <a href="breaking.html">Breaking</a>
-        <a href="saved.html">⭐ Saved</a>
+        <a href="breaking.html">Trending</a>
+        <a href="exams.html">Exams</a>
       </nav>
+
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <!-- === Post Detail === -->
-  <main>
+  <main class="post-page">
     <div class="post-detail">
-      <h2 id="postTitle">Loading...</h2>
-      <div class="meta" id="postMeta"></div>
+      <div class="post-head">
+        <span id="postBadge" class="badge">Job</span>
+        <h1 id="postTitle">Loading…</h1>
+      </div>
+      <p id="postMeta" class="meta"></p>
       <img id="postImage" class="post-image" src="dummy-photo.svg" alt="Post Image">
-      <div class="post-body" id="postBody"></div>
+      <div id="postBody" class="post-body"></div>
 
-      <!-- ✅ Original Source -->
-      <div class="source-link">
-        <img src="logo.svg" width="20" style="vertical-align: middle;">
-        <a id="postSource" href="#" target="_blank">View Original Source</a>
+      <div class="post-actions">
+        <a id="applyBtn" class="btn" target="_blank" rel="noopener">Apply Now</a>
+        <a id="postSource" class="btn-outline" target="_blank" rel="noopener">Original Source</a>
       </div>
 
-      <!-- ✅ Dynamic Back Button -->
       <div class="back-home">
         <a href="index.html" class="back-btn" id="backBtn">⬅ Back</a>
       </div>
     </div>
   </main>
 
-  <footer>
-    <p>&copy; 2025 JobPulse Kolkata – All Rights Reserved</p>
-  </footer>
+  <div class="bottom-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="jobs.html">💼 Jobs</a>
+    <a href="news.html">📰 News</a>
+    <a href="breaking.html">🔥 Trending</a>
+    <a href="exams.html">📘 Exams</a>
+    <span id="visitorCount">👥 0 Visitors</span>
+  </div>
 
+  <footer><p>&copy; 2025 JobPulse</p></footer>
   <script src="app.js"></script>
-  <script>
-    // ✅ Detect source page from query string (?from=jobs/news/home)
-    const urlParams = new URLSearchParams(window.location.search);
-    const from = urlParams.get("from") || "home";
-
-    const backBtn = document.getElementById("backBtn");
-    if (from === "jobs") {
-      backBtn.href = "jobs.html";
-      backBtn.textContent = "⬅ Back to Jobs";
-    } else if (from === "news") {
-      backBtn.href = "news.html";
-      backBtn.textContent = "⬅ Back to News";
-    } else {
-      backBtn.href = "index.html";
-      backBtn.textContent = "⬅ Back to Home";
-    }
-  </script>
 </body>
 </html>
