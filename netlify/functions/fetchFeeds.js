@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const Parser = require("rss-parser");
 const parser = new Parser({
   customFields: {
@@ -9,7 +11,10 @@ const parser = new Parser({
   },
 });
 
-// === Feeds to fetch ===
+// === Cache location inside Netlify ===
+const CACHE_FILE = path.join("/tmp", "lastFeeds.json");
+
+// === Feeds list ===
 const feeds = [
   { name: "Remotive Jobs", url: "https://remotive.com/feed", type: "job" },
   { name: "We Work Remotely", url: "https://weworkremotely.com/remote-jobs.rss", type: "job" },
@@ -17,10 +22,10 @@ const feeds = [
   { name: "Jobs.ac.uk", url: "https://www.jobs.ac.uk/feeds", type: "job" },
   { name: "JobPulse News (Feedspot)", url: "https://rss.feedspot.com/job_hunting_rss_feeds/", type: "news" },
   { name: "Undercover Recruiter", url: "https://theundercoverrecruiter.com/feed", type: "news" },
-  { name: "The Big Game Hunter", url: "https://thebiggamehunter.us/feed", type: "news" },
+  { name: "The Big Game Hunter", url: "https://thebiggamehunter.us/feed", type: "news" }
 ];
 
-// === Extract first image from item if possible ===
+// === Extract first image ===
 function extractImage(item) {
   if (item.media && item.media[0] && item.media[0].$.url) return item.media[0].$.url;
   if (item.thumbnail) return item.thumbnail;
@@ -59,16 +64,31 @@ exports.handler = async function () {
     jobs.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
     news.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
+    const payload = { jobs, news };
+
+    // ✅ Save to cache file
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(payload));
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ jobs, news }),
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" }
     };
+
   } catch (err) {
     console.error("Global fetch error:", err);
+
+    // ✅ Fallback: serve cached feeds if exist
+    if (fs.existsSync(CACHE_FILE)) {
+      console.warn("Serving cached feeds due to error");
+      const cached = fs.readFileSync(CACHE_FILE, "utf8");
+      return {
+        statusCode: 200,
+        body: cached,
+        headers: { "Content-Type": "application/json" }
+      };
+    }
+
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
