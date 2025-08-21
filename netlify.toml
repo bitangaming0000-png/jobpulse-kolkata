@@ -1,6 +1,10 @@
 [build]
-  command = "npm install && npm run build"
+  command = ""          # no build step for static site
   publish = "."
+
+[functions]
+  directory = "netlify/functions"   # location of serverless functions
+  node_bundler = "esbuild"          # makes sure deps like rss-parser are bundled
 
 [[redirects]]
   from = "/*"
