@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobPulse Kolkata – Latest Job Openings Near You</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <img src="logo.svg" alt="JobPulse Logo" class="logo" />
+    <h1>JobPulse Kolkata</h1>
+    <p>Find the latest job openings in Kolkata & nearby</p>
+  </header>
+
+  <main>
+    <section class="add-job">
+      <h2>Quick Add Job</h2>
+      <form id="jobForm">
+        <input type="text" id="title" placeholder="Job Title *" required />
+        <input type="text" id="company" placeholder="Company *" required />
+        <input type="text" id="location" placeholder="Location" />
+        <input type="url" id="applyLink" placeholder="Apply Link (https://...)" />
+        <select id="category">
+          <option value="IT">IT</option>
+          <option value="Banking">Banking</option>
+          <option value="Govt">Govt</option>
+          <option value="Other">Other</option>
+        </select>
+        <select id="type">
+          <option value="Full-Time">Full-Time</option>
+          <option value="Part-Time">Part-Time</option>
+          <option value="Internship">Internship</option>
+        </select>
+        <button type="submit">Add Job</button>
+      </form>
+    </section>
+
+    <section class="filters">
+      <h2>Search & Filter</h2>
+      <input type="text" id="search" placeholder="Search by title/company..." />
+      <select id="filterCategory">
+        <option value="">All Categories</option>
+        <option value="IT">IT</option>
+        <option value="Banking">Banking</option>
+        <option value="Govt">Govt</option>
+        <option value="Other">Other</option>
+      </select>
+      <select id="filterType">
+        <option value="">All Types</option>
+        <option value="Full-Time">Full-Time</option>
+        <option value="Part-Time">Part-Time</option>
+        <option value="Internship">Internship</option>
+      </select>
+    </section>
+
+    <section id="jobList">
+      <h2>Latest Openings</h2>
+      <div id="jobs"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 JobPulse Kolkata</p>
+    <p>
+      <a href="https://t.me/yourchannel" target="_blank">Telegram</a> |
+      <a href="https://wa.me/yourwhatsapp" target="_blank">WhatsApp</a> |
+      <a href="https://linkedin.com/yourpage" target="_blank">LinkedIn</a> |
+      <a href="https://facebook.com/yourpage" target="_blank">Facebook</a>
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f9f9f9;
+  color: #333;
+}
+
+header {
+  text-align: center;
+  background: #004080;
+  color: white;
+  padding: 20px;
+}
+
+header .logo {
+  height: 60px;
+}
+
+main {
+  padding: 20px;
+}
+
+.add-job, .filters, #jobList {
+  background: white;
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+form input, form select, form button {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+}
+
+form button {
+  background: #004080;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.job-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+.job-card h3 {
+  margin: 0 0 10px 0;
+}
+
+.job-actions button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.job-actions .apply { background: #28a745; color: white; }
+.job-actions .copy { background: #007bff; color: white; }
+.job-actions .share { background: #ff9800; color: white; }
+
+footer {
+  text-align: center;
+  padding: 15px;
+  background: #004080;
+  color: white;
+}
