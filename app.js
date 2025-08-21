@@ -1,20 +1,70 @@
-// === HOMEPAGE ===
-if(PAGE === 'home'){
-  // Show 6 latest jobs & news with images
-  renderCards('#latestJobs', JOBS.slice(0,6));
-  renderCards('#latestNews', NEWS.slice(0,6));
+function setupFilters(containerSelector, listSelector, items, type="job"){
+  let currentCat = '';
+  let currentEdu = '';
+  let currentQuery = '';
 
-  // Sidebar Notifications (auto-scroll short titles)
-  const notifEl = document.getElementById('notifications');
-  notifEl.innerHTML = NEWS.slice(0,10).map(n=>`<div>${safe(n.title)}</div>`).join('');
-  
-  // Latest Announcements (keywords from news titles)
-  const annEl = document.getElementById('announcements');
-  const keywords = NEWS.slice(0,6).map(n => n.title.split(" ").slice(0,3).join(" "));
-  annEl.innerHTML = keywords.map(k=>`<li>${safe(k)}</li>`).join('');
-  
-  // Others (mix of jobs/news not in top)
-  const othersEl = document.getElementById('others');
-  const others = [...JOBS.slice(6,10), ...NEWS.slice(6,10)];
-  othersEl.innerHTML = others.map(o=>`<li>${safe(o.title)}</li>`).join('');
+  const catTabs = document.querySelectorAll(containerSelector + ' .categories .tab');
+  const eduTabs = document.querySelectorAll(containerSelector + ' .education .tab');
+  const searchBox = document.querySelector(containerSelector + ' #searchBox');
+
+  function applyFilters(){
+    let filtered = [...items];
+    if(currentCat){
+      filtered = filtered.filter(i => i.category === currentCat);
+    }
+    if(currentEdu){
+      filtered = filtered.filter(i => i.education === currentEdu);
+    }
+    if(currentQuery){
+      const q = currentQuery.toLowerCase();
+      filtered = filtered.filter(i => 
+        (i.title && i.title.toLowerCase().includes(q)) ||
+        (i.description && i.description.toLowerCase().includes(q))
+      );
+    }
+    renderCards(listSelector, filtered);
+  }
+
+  catTabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      catTabs.forEach(t=> t.classList.remove('active'));
+      tab.classList.add('active');
+      currentCat = tab.getAttribute('data-cat');
+      applyFilters();
+    });
+  });
+
+  eduTabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      eduTabs.forEach(t=> t.classList.remove('active'));
+      tab.classList.add('active');
+      currentEdu = tab.getAttribute('data-edu');
+      applyFilters();
+    });
+  });
+
+  searchBox && searchBox.addEventListener('input', ()=>{
+    currentQuery = searchBox.value;
+    applyFilters();
+  });
+
+  applyFilters();
+}
+
+// === Jobs Page ===
+if(PAGE === 'jobs'){
+  setupFilters('.filters', '#jobList', JOBS, 'job');
+
+  // Sidebar content
+  document.getElementById('notifications').innerHTML =
+    NEWS.slice(0,10).map(n=>`<div>${safe(n.title)}</div>`).join('');
+  document.getElementById('announcements').innerHTML =
+    NEWS.slice(0,6).map(n=>`<li>${safe(n.title.split(" ").slice(0,3).join(" "))}</li>`).join('');
+  document.getElementById('others').innerHTML =
+    [...NEWS.slice(6,9)].map(o=>`<li>${safe(o.title)}</li>`).join('');
+}
+
+// === News Page ===
+if(PAGE === 'news'){
+  setupFilters('.filters', '#newsList', NEWS, 'news');
 }
