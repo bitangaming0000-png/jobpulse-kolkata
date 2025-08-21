@@ -9,6 +9,11 @@
 </head>
 <body data-page="home">
 
+  <!-- 🔴 Breaking News Banner -->
+  <div id="breakingBanner" class="breaking-banner">
+    <span id="breakingText"></span>
+  </div>
+
   <!-- Header -->
   <header>
     <div class="header-inner">
@@ -20,51 +25,55 @@
         <a href="index.html" class="active">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html">News</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
+        <a href="breaking.html">Breaking</a>
+        <a href="saved.html">⭐ Saved Jobs</a>
       </nav>
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main class="layout-grid">
-    
+  <!-- Layout -->
+  <main class="layout-main">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <section class="sidebar-section">
-        <h2>Notifications</h2>
-        <div id="notifications" class="scroll-box"></div>
+      <section>
+        <h3>📢 Notifications</h3>
+        <ul id="notificationsList"></ul>
       </section>
-
-      <section class="sidebar-section">
-        <h2>Latest Announcements</h2>
-        <ul id="announcements"></ul>
+      <section>
+        <h3>📰 Latest Announcements</h3>
+        <ul id="announcementsList"></ul>
       </section>
-
-      <section class="sidebar-section">
-        <h2>Others</h2>
-        <ul id="others"></ul>
+      <section>
+        <h3>📂 Others</h3>
+        <ul id="othersList"></ul>
+      </section>
+      <section>
+        <h3>🔥 Trending Now</h3>
+        <div class="ticker">
+          <ul id="trendingList"></ul>
+        </div>
       </section>
     </aside>
 
     <!-- Main Content -->
-    <section class="content">
-      <div class="two-columns">
-        <div class="column">
-          <h2>Latest Jobs</h2>
-          <div id="latestJobs" class="card-grid"></div>
-        </div>
-        <div class="column">
-          <h2>Latest News</h2>
-          <div id="latestNews" class="card-grid"></div>
-        </div>
-      </div>
-    </section>
+    <section class="content-area">
+      <!-- Featured Slider -->
+      <div class="slider" id="featuredSlider"></div>
 
+      <!-- Latest Jobs -->
+      <h2>💼 Latest Jobs</h2>
+      <div id="latestJobs" class="card-grid"></div>
+
+      <!-- Latest News -->
+      <h2>📰 Latest News</h2>
+      <div id="latestNews" class="card-grid"></div>
+    </section>
   </main>
 
+  <!-- Footer -->
   <footer>
-    <p>© 2025 JobPulse West Bengal | All Rights Reserved</p>
+    <p>© 2025 JobPulse West Bengal</p>
   </footer>
 
   <script src="app.js"></script>
