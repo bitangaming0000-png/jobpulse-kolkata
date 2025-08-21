@@ -2,7 +2,6 @@ import Parser from "rss-parser";
 
 const parser = new Parser();
 
-// Example: You can add/remove feeds here
 const feeds = {
   jobs: [
     { name: "Remotive", url: "https://remotive.com/feed" },
@@ -23,49 +22,56 @@ export async function handler() {
     let jobs = [];
     let news = [];
 
-    // Fetch jobs
+    const parseFeed = async (f, category) => {
+      const feed = await parser.parseURL(f.url);
+      return feed.items.map(item => {
+        // Try multiple ways to extract images
+        let thumb = "dummy-photo.svg";
+        if (item.enclosure && item.enclosure.url) {
+          thumb = item.enclosure.url;
+        } else if (
+          item["media:content"] &&
+          item["media:content"]["$"] &&
+          item["media:content"]["$"].url
+        ) {
+          thumb = item["media:content"]["$"].url;
+        } else if (item.content && item.content.match(/<img[^>]+src="([^">]+)"/)) {
+          thumb = item.content.match(/<img[^>]+src="([^">]+)"/)[1];
+        }
+
+        return {
+          id: item.link,
+          title: item.title,
+          link: item.link,
+          description: item.contentSnippet || item.content || "",
+          pubDate: item.pubDate,
+          thumbnail: thumb,
+          category,
+          source: f.name
+        };
+      });
+    };
+
+    // Jobs
     for (const f of feeds.jobs) {
       try {
-        const feed = await parser.parseURL(f.url);
-        const items = feed.items.map(item => ({
-          id: item.link,
-          title: item.title,
-          link: item.link,
-          description: item.contentSnippet || item.content || "",
-          pubDate: item.pubDate,
-          thumbnail: (item.enclosure && item.enclosure.url) || "dummy-photo.svg",
-          category: "Job",
-          source: f.name
-        }));
-        jobs = jobs.concat(items);
-      } catch (e) {
-        console.error("Job feed error", f.url, e);
+        jobs = jobs.concat(await parseFeed(f, "Job"));
+      } catch (err) {
+        console.error("Job feed error", f.url, err);
       }
     }
 
-    // Fetch news
+    // News
     for (const f of feeds.news) {
       try {
-        const feed = await parser.parseURL(f.url);
-        const items = feed.items.map(item => ({
-          id: item.link,
-          title: item.title,
-          link: item.link,
-          description: item.contentSnippet || item.content || "",
-          pubDate: item.pubDate,
-          thumbnail: (item.enclosure && item.enclosure.url) || "dummy-photo.svg",
-          category: "News",
-          source: f.name
-        }));
-        news = news.concat(items);
-      } catch (e) {
-        console.error("News feed error", f.url, e);
+        news = news.concat(await parseFeed(f, "News"));
+      } catch (err) {
+        console.error("News feed error", f.url, err);
       }
     }
 
-    // Sort by date
-    jobs.sort((a,b)=> new Date(b.pubDate)-new Date(a.pubDate));
-    news.sort((a,b)=> new Date(b.pubDate)-new Date(a.pubDate));
+    jobs.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    news.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
     return {
       statusCode: 200,
