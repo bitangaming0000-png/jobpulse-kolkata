@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JobPulse Kolkata – Latest Jobs & News</title>
+  <title>JobPulse – West Bengal Jobs & News</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body data-page="home">
   <!-- === Header === -->
   <header>
     <div class="header-inner">
@@ -22,61 +22,61 @@
     </div>
   </header>
 
-  <!-- === Breaking Banner === -->
-  <div class="breaking-banner" id="breakingBanner">
-    🔔 Breaking Updates will scroll here...
-  </div>
+  <!-- === Breaking News === -->
+  <div id="breakingBanner" class="breaking-banner"></div>
 
-  <!-- === Layout Main === -->
-  <div class="layout-main">
-    <!-- === Sidebar === -->
+  <!-- === Hero Section === -->
+  <section class="hero">
+    <h1>Find Your Dream Job in West Bengal</h1>
+    <p>Stay updated with the latest jobs, news & announcements.</p>
+    <input type="text" id="homeSearch" placeholder="🔍 Search jobs & news...">
+  </section>
+
+  <main class="content-layout">
+    <!-- Sidebar -->
     <aside class="sidebar">
-      <h3>Notifications</h3>
-      <div class="scroll-box">
-        <ul id="notificationsList"></ul>
-      </div>
+      <h2>Notifications</h2>
+      <ul id="notificationsList" class="scroll-list"></ul>
 
-      <h3>Latest Announcements</h3>
-      <div class="scroll-box">
-        <ul id="announcementsList"></ul>
-      </div>
+      <h2>Latest Announcements</h2>
+      <ul id="announcementsList" class="scroll-list"></ul>
 
-      <h3>Others</h3>
-      <div class="scroll-box">
-        <ul id="othersList"></ul>
-      </div>
+      <h2>Others</h2>
+      <ul id="othersList" class="scroll-list"></ul>
     </aside>
 
-    <!-- === Main Content === -->
-    <main>
-      <section>
-        <h2>New Updates</h2>
-        <div class="card-grid" id="latestPosts">
-          <!-- Latest 6 jobs/news inserted by JS -->
-        </div>
-      </section>
+    <!-- Main Feed -->
+    <section class="main-feed">
+      <h2>Latest Jobs</h2>
+      <div id="latestPosts" class="grid"></div>
 
-      <section>
-        <h2>Jobs by Education</h2>
-        <div class="card-grid" id="educationJobs">
-          <!-- Jobs filtered by education -->
-        </div>
-      </section>
+      <h2>Latest News</h2>
+      <div id="latestNews" class="grid"></div>
 
-      <section>
-        <h2>Job Notifications</h2>
-        <div class="card-grid" id="jobNotifications">
-          <!-- More job cards -->
-        </div>
-      </section>
-    </main>
-  </div>
+      <h2>Jobs by Education</h2>
+      <div id="educationJobs" class="grid"></div>
 
-  <!-- === Footer === -->
+      <h2>Job Notifications</h2>
+      <div id="jobNotifications" class="grid"></div>
+    </section>
+  </main>
+
   <footer>
     <p>&copy; 2025 JobPulse Kolkata – All Rights Reserved</p>
   </footer>
 
   <script src="app.js"></script>
+  <script>
+    // Home search filters across ALL_POSTS
+    document.getElementById("homeSearch")?.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = ALL_POSTS.filter(
+        (p) =>
+          (p.title || "").toLowerCase().includes(q) ||
+          (p.description || "").toLowerCase().includes(q)
+      );
+      renderCards("#latestPosts", filtered.slice(0, 6), "home");
+    });
+  </script>
 </body>
 </html>
