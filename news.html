@@ -3,66 +3,53 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>All Job-News – JobPulse West Bengal</title>
+  <title>News – JobPulse</title>
   <link rel="icon" href="logo.svg" type="image/svg+xml"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body data-page="news">
+
   <header>
-    <div class="header-inner nav">
-      <div class="left">
+    <div class="header-inner">
+      <div class="logo-area">
         <img src="logo.svg" class="logo" alt="JobPulse Logo"/>
-        <div class="brand">
-          <h1>Job-Related News</h1>
-          <p>Hiring trends, exams, recruitment updates, more</p>
-        </div>
+        <h1><a href="index.html">JobPulse</a></h1>
       </div>
-      <nav class="topnav">
+      <nav>
         <a href="index.html">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html" class="active">News</a>
       </nav>
-      <div class="actions"><button id="modeToggle" class="toggle">🌙 / ☀️</button></div>
+      <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main>
-    <section class="filters">
-      <input type="text" id="searchNews" placeholder="Search headlines or source..."/>
-      <select id="districtFilter">
-        <option value="">All West Bengal</option>
-        <option>Kolkata</option><option>Howrah</option><option>Hooghly</option>
-        <option>North 24 Parganas</option><option>South 24 Parganas</option>
-        <option>Nadia</option><option>Murshidabad</option><option>Birbhum</option>
-        <option>Purba Bardhaman</option><option>Paschim Bardhaman</option>
-        <option>Bankura</option><option>Purulia</option><option>Jhargram</option>
-        <option>Paschim Medinipur</option><option>Purba Medinipur</option>
-        <option>Malda</option><option>Uttar Dinajpur</option><option>Dakshin Dinajpur</option>
-        <option>Darjeeling</option><option>Kalimpong</option><option>Alipurduar</option>
-        <option>Cooch Behar</option><option>Jalpaiguri</option>
-        <option>Asansol</option><option>Durgapur</option><option>Siliguri</option>
-        <option>Kharagpur</option><option>Haldia</option><option>Digha</option>
-        <option>Kalyani</option><option>Bidhannagar</option><option>Barasat</option>
-        <option>Barrackpore</option><option>Salt Lake</option><option>New Town</option>
-      </select>
-      <select id="categoryFilter">
-        <option value="">All Categories</option>
-        <option>Govt</option><option>IT/Tech</option><option>Education</option>
-        <option>Healthcare</option><option>Banking/Finance</option>
-        <option>Manufacturing</option><option>Remote/International</option>
-        <option>Walk-in</option>
-      </select>
-    </section>
+  <main class="layout-main">
+    <h2>Job News & Announcements</h2>
+    <div class="filters">
+      <input type="text" id="searchBox" placeholder="🔍 Search news...">
 
-    <section>
-      <div id="newsList">
-        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      <!-- Category Tabs -->
+      <div class="tabs categories">
+        <button class="tab active" data-cat="">All</button>
+        <button class="tab" data-cat="Govt">Govt</button>
+        <button class="tab" data-cat="IT/Tech">IT/Tech</button>
+        <button class="tab" data-cat="Education">Education</button>
+        <button class="tab" data-cat="Healthcare">Healthcare</button>
+        <button class="tab" data-cat="Banking/Finance">Banking</button>
+        <button class="tab" data-cat="Manufacturing">Manufacturing</button>
+        <button class="tab" data-cat="Remote/International">Remote</button>
+        <button class="tab" data-cat="Walk-in">Walk-in</button>
       </div>
-      <div id="newsPagination" class="pagination"></div>
-    </section>
+    </div>
+
+    <div id="newsList"></div>
   </main>
 
-  <footer><p>© 2025 JobPulse West Bengal</p></footer>
+  <footer>
+    <p>© 2025 JobPulse West Bengal</p>
+  </footer>
+
   <script src="app.js"></script>
 </body>
 </html>
