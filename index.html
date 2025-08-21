@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JobPulse West Bengal – Jobs & News</title>
+  <link rel="icon" href="logo.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <img src="logo.svg" class="logo" alt="JobPulse Logo"/>
+      <div class="brand">
+        <h1>JobPulse West Bengal</h1>
+        <p>Auto-aggregated jobs & job-news across every district</p>
+      </div>
+      <div class="actions">
+        <button id="modeToggle" class="toggle" aria-label="Toggle theme">🌙 / ☀️</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="filters">
+      <input type="text" id="searchJobs" placeholder="Search jobs..."/>
+      <select id="districtFilter">
+        <option value="">All West Bengal</option>
+        <option>Kolkata</option><option>Howrah</option><option>Hooghly</option>
+        <option>North 24 Parganas</option><option>South 24 Parganas</option>
+        <option>Nadia</option><option>Murshidabad</option><option>Birbhum</option>
+        <option>Purba Bardhaman</option><option>Paschim Bardhaman</option>
+        <option>Bankura</option><option>Purulia</option><option>Jhargram</option>
+        <option>Paschim Medinipur</option><option>Purba Medinipur</option>
+        <option>Malda</option><option>Uttar Dinajpur</option><option>Dakshin Dinajpur</option>
+        <option>Darjeeling</option><option>Kalimpong</option><option>Alipurduar</option>
+        <option>Cooch Behar</option><option>Jalpaiguri</option>
+        <option>Asansol</option><option>Durgapur</option><option>Siliguri</option>
+        <option>Kharagpur</option><option>Haldia</option><option>Digha</option>
+        <option>Kalyani</option><option>Bidhannagar</option><option>Barasat</option>
+        <option>Barrackpore</option><option>Salt Lake</option><option>New Town</option>
+      </select>
+      <input type="text" id="searchNews" placeholder="Search news..."/>
+    </section>
+
+    <section id="jobSection">
+      <h2>Latest Jobs</h2>
+      <div id="jobList">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+    </section>
+
+    <section id="newsSection">
+      <h2>Job-Related News</h2>
+      <div id="newsList">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 JobPulse West Bengal — built for speed & clarity</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
