@@ -113,14 +113,20 @@ nav a.active {
   margin-bottom: 6px;
   font-size: 14px;
 }
-.ticker {
-  max-height: 80px;
+
+/* 🔄 Scroll effect for Notifications, Announcements, Others */
+.scroll-box {
+  max-height: 120px;
   overflow: hidden;
+  position: relative;
 }
-.ticker ul {
-  animation: scroll 8s linear infinite;
+.scroll-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  animation: scroll-vertical 12s linear infinite;
 }
-@keyframes scroll {
+@keyframes scroll-vertical {
   0% { transform: translateY(0); }
   100% { transform: translateY(-50%); }
 }
