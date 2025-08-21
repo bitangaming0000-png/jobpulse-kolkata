@@ -3,114 +3,68 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>JobPulse West Bengal – Updates & Notifications</title>
+  <title>JobPulse – West Bengal Jobs & News</title>
   <link rel="icon" href="logo.svg" type="image/svg+xml"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body data-page="home">
+
+  <!-- Header -->
   <header>
-    <div class="header-inner nav">
-      <div class="left">
-        <img src="logo.svg" class="logo" alt="JobPulse Logo"/>
-        <div class="brand">
-          <h1>JobPulse West Bengal</h1>
-          <p>Latest updates, education jobs, job notifications</p>
-        </div>
+    <div class="header-inner">
+      <div class="logo-area">
+        <img src="logo.svg" alt="JobPulse Logo" class="logo"/>
+        <h1><a href="index.html">JobPulse</a></h1>
       </div>
-      <nav class="topnav">
+      <nav>
         <a href="index.html" class="active">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html">News</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
       </nav>
-      <div class="actions">
-        <button id="modeToggle" class="toggle" aria-label="Toggle theme">🌙 / ☀️</button>
-      </div>
+      <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main class="layout">
+  <main class="layout-grid">
+    
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="side-section">
-        <h3>Notifications</h3>
-        <ul id="sideNotifications" class="side-list"></ul>
-      </div>
-      <div class="side-section">
-        <h3>Latest Announcements</h3>
-        <ul id="sideAnnouncements" class="side-list"></ul>
-      </div>
-      <div class="side-section">
-        <h3>Others</h3>
-        <ul id="sideOthers" class="side-list"></ul>
-      </div>
+      <section class="sidebar-section">
+        <h2>Notifications</h2>
+        <div id="notifications" class="scroll-box"></div>
+      </section>
+
+      <section class="sidebar-section">
+        <h2>Latest Announcements</h2>
+        <ul id="announcements"></ul>
+      </section>
+
+      <section class="sidebar-section">
+        <h2>Others</h2>
+        <ul id="others"></ul>
+      </section>
     </aside>
 
-    <!-- Center column -->
+    <!-- Main Content -->
     <section class="content">
-      <div class="filters three">
-        <input type="text" id="searchHome" placeholder="Search updates & jobs..."/>
-        <select id="districtHome">
-          <option value="">All West Bengal</option>
-          <option>Kolkata</option><option>Howrah</option><option>Hooghly</option>
-          <option>North 24 Parganas</option><option>South 24 Parganas</option>
-          <option>Nadia</option><option>Murshidabad</option><option>Birbhum</option>
-          <option>Purba Bardhaman</option><option>Paschim Bardhaman</option>
-          <option>Bankura</option><option>Purulia</option><option>Jhargram</option>
-          <option>Paschim Medinipur</option><option>Purba Medinipur</option>
-          <option>Malda</option><option>Uttar Dinajpur</option><option>Dakshin Dinajpur</option>
-          <option>Darjeeling</option><option>Kalimpong</option><option>Alipurduar</option>
-          <option>Cooch Behar</option><option>Jalpaiguri</option>
-          <option>Asansol</option><option>Durgapur</option><option>Siliguri</option>
-          <option>Kharagpur</option><option>Haldia</option><option>Digha</option>
-          <option>Kalyani</option><option>Bidhannagar</option><option>Barasat</option>
-          <option>Barrackpore</option><option>Salt Lake</option><option>New Town</option>
-        </select>
-        <select id="categoryHome">
-          <option value="">All Categories</option>
-          <option>Govt</option><option>IT/Tech</option><option>Education</option>
-          <option>Healthcare</option><option>Banking/Finance</option>
-          <option>Manufacturing</option><option>Remote/International</option>
-          <option>Walk-in</option>
-        </select>
+      <div class="two-columns">
+        <div class="column">
+          <h2>Latest Jobs</h2>
+          <div id="latestJobs" class="card-grid"></div>
+        </div>
+        <div class="column">
+          <h2>Latest News</h2>
+          <div id="latestNews" class="card-grid"></div>
+        </div>
       </div>
-
-      <!-- Latest 4 mixed updates -->
-      <section class="block">
-        <div class="section-head">
-          <h2>New Updates</h2>
-          <a class="link" href="news.html">See all news →</a>
-        </div>
-        <div id="updatesList" class="cards-grid">
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-        </div>
-      </section>
-
-      <!-- Latest 4 education jobs -->
-      <section class="block">
-        <div class="section-head">
-          <h2>Jobs by Education</h2>
-          <a class="link" href="jobs.html?category=Education">Explore more →</a>
-        </div>
-        <div id="eduJobsList" class="cards-grid">
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-        </div>
-      </section>
-
-      <!-- Latest 4 govt/notifications -->
-      <section class="block">
-        <div class="section-head">
-          <h2>Job Notifications</h2>
-          <a class="link" href="jobs.html?category=Govt">All notifications →</a>
-        </div>
-        <div id="notifJobsList" class="cards-grid">
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-        </div>
-      </section>
     </section>
+
   </main>
 
   <footer>
-    <p>© 2025 JobPulse West Bengal — clean, fast & updated</p>
+    <p>© 2025 JobPulse West Bengal | All Rights Reserved</p>
   </footer>
 
   <script src="app.js"></script>
