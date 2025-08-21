@@ -3,63 +3,124 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>JobPulse West Bengal – Jobs & News</title>
+  <title>JobPulse West Bengal – Updates & Notifications</title>
   <link rel="icon" href="logo.svg" type="image/svg+xml"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
-<body>
+<body data-page="home">
   <header>
-    <div class="header-inner">
-      <img src="logo.svg" class="logo" alt="JobPulse Logo"/>
-      <div class="brand">
-        <h1>JobPulse West Bengal</h1>
-        <p>Auto-aggregated jobs & job-news across every district</p>
+    <div class="header-inner nav">
+      <div class="left">
+        <img src="logo.svg" class="logo" alt="JobPulse Logo"/>
+        <div class="brand">
+          <h1>JobPulse West Bengal</h1>
+          <p>Latest updates, education jobs, job notifications</p>
+        </div>
       </div>
+      <nav class="topnav">
+        <a href="index.html" class="active">Home</a>
+        <a href="jobs.html">Jobs</a>
+        <a href="news.html">News</a>
+      </nav>
       <div class="actions">
         <button id="modeToggle" class="toggle" aria-label="Toggle theme">🌙 / ☀️</button>
       </div>
     </div>
   </header>
 
-  <main>
-    <section class="filters">
-      <input type="text" id="searchJobs" placeholder="Search jobs..."/>
-      <select id="districtFilter">
-        <option value="">All West Bengal</option>
-        <option>Kolkata</option><option>Howrah</option><option>Hooghly</option>
-        <option>North 24 Parganas</option><option>South 24 Parganas</option>
-        <option>Nadia</option><option>Murshidabad</option><option>Birbhum</option>
-        <option>Purba Bardhaman</option><option>Paschim Bardhaman</option>
-        <option>Bankura</option><option>Purulia</option><option>Jhargram</option>
-        <option>Paschim Medinipur</option><option>Purba Medinipur</option>
-        <option>Malda</option><option>Uttar Dinajpur</option><option>Dakshin Dinajpur</option>
-        <option>Darjeeling</option><option>Kalimpong</option><option>Alipurduar</option>
-        <option>Cooch Behar</option><option>Jalpaiguri</option>
-        <option>Asansol</option><option>Durgapur</option><option>Siliguri</option>
-        <option>Kharagpur</option><option>Haldia</option><option>Digha</option>
-        <option>Kalyani</option><option>Bidhannagar</option><option>Barasat</option>
-        <option>Barrackpore</option><option>Salt Lake</option><option>New Town</option>
-      </select>
-      <input type="text" id="searchNews" placeholder="Search news..."/>
-    </section>
-
-    <section id="jobSection">
-      <h2>Latest Jobs</h2>
-      <div id="jobList">
-        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+  <!-- Main 2-column layout -->
+  <main class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="side-section">
+        <h3>Notifications</h3>
+        <ul id="sideNotifications" class="side-list">
+          <!-- filled by JS -->
+        </ul>
       </div>
-    </section>
 
-    <section id="newsSection">
-      <h2>Job-Related News</h2>
-      <div id="newsList">
-        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      <div class="side-section">
+        <h3>Latest Announcements</h3>
+        <ul id="sideAnnouncements" class="side-list">
+          <!-- filled by JS -->
+        </ul>
       </div>
+
+      <div class="side-section">
+        <h3>Others</h3>
+        <ul id="sideOthers" class="side-list">
+          <!-- filled by JS -->
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Center content -->
+    <section class="content">
+      <!-- Quick filters row -->
+      <div class="filters three">
+        <input type="text" id="searchHome" placeholder="Search updates & jobs..."/>
+        <select id="districtHome">
+          <option value="">All West Bengal</option>
+          <option>Kolkata</option><option>Howrah</option><option>Hooghly</option>
+          <option>North 24 Parganas</option><option>South 24 Parganas</option>
+          <option>Nadia</option><option>Murshidabad</option><option>Birbhum</option>
+          <option>Purba Bardhaman</option><option>Paschim Bardhaman</option>
+          <option>Bankura</option><option>Purulia</option><option>Jhargram</option>
+          <option>Paschim Medinipur</option><option>Purba Medinipur</option>
+          <option>Malda</option><option>Uttar Dinajpur</option><option>Dakshin Dinajpur</option>
+          <option>Darjeeling</option><option>Kalimpong</option><option>Alipurduar</option>
+          <option>Cooch Behar</option><option>Jalpaiguri</option>
+          <option>Asansol</option><option>Durgapur</option><option>Siliguri</option>
+          <option>Kharagpur</option><option>Haldia</option><option>Digha</option>
+          <option>Kalyani</option><option>Bidhannagar</option><option>Barasat</option>
+          <option>Barrackpore</option><option>Salt Lake</option><option>New Town</option>
+        </select>
+        <select id="categoryHome">
+          <option value="">All Categories</option>
+          <option>Govt</option><option>IT/Tech</option><option>Education</option>
+          <option>Healthcare</option><option>Banking/Finance</option>
+          <option>Manufacturing</option><option>Remote/International</option>
+          <option>Walk-in</option>
+        </select>
+      </div>
+
+      <!-- New Updates -->
+      <section class="block">
+        <div class="section-head">
+          <h2>New Updates</h2>
+          <a class="link" href="news.html">See all news →</a>
+        </div>
+        <div id="updatesList" class="cards-grid">
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+      </section>
+
+      <!-- Jobs by Education -->
+      <section class="block">
+        <div class="section-head">
+          <h2>Jobs by Education</h2>
+          <a class="link" href="jobs.html?category=Education">Explore more →</a>
+        </div>
+        <div id="eduJobsList" class="cards-grid">
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+      </section>
+
+      <!-- Job Notifications -->
+      <section class="block">
+        <div class="section-head">
+          <h2>Job Notifications</h2>
+          <a class="link" href="jobs.html?category=Govt">All notifications →</a>
+        </div>
+        <div id="notifJobsList" class="cards-grid">
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+      </section>
     </section>
   </main>
 
   <footer>
-    <p>© 2025 JobPulse West Bengal — built for speed & clarity</p>
+    <p>© 2025 JobPulse West Bengal — clean, fast & updated</p>
   </footer>
 
   <script src="app.js"></script>
