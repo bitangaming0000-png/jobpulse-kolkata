@@ -1,10 +1,5 @@
 {
-  "name": "jobpulse-kolkata",
-  "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "build": "echo 'Static site build complete'"
-  },
   "dependencies": {
     "rss-parser": "^3.13.0"
   }
