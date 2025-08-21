@@ -1,101 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jobs – JobPulse</title>
-  <link rel="icon" href="logo.svg" type="image/svg+xml"/>
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="jobs">
-
-  <!-- 🔴 Breaking Banner -->
-  <div id="breakingBanner" class="breaking-banner">
-    <span id="breakingText"></span>
-  </div>
-
-  <!-- Header -->
+  <!-- === Header === -->
   <header>
     <div class="header-inner">
-      <h1><a href="index.html">JobPulse</a></h1>
+      <img src="logo.svg" alt="JobPulse Logo" width="40">
       <nav>
         <a href="index.html">Home</a>
         <a href="jobs.html" class="active">Jobs</a>
         <a href="news.html">News</a>
         <a href="breaking.html">Breaking</a>
-        <a href="saved.html">⭐ Saved Jobs</a>
+        <a href="saved.html">⭐ Saved</a>
       </nav>
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main class="layout-main with-sidebar">
-    <!-- Sidebar Filters -->
-    <aside class="filter-sidebar">
-      <h3>🔍 Advanced Filters</h3>
+  <!-- === Layout === -->
+  <div class="layout-main with-sidebar">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3>Notifications</h3>
+      <div class="scroll-box"><ul id="notificationsList"></ul></div>
 
-      <div class="filter-group">
-        <h4>Job Type</h4>
-        <label><input type="checkbox" class="filter-jobtype" value="Full-time"> Full-time</label>
-        <label><input type="checkbox" class="filter-jobtype" value="Part-time"> Part-time</label>
-        <label><input type="checkbox" class="filter-jobtype" value="Internship"> Internship</label>
-        <label><input type="checkbox" class="filter-jobtype" value="Contract"> Contract</label>
-      </div>
+      <h3>Latest Announcements</h3>
+      <div class="scroll-box"><ul id="announcementsList"></ul></div>
 
-      <div class="filter-group">
-        <h4>Location</h4>
-        <label><input type="checkbox" class="filter-location" value="Kolkata"> Kolkata</label>
-        <label><input type="checkbox" class="filter-location" value="Howrah"> Howrah</label>
-        <label><input type="checkbox" class="filter-location" value="Durgapur"> Durgapur</label>
-        <label><input type="checkbox" class="filter-location" value="Siliguri"> Siliguri</label>
-      </div>
-
-      <div class="filter-group">
-        <h4>Salary Range</h4>
-        <label><input type="checkbox" class="filter-salary" value="0-20000"> ₹0 – ₹20k</label>
-        <label><input type="checkbox" class="filter-salary" value="20000-50000"> ₹20k – ₹50k</label>
-        <label><input type="checkbox" class="filter-salary" value="50000-100000"> ₹50k – ₹1L</label>
-        <label><input type="checkbox" class="filter-salary" value="100000+"> ₹1L+</label>
-      </div>
+      <h3>Others</h3>
+      <div class="scroll-box"><ul id="othersList"></ul></div>
     </aside>
 
-    <!-- Jobs Content -->
-    <section class="content-area">
-      <!-- Search + Sort -->
+    <!-- Main Content -->
+    <main>
+      <h2>All Jobs</h2>
+      
+      <!-- Search + Filters -->
       <div class="filters">
-        <input type="text" id="searchBox" placeholder="Search jobs...">
-        <select id="sortSelect">
-          <option value="newest">Sort by: Newest</option>
-          <option value="oldest">Sort by: Oldest</option>
+        <input type="text" id="jobSearch" placeholder="Search jobs...">
+        <select id="educationFilter">
+          <option value="">All Education</option>
+          <option value="10th">10th Pass</option>
+          <option value="12th">12th Pass</option>
+          <option value="Graduate">Graduate</option>
+          <option value="Post Graduate">Post Graduate</option>
         </select>
       </div>
 
       <!-- Category Tabs -->
-      <div class="tabs categories">
-        <button class="tab active" data-cat="">All</button>
-        <button class="tab" data-cat="recent">Recently Added</button>
-        <button class="tab" data-cat="Govt">Govt</button>
-        <button class="tab" data-cat="IT/Tech">IT/Tech</button>
-        <button class="tab" data-cat="Education">Education</button>
+      <div class="tabs" id="jobTabs">
+        <div class="tab active" data-cat="">All</div>
+        <div class="tab" data-cat="Govt">Govt</div>
+        <div class="tab" data-cat="Private">Private</div>
+        <div class="tab" data-cat="IT">IT</div>
+        <div class="tab" data-cat="Banking">Banking</div>
       </div>
 
-      <!-- Education Tabs -->
-      <div class="tabs education">
-        <button class="tab active" data-edu="">All Education</button>
-        <button class="tab" data-edu="10th">10th Pass</button>
-        <button class="tab" data-edu="12th">12th Pass</button>
-        <button class="tab" data-edu="Graduate">Graduate</button>
-        <button class="tab" data-edu="Postgraduate">Postgraduate</button>
+      <!-- Job Cards -->
+      <div class="card-grid" id="jobsList">
+        <!-- Filled by JS -->
       </div>
-
-      <!-- Job List -->
-      <div id="jobList" class="card-grid"></div>
-      <button id="loadMoreJobs" class="load-more">Load More</button>
-    </section>
-  </main>
+    </main>
+  </div>
 
   <footer>
-    <p>© 2025 JobPulse West Bengal</p>
+    <p>&copy; 2025 JobPulse Kolkata – All Rights Reserved</p>
   </footer>
 
   <script src="app.js"></script>
