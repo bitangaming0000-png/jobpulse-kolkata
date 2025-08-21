@@ -9,41 +9,50 @@
 </head>
 <body data-page="news">
 
+  <!-- 🔴 Breaking Banner -->
+  <div id="breakingBanner" class="breaking-banner">
+    <span id="breakingText"></span>
+  </div>
+
+  <!-- Header -->
   <header>
     <div class="header-inner">
-      <div class="logo-area">
-        <img src="logo.svg" class="logo" alt="JobPulse Logo"/>
-        <h1><a href="index.html">JobPulse</a></h1>
-      </div>
+      <h1><a href="index.html">JobPulse</a></h1>
       <nav>
         <a href="index.html">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html" class="active">News</a>
+        <a href="breaking.html">Breaking</a>
+        <a href="saved.html">⭐ Saved Jobs</a>
       </nav>
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
   <main class="layout-main">
-    <h2>Job News & Announcements</h2>
-    <div class="filters">
-      <input type="text" id="searchBox" placeholder="🔍 Search news...">
+    <section class="content-area">
+      <!-- Search + Sort -->
+      <div class="filters">
+        <input type="text" id="searchBox" placeholder="Search news...">
+        <select id="sortSelect">
+          <option value="newest">Sort by: Newest</option>
+          <option value="oldest">Sort by: Oldest</option>
+        </select>
+      </div>
 
       <!-- Category Tabs -->
       <div class="tabs categories">
         <button class="tab active" data-cat="">All</button>
+        <button class="tab" data-cat="recent">Recently Added</button>
         <button class="tab" data-cat="Govt">Govt</button>
-        <button class="tab" data-cat="IT/Tech">IT/Tech</button>
-        <button class="tab" data-cat="Education">Education</button>
-        <button class="tab" data-cat="Healthcare">Healthcare</button>
-        <button class="tab" data-cat="Banking/Finance">Banking</button>
-        <button class="tab" data-cat="Manufacturing">Manufacturing</button>
-        <button class="tab" data-cat="Remote/International">Remote</button>
-        <button class="tab" data-cat="Walk-in">Walk-in</button>
+        <button class="tab" data-cat="Exam">Exam</button>
+        <button class="tab" data-cat="Announcement">Announcements</button>
       </div>
-    </div>
 
-    <div id="newsList"></div>
+      <!-- News List -->
+      <div id="newsList" class="card-grid"></div>
+      <button id="loadMoreNews" class="load-more">Load More</button>
+    </section>
   </main>
 
   <footer>
