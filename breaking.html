@@ -1,45 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Breaking – JobPulse</title>
-  <link rel="icon" href="logo.svg" type="image/svg+xml"/>
-  <link rel="stylesheet" href="styles.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trending – JobPulse</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="breaking">
-
-  <!-- 🔴 Breaking Banner -->
-  <div id="breakingBanner" class="breaking-banner">
-    <span id="breakingText"></span>
-  </div>
-
-  <!-- Header -->
   <header>
     <div class="header-inner">
-      <h1><a href="index.html">JobPulse</a></h1>
-      <nav>
+      <span id="dateTime"></span>
+      <img src="logo.svg" alt="JobPulse Logo" width="40">
+
+      <button id="menuToggle" class="menu-toggle">☰</button>
+      <nav id="mainNav" class="hidden">
         <a href="index.html">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html">News</a>
-        <a href="breaking.html" class="active">Breaking</a>
-        <a href="saved.html">⭐ Saved Jobs</a>
+        <a href="breaking.html" class="active">Trending</a>
+        <a href="exams.html">Exams</a>
       </nav>
+
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main class="layout-main">
-    <section class="content-area">
-      <h2>🚨 Breaking News & Urgent Updates</h2>
-      <div id="breakingList" class="card-grid"></div>
-    </section>
+  <main class="content-only">
+    <h2>All Trending News</h2>
+    <div id="breakingList" class="grid"></div>
   </main>
 
-  <footer>
-    <p>© 2025 JobPulse West Bengal</p>
-  </footer>
+  <div class="bottom-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="jobs.html">💼 Jobs</a>
+    <a href="news.html">📰 News</a>
+    <a href="breaking.html" class="active">🔥 Trending</a>
+    <a href="exams.html">📘 Exams</a>
+    <span id="visitorCount">👥 0 Visitors</span>
+  </div>
 
+  <footer><p>&copy; 2025 JobPulse</p></footer>
   <script src="app.js"></script>
 </body>
 </html>
