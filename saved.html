@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saved Jobs – JobPulse</title>
+  <link rel="icon" href="logo.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body data-page="saved">
+
+  <!-- 🔴 Breaking Banner -->
+  <div id="breakingBanner" class="breaking-banner">
+    <span id="breakingText"></span>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <h1><a href="index.html">JobPulse</a></h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="jobs.html">Jobs</a>
+        <a href="news.html">News</a>
+        <a href="breaking.html">Breaking</a>
+        <a href="saved.html" class="active">⭐ Saved Jobs</a>
+      </nav>
+      <button id="modeToggle">🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="content-area">
+      <h2>⭐ Saved Jobs</h2>
+      <div id="savedList" class="card-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 JobPulse West Bengal</p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    const saved = JSON.parse(localStorage.getItem("savedJobs") || "[]");
+    document.getElementById("savedList").innerHTML = saved.length ? 
+      saved.map(j=>`
+        <div class="card">
+          <a href="post.html?id=${j.id}">
+            <img src="${j.thumbnail}" alt="${j.title}">
+            <h3>${j.title}</h3>
+          </a>
+          <button class="save-btn" onclick="toggleSave('${j.id}', '${j.title}', '${j.thumbnail}')">Remove</button>
+        </div>
+      `).join('')
+    : `<p>No jobs saved yet.</p>`;
+  </script>
+</body>
+</html>
