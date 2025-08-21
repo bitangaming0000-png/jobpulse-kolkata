@@ -1,64 +1,13 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #f9f9f9;
-  color: #333;
-}
-
-header {
-  text-align: center;
-  background: #004080;
-  color: white;
-  padding: 20px;
-}
-
-header .logo {
-  height: 60px;
-}
-
-main {
-  padding: 20px;
-}
-
-.filters, #jobList {
-  background: white;
-  margin-bottom: 20px;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.filters input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-}
-
-.job-card {
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-}
-
-.job-card h3 {
-  margin: 0 0 10px 0;
-}
-
-.job-actions button {
-  margin-right: 10px;
-  padding: 5px 10px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.job-actions .apply { background: #28a745; color: white; }
-
-footer {
-  text-align: center;
-  padding: 15px;
-  background: #004080;
-  color: white;
-}
+body{font-family:Arial,sans-serif;margin:0;padding:0;background:#f9f9f9;color:#333}
+header{text-align:center;background:#004080;color:#fff;padding:20px}
+header .logo{height:60px}
+.filters{display:flex;gap:10px;padding:15px;background:#fff;border-radius:8px;margin:15px;box-shadow:0 2px 5px rgba(0,0,0,.06)}
+.filters input{flex:1;padding:8px;border-radius:5px;border:1px solid #ccc}
+section{margin:15px}
+.job-card,.news-card{background:#fff;padding:15px;margin-bottom:10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,.1)}
+.job-card h3,.news-card h3{margin:0 0 10px 0}
+.job-actions button{padding:5px 10px;border:none;border-radius:5px;cursor:pointer;margin-top:5px}
+.job-actions .apply{background:#28a745;color:#fff}
+.job-actions .whatsapp{background:#25D366;color:#fff;margin-left:5px}
+.news-card img{max-width:100%;border-radius:6px;margin-bottom:10px}
+footer{text-align:center;padding:15px;background:#004080;color:#fff}
