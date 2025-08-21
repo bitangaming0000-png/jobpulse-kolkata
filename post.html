@@ -36,9 +36,9 @@
         <a id="postSource" href="#" target="_blank">View Original Source</a>
       </div>
 
-      <!-- ✅ Back to Home -->
+      <!-- ✅ Dynamic Back Button -->
       <div class="back-home">
-        <a href="index.html" class="back-btn">⬅ Back to Home</a>
+        <a href="index.html" class="back-btn" id="backBtn">⬅ Back</a>
       </div>
     </div>
   </main>
@@ -48,5 +48,22 @@
   </footer>
 
   <script src="app.js"></script>
+  <script>
+    // ✅ Detect source page from query string (?from=jobs/news/home)
+    const urlParams = new URLSearchParams(window.location.search);
+    const from = urlParams.get("from") || "home";
+
+    const backBtn = document.getElementById("backBtn");
+    if (from === "jobs") {
+      backBtn.href = "jobs.html";
+      backBtn.textContent = "⬅ Back to Jobs";
+    } else if (from === "news") {
+      backBtn.href = "news.html";
+      backBtn.textContent = "⬅ Back to News";
+    } else {
+      backBtn.href = "index.html";
+      backBtn.textContent = "⬅ Back to Home";
+    }
+  </script>
 </body>
 </html>
