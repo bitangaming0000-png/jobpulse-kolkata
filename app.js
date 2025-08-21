@@ -6,9 +6,7 @@ function safe(str) {
 }
 
 function byDateDesc(a, b) {
-  const da = new Date(a.pubDate || 0);
-  const db = new Date(b.pubDate || 0);
-  return db - da;
+  return new Date(b.pubDate || 0) - new Date(a.pubDate || 0);
 }
 
 /* ================================
@@ -37,6 +35,59 @@ let JOBS = [];
 let NEWS = [];
 
 /* ================================
+   Client-side Cache (localStorage)
+================================== */
+function saveCache(data) {
+  localStorage.setItem("cachedPosts", JSON.stringify({
+    data,
+    savedAt: Date.now()
+  }));
+}
+
+function loadCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem("cachedPosts"));
+    if (!cached) return null;
+    if (Date.now() - cached.savedAt > 15 * 60 * 1000) return null; // 15 min TTL
+    return cached.data;
+  } catch {
+    return null;
+  }
+}
+
+/* ================================
+   Fetch with Fallback
+================================== */
+async function getPosts() {
+  // 1. Local cache first
+  const local = loadCache();
+  if (local) {
+    console.log("✅ Loaded from local cache");
+    return local;
+  }
+
+  try {
+    // 2. Fetch from Netlify
+    const res = await fetch("/.netlify/functions/fetchFeeds");
+    const data = await res.json();
+    saveCache(data);
+    console.log("✅ Loaded from server");
+    return data;
+  } catch (err) {
+    console.error("Server fetch failed:", err);
+    // 3. Last resort → stale cache
+    try {
+      const cached = JSON.parse(localStorage.getItem("cachedPosts"));
+      if (cached?.data) {
+        console.warn("⚠️ Using stale cached data");
+        return cached.data;
+      }
+    } catch {}
+    return { jobs: [], news: [] };
+  }
+}
+
+/* ================================
    Rendering helpers
 ================================== */
 function cardHTML(post, fromPage) {
@@ -47,19 +98,13 @@ function cardHTML(post, fromPage) {
   return `
     <div class="card">
       <a href="post.html?id=${encodeURIComponent(post.id)}&from=${fromPage}">
-        <img src="${safe(post.thumbnail || "dummy-photo.svg")}" alt="${safe(
-    post.title
-  )}">
+        <img src="${safe(post.thumbnail || "dummy-photo.svg")}" alt="${safe(post.title)}">
         <h3>${safe(post.title)} ${isNew ? '<span class="new-badge">NEW</span>' : ""}</h3>
         <p>${safe((post.description || "").slice(0, 120))}...</p>
       </a>
       ${
         fromPage === "jobs"
-          ? `<button class="save-btn" onclick="toggleSave('${safe(
-              post.id
-            )}','${safe(post.title)}','${safe(
-              post.thumbnail || "dummy-photo.svg"
-            )}')">⭐ Save</button>`
+          ? `<button class="save-btn" onclick="toggleSave('${safe(post.id)}','${safe(post.title)}','${safe(post.thumbnail || "dummy-photo.svg")}')">⭐ Save</button>`
           : ""
       }
     </div>
@@ -78,9 +123,7 @@ function fillList(selector, items, fromTag) {
   el.innerHTML = items
     .map(
       (p) =>
-        `<li><a href="post.html?id=${encodeURIComponent(
-          p.id
-        )}&from=${fromTag}">${safe(p.title)}</a></li>`
+        `<li><a href="post.html?id=${encodeURIComponent(p.id)}&from=${fromTag}">${safe(p.title)}</a></li>`
     )
     .join("");
 }
@@ -99,48 +142,28 @@ function toggleSave(id, title, thumbnail) {
   localStorage.setItem("savedJobs", JSON.stringify(saved));
   alert(exists ? "Removed from Saved Jobs" : "Saved!");
 }
-window.toggleSave = toggleSave; // make available to inline onclicks
+window.toggleSave = toggleSave;
 
 /* ================================
-   Sidebar (Notifications / Announcements / Others)
-   – used on Home, Jobs, News pages
+   Sidebar
 ================================== */
 function populateSidebar() {
-  // Notifications → latest NEWS titles
-  fillList(
-    "notificationsList",
-    NEWS.slice(0, 12),
-    "news"
-  );
-
-  // Latest Announcements → latest JOB titles
-  fillList(
-    "announcementsList",
-    JOBS.slice(0, 12),
-    "jobs"
-  );
-
-  // Others → mixed remaining posts
+  fillList("notificationsList", NEWS.slice(0, 12), "news");
+  fillList("announcementsList", JOBS.slice(0, 12), "jobs");
   const mixed = [...JOBS.slice(12, 18), ...NEWS.slice(12, 18)].sort(byDateDesc);
   fillList("othersList", mixed, "home");
 }
 
 /* ================================
-   Breaking Banner (Home + News + Breaking)
+   Breaking Banner
 ================================== */
 function renderBreakingBanner() {
   const bannerContainer = document.getElementById("breakingBanner");
-  if (!bannerContainer) return; // not on this page
-
+  if (!bannerContainer) return;
   const breaking =
-    NEWS.find((n) =>
-      /urgent|breaking|important|alert|announcement/i.test(n.title || "")
-    ) || NEWS[0];
-
+    NEWS.find((n) => /urgent|breaking|important|alert|announcement/i.test(n.title || "")) || NEWS[0];
   if (breaking) {
-    bannerContainer.innerHTML = `🚨 <a href="post.html?id=${encodeURIComponent(
-      breaking.id
-    )}&from=news">${safe(breaking.title)}</a>`;
+    bannerContainer.innerHTML = `🚨 <a href="post.html?id=${encodeURIComponent(breaking.id)}&from=news">${safe(breaking.title)}</a>`;
   }
 }
 
@@ -148,22 +171,14 @@ function renderBreakingBanner() {
    Page initializers
 ================================== */
 function initHome() {
-  // New Updates → latest mix (6)
-  const latestMix = ALL_POSTS.slice(0, 6);
-  renderCards("#latestPosts", latestMix, "home");
-
-  // Jobs by Education → just show latest jobs (6) for now
+  renderCards("#latestPosts", ALL_POSTS.slice(0, 6), "home");
   renderCards("#educationJobs", JOBS.slice(0, 6), "jobs");
-
-  // Job Notifications → next set of jobs (6)
   renderCards("#jobNotifications", JOBS.slice(6, 12), "jobs");
-
   populateSidebar();
   renderBreakingBanner();
 }
 
 function initJobs() {
-  // Basic filters (search + simple tabs)
   const listEl = "#jobsList";
   const searchInput = document.getElementById("jobSearch");
   const eduSelect = document.getElementById("educationFilter");
@@ -173,15 +188,9 @@ function initJobs() {
   function apply() {
     let arr = [...JOBS];
     if (currentCat)
-      arr = arr.filter((p) =>
-        (p.category || "").toLowerCase().includes(currentCat.toLowerCase())
-      );
+      arr = arr.filter((p) => (p.category || "").toLowerCase().includes(currentCat.toLowerCase()));
     const edu = (eduSelect?.value || "").toLowerCase();
-    if (edu) {
-      arr = arr.filter((p) =>
-        (p.title || "").toLowerCase().includes(edu)
-      );
-    }
+    if (edu) arr = arr.filter((p) => (p.title || "").toLowerCase().includes(edu));
     const q = (searchInput?.value || "").toLowerCase().trim();
     if (q) {
       arr = arr.filter(
@@ -218,9 +227,7 @@ function initNews() {
   function apply() {
     let arr = [...NEWS];
     if (currentCat)
-      arr = arr.filter((p) =>
-        (p.title || "").toLowerCase().includes(currentCat.toLowerCase())
-      );
+      arr = arr.filter((p) => (p.title || "").toLowerCase().includes(currentCat.toLowerCase()));
     const q = (searchInput?.value || "").toLowerCase().trim();
     if (q) {
       arr = arr.filter(
@@ -248,7 +255,6 @@ function initNews() {
 }
 
 function initPost() {
-  // Prefer cached data first for instant load
   let cached = [];
   try {
     cached = JSON.parse(sessionStorage.getItem("allPosts") || "[]");
@@ -260,78 +266,49 @@ function initPost() {
     const post = data.find((p) => p.id === id);
     if (!post) return;
 
-    const titleEl = document.getElementById("postTitle");
-    const metaEl = document.getElementById("postMeta");
-    const imgEl = document.getElementById("postImage");
-    const bodyEl = document.getElementById("postBody");
-    const srcEl = document.getElementById("postSource");
-
-    titleEl.textContent = post.title || "Untitled";
-    metaEl.textContent = `Published: ${
-      post.pubDate ? new Date(post.pubDate).toLocaleString() : "N/A"
-    }  •  Source: ${post.source || ""}`;
-    imgEl.src = post.thumbnail || "dummy-photo.svg";
-    bodyEl.innerHTML = post.description || "No description available.";
-    srcEl.href = post.link || "#";
+    document.getElementById("postTitle").textContent = post.title || "Untitled";
+    document.getElementById("postMeta").textContent =
+      `Published: ${post.pubDate ? new Date(post.pubDate).toLocaleString() : "N/A"} • Source: ${post.source || ""}`;
+    document.getElementById("postImage").src = post.thumbnail || "dummy-photo.svg";
+    document.getElementById("postBody").innerHTML = post.description || "No description available.";
+    document.getElementById("postSource").href = post.link || "#";
   };
 
   if (cached.length) paint(cached);
 
-  // Also refresh once from network (silently)
   fetch("/.netlify/functions/fetchFeeds")
     .then((r) => r.json())
     .then((data) => {
       const all = [...(data.jobs || []), ...(data.news || [])].sort(byDateDesc);
       sessionStorage.setItem("allPosts", JSON.stringify(all));
-      if (!cached.length) paint(all); // if nothing was painted, paint now
+      if (!cached.length) paint(all);
     })
     .catch(() => {});
 }
 
 /* ================================
-   Fetch data from Netlify Function
+   Init Load
 ================================== */
 async function loadAndInit() {
-  try {
-    const res = await fetch("/.netlify/functions/fetchFeeds");
-    const data = await res.json();
+  const data = await getPosts();
 
-    // Support both shapes:
-    // 1) { jobs: [], news: [] }
-    // 2) [mixed array]
-    if (Array.isArray(data)) {
-      ALL_POSTS = data.sort(byDateDesc);
-      JOBS = ALL_POSTS.filter((p) => (p.category || "").toLowerCase() === "job");
-      NEWS = ALL_POSTS.filter((p) => (p.category || "").toLowerCase() === "news");
-    } else {
-      JOBS = (data.jobs || []).sort(byDateDesc);
-      NEWS = (data.news || []).sort(byDateDesc);
-      ALL_POSTS = [...JOBS, ...NEWS].sort(byDateDesc);
-    }
+  JOBS = (data.jobs || []).sort(byDateDesc);
+  NEWS = (data.news || []).sort(byDateDesc);
+  ALL_POSTS = [...JOBS, ...NEWS].sort(byDateDesc);
 
-    // Cache for post page
-    sessionStorage.setItem("allPosts", JSON.stringify(ALL_POSTS));
+  sessionStorage.setItem("allPosts", JSON.stringify(ALL_POSTS));
 
-    const page = document.body.getAttribute("data-page") || "home";
-    if (page === "home") initHome();
-    if (page === "jobs") initJobs();
-    if (page === "news") initNews();
-    if (page === "breaking") {
-      renderBreakingBanner();
-      const breaking = NEWS.filter((n) =>
-        /urgent|breaking|important|alert|announcement/i.test(n.title || "")
-      );
-      renderCards("#breakingList", breaking, "news");
-    }
-    if (page === "saved") {
-      // Saved page is static; sidebar not required
-      // (Cards rendered inline in saved.html)
-      renderBreakingBanner();
-    }
-    if (page === "post") initPost();
-  } catch (e) {
-    console.error("Failed to load feeds:", e);
+  const page = document.body.getAttribute("data-page") || "home";
+  if (page === "home") initHome();
+  if (page === "jobs") initJobs();
+  if (page === "news") initNews();
+  if (page === "breaking") {
+    renderBreakingBanner();
+    const breaking = NEWS.filter((n) => /urgent|breaking|important|alert|announcement/i.test(n.title || ""));
+    renderCards("#breakingList", breaking, "news");
   }
+  if (page === "saved") renderBreakingBanner();
+  if (page === "post") initPost();
 }
 
 loadAndInit();
