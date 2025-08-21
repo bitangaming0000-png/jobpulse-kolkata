@@ -3,66 +3,52 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>All Jobs – JobPulse West Bengal</title>
+  <title>Jobs – JobPulse</title>
   <link rel="icon" href="logo.svg" type="image/svg+xml"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body data-page="jobs">
+
   <header>
-    <div class="header-inner nav">
-      <div class="left">
+    <div class="header-inner">
+      <div class="logo-area">
         <img src="logo.svg" class="logo" alt="JobPulse Logo"/>
-        <div class="brand">
-          <h1>All Jobs</h1>
-          <p>Browse every listing across West Bengal</p>
-        </div>
+        <h1><a href="index.html">JobPulse</a></h1>
       </div>
-      <nav class="topnav">
+      <nav>
         <a href="index.html">Home</a>
         <a href="jobs.html" class="active">Jobs</a>
         <a href="news.html">News</a>
       </nav>
-      <div class="actions"><button id="modeToggle" class="toggle">🌙 / ☀️</button></div>
+      <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main>
-    <section class="filters">
-      <input type="text" id="searchJobs" placeholder="Search job titles or source..."/>
-      <select id="districtFilter">
-        <option value="">All West Bengal</option>
-        <option>Kolkata</option><option>Howrah</option><option>Hooghly</option>
-        <option>North 24 Parganas</option><option>South 24 Parganas</option>
-        <option>Nadia</option><option>Murshidabad</option><option>Birbhum</option>
-        <option>Purba Bardhaman</option><option>Paschim Bardhaman</option>
-        <option>Bankura</option><option>Purulia</option><option>Jhargram</option>
-        <option>Paschim Medinipur</option><option>Purba Medinipur</option>
-        <option>Malda</option><option>Uttar Dinajpur</option><option>Dakshin Dinajpur</option>
-        <option>Darjeeling</option><option>Kalimpong</option><option>Alipurduar</option>
-        <option>Cooch Behar</option><option>Jalpaiguri</option>
-        <option>Asansol</option><option>Durgapur</option><option>Siliguri</option>
-        <option>Kharagpur</option><option>Haldia</option><option>Digha</option>
-        <option>Kalyani</option><option>Bidhannagar</option><option>Barasat</option>
-        <option>Barrackpore</option><option>Salt Lake</option><option>New Town</option>
-      </select>
-      <select id="categoryFilter">
-        <option value="">All Categories</option>
-        <option>Govt</option><option>IT/Tech</option><option>Education</option>
-        <option>Healthcare</option><option>Banking/Finance</option>
-        <option>Manufacturing</option><option>Remote/International</option>
-        <option>Walk-in</option>
-      </select>
-    </section>
+  <main class="layout-grid">
 
-    <section>
-      <div id="jobList">
-        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-      </div>
-      <div id="jobsPagination" class="pagination"></div>
-    </section>
-  </main>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <section class="sidebar-section">
+        <h2>Notifications</h2>
+        <div id="notifications" class="scroll-box"></div>
+      </section>
 
-  <footer><p>© 2025 JobPulse West Bengal</p></footer>
-  <script src="app.js"></script>
-</body>
-</html>
+      <section class="sidebar-section">
+        <h2>Latest Announcements</h2>
+        <ul id="announcements"></ul>
+      </section>
+
+      <section class="sidebar-section">
+        <h2>Others</h2>
+        <ul id="others"></ul>
+      </section>
+    </aside>
+
+    <!-- Main Content -->
+    <section class="content">
+      <h2>Job Listings</h2>
+      <div class="filters">
+        <input type="text" id="searchBox" placeholder="🔍 Search jobs...">
+
+        <!-- Category Tabs -->
+        <div class="tabs categories">
