@@ -7,25 +7,27 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="home">
-  <!-- === Header === -->
   <header>
     <div class="header-inner">
+      <span id="dateTime"></span>
       <img src="logo.svg" alt="JobPulse Logo" width="40">
-      <nav>
+
+      <!-- Hamburger Menu -->
+      <button id="menuToggle" class="menu-toggle">☰</button>
+      <nav id="mainNav" class="hidden">
         <a href="index.html" class="active">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html">News</a>
-        <a href="breaking.html">Breaking</a>
-        <a href="saved.html">⭐ Saved</a>
+        <a href="breaking.html">Trending</a>
+        <a href="exams.html">Exams</a>
       </nav>
+
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <!-- === Breaking News === -->
   <div id="breakingBanner" class="breaking-banner"></div>
 
-  <!-- === Hero Section === -->
   <section class="hero">
     <h1>Find Your Dream Job in West Bengal</h1>
     <p>Stay updated with the latest jobs, news & announcements.</p>
@@ -33,16 +35,19 @@
   </section>
 
   <main class="content-layout">
-    <!-- Sidebar -->
+    <!-- Sidebar (only on home) -->
     <aside class="sidebar">
       <h2>Notifications</h2>
-      <ul id="notificationsList" class="scroll-list"></ul>
+      <div id="notificationsList" class="scroll-list"></div>
 
       <h2>Latest Announcements</h2>
-      <ul id="announcementsList" class="scroll-list"></ul>
+      <div id="announcementsList" class="scroll-list"></div>
 
       <h2>Others</h2>
-      <ul id="othersList" class="scroll-list"></ul>
+      <div id="othersList" class="scroll-list"></div>
+
+      <h2>Trending Keywords</h2>
+      <div id="trendingKeywords" class="keywords"></div>
     </aside>
 
     <!-- Main Feed -->
@@ -50,16 +55,26 @@
       <h2>Latest Jobs</h2>
       <div id="latestPosts" class="grid"></div>
 
+      <h2>Government Jobs</h2>
+      <div id="govtJobs" class="grid"></div>
+
+      <h2>Private Jobs</h2>
+      <div id="privateJobs" class="grid"></div>
+
       <h2>Latest News</h2>
       <div id="latestNews" class="grid"></div>
-
-      <h2>Jobs by Education</h2>
-      <div id="educationJobs" class="grid"></div>
-
-      <h2>Job Notifications</h2>
-      <div id="jobNotifications" class="grid"></div>
     </section>
   </main>
+
+  <!-- Bottom Visitor Counter -->
+  <div class="bottom-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="jobs.html">💼 Jobs</a>
+    <a href="news.html">📰 News</a>
+    <a href="breaking.html">🔥 Trending</a>
+    <a href="exams.html">📘 Exams</a>
+    <span id="visitorCount">👥 0 Visitors</span>
+  </div>
 
   <footer>
     <p>&copy; 2025 JobPulse Kolkata – All Rights Reserved</p>
@@ -67,7 +82,6 @@
 
   <script src="app.js"></script>
   <script>
-    // Home search filters across ALL_POSTS
     document.getElementById("homeSearch")?.addEventListener("input", (e) => {
       const q = e.target.value.toLowerCase();
       const filtered = ALL_POSTS.filter(
