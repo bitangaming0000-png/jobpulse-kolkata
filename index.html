@@ -1,79 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>JobPulse – West Bengal Jobs & News</title>
-  <link rel="icon" href="logo.svg" type="image/svg+xml"/>
-  <link rel="stylesheet" href="styles.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobPulse Kolkata – Latest Jobs & News</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="home">
-
-  <!-- 🔴 Breaking News Banner -->
-  <div id="breakingBanner" class="breaking-banner">
-    <span id="breakingText"></span>
-  </div>
-
-  <!-- Header -->
+<body>
+  <!-- === Header === -->
   <header>
     <div class="header-inner">
-      <div class="logo-area">
-        <img src="logo.svg" alt="JobPulse Logo" class="logo"/>
-        <h1><a href="index.html">JobPulse</a></h1>
-      </div>
+      <img src="logo.svg" alt="JobPulse Logo" width="40">
       <nav>
         <a href="index.html" class="active">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html">News</a>
         <a href="breaking.html">Breaking</a>
-        <a href="saved.html">⭐ Saved Jobs</a>
+        <a href="saved.html">⭐ Saved</a>
       </nav>
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <!-- Layout -->
-  <main class="layout-main">
-    <!-- Sidebar -->
+  <!-- === Breaking Banner === -->
+  <div class="breaking-banner" id="breakingBanner">
+    🔔 Breaking Updates will scroll here...
+  </div>
+
+  <!-- === Layout Main === -->
+  <div class="layout-main">
+    <!-- === Sidebar === -->
     <aside class="sidebar">
-      <section>
-        <h3>📢 Notifications</h3>
+      <h3>Notifications</h3>
+      <div class="scroll-box">
         <ul id="notificationsList"></ul>
-      </section>
-      <section>
-        <h3>📰 Latest Announcements</h3>
+      </div>
+
+      <h3>Latest Announcements</h3>
+      <div class="scroll-box">
         <ul id="announcementsList"></ul>
-      </section>
-      <section>
-        <h3>📂 Others</h3>
+      </div>
+
+      <h3>Others</h3>
+      <div class="scroll-box">
         <ul id="othersList"></ul>
-      </section>
-      <section>
-        <h3>🔥 Trending Now</h3>
-        <div class="ticker">
-          <ul id="trendingList"></ul>
-        </div>
-      </section>
+      </div>
     </aside>
 
-    <!-- Main Content -->
-    <section class="content-area">
-      <!-- Featured Slider -->
-      <div class="slider" id="featuredSlider"></div>
+    <!-- === Main Content === -->
+    <main>
+      <section>
+        <h2>New Updates</h2>
+        <div class="card-grid" id="latestPosts">
+          <!-- Latest 6 jobs/news inserted by JS -->
+        </div>
+      </section>
 
-      <!-- Latest Jobs -->
-      <h2>💼 Latest Jobs</h2>
-      <div id="latestJobs" class="card-grid"></div>
+      <section>
+        <h2>Jobs by Education</h2>
+        <div class="card-grid" id="educationJobs">
+          <!-- Jobs filtered by education -->
+        </div>
+      </section>
 
-      <!-- Latest News -->
-      <h2>📰 Latest News</h2>
-      <div id="latestNews" class="card-grid"></div>
-    </section>
-  </main>
+      <section>
+        <h2>Job Notifications</h2>
+        <div class="card-grid" id="jobNotifications">
+          <!-- More job cards -->
+        </div>
+      </section>
+    </main>
+  </div>
 
-  <!-- Footer -->
+  <!-- === Footer === -->
   <footer>
-    <p>© 2025 JobPulse West Bengal</p>
+    <p>&copy; 2025 JobPulse Kolkata – All Rights Reserved</p>
   </footer>
 
   <script src="app.js"></script>
