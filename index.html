@@ -10,48 +10,13 @@
   <header>
     <img src="logo.svg" alt="JobPulse Logo" class="logo" />
     <h1>JobPulse Kolkata</h1>
-    <p>Find the latest job openings in Kolkata & nearby</p>
+    <p>Automatically aggregated jobs from top portals near Kolkata</p>
   </header>
 
   <main>
-    <section class="add-job">
-      <h2>Quick Add Job</h2>
-      <form id="jobForm">
-        <input type="text" id="title" placeholder="Job Title *" required />
-        <input type="text" id="company" placeholder="Company *" required />
-        <input type="text" id="location" placeholder="Location" />
-        <input type="url" id="applyLink" placeholder="Apply Link (https://...)" />
-        <select id="category">
-          <option value="IT">IT</option>
-          <option value="Banking">Banking</option>
-          <option value="Govt">Govt</option>
-          <option value="Other">Other</option>
-        </select>
-        <select id="type">
-          <option value="Full-Time">Full-Time</option>
-          <option value="Part-Time">Part-Time</option>
-          <option value="Internship">Internship</option>
-        </select>
-        <button type="submit">Add Job</button>
-      </form>
-    </section>
-
     <section class="filters">
       <h2>Search & Filter</h2>
       <input type="text" id="search" placeholder="Search by title/company..." />
-      <select id="filterCategory">
-        <option value="">All Categories</option>
-        <option value="IT">IT</option>
-        <option value="Banking">Banking</option>
-        <option value="Govt">Govt</option>
-        <option value="Other">Other</option>
-      </select>
-      <select id="filterType">
-        <option value="">All Types</option>
-        <option value="Full-Time">Full-Time</option>
-        <option value="Part-Time">Part-Time</option>
-        <option value="Internship">Internship</option>
-      </select>
     </section>
 
     <section id="jobList">
