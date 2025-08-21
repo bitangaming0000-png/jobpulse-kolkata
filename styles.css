@@ -131,14 +131,29 @@ header nav a.active {
 /* ==========================
    Sidebar Lists
 ========================== */
+/* Auto-scroll lists (ticker effect) */
 .scroll-list {
-  max-height: 150px;
-  overflow-y: auto;
-  margin-bottom: 20px;
+  height: 150px;
+  overflow: hidden;
+  position: relative;
+}
+.scroll-list ul {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: scroll-up 15s linear infinite;
 }
 .scroll-list li {
-  margin-bottom: 8px;
+  padding: 6px 0;
+  white-space: nowrap;
 }
+
+@keyframes scroll-up {
+  0%   { transform: translateY(0%); }
+  100% { transform: translateY(-100%); }
+}
+
 
 /* ==========================
    Cards & Grids
@@ -221,3 +236,4 @@ footer {
     width: 100%;
   }
 }
+
