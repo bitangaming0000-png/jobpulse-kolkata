@@ -1,1 +1,23 @@
+{
+  "name": "jobpulse-kolkata",
+  "version": "1.0.0",
+  "description": "JobPulse – West Bengal Jobs and News Aggregator",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'Static site – no dev server required'"
+  },
+  "keywords": [
+    "jobs",
+    "news",
+    "rss",
+    "kolkata",
+    "west-bengal",
+    "jobpulse"
+  ],
+  "author": "JobPulse",
+  "license": "MIT",
+  "dependencies": {
+    "rss-parser": "^3.13.0"
+  }
+}
 
