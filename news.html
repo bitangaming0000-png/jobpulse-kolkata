@@ -1,62 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>News – JobPulse</title>
-  <link rel="icon" href="logo.svg" type="image/svg+xml"/>
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="news">
-
-  <!-- 🔴 Breaking Banner -->
-  <div id="breakingBanner" class="breaking-banner">
-    <span id="breakingText"></span>
-  </div>
-
-  <!-- Header -->
+  <!-- === Header === -->
   <header>
     <div class="header-inner">
-      <h1><a href="index.html">JobPulse</a></h1>
+      <img src="logo.svg" alt="JobPulse Logo" width="40">
       <nav>
         <a href="index.html">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html" class="active">News</a>
         <a href="breaking.html">Breaking</a>
-        <a href="saved.html">⭐ Saved Jobs</a>
+        <a href="saved.html">⭐ Saved</a>
       </nav>
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main class="layout-main">
-    <section class="content-area">
-      <!-- Search + Sort -->
+  <!-- === Layout === -->
+  <div class="layout-main with-sidebar">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3>Notifications</h3>
+      <div class="scroll-box"><ul id="notificationsList"></ul></div>
+
+      <h3>Latest Announcements</h3>
+      <div class="scroll-box"><ul id="announcementsList"></ul></div>
+
+      <h3>Others</h3>
+      <div class="scroll-box"><ul id="othersList"></ul></div>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+      <h2>All News</h2>
+
+      <!-- Search -->
       <div class="filters">
-        <input type="text" id="searchBox" placeholder="Search news...">
-        <select id="sortSelect">
-          <option value="newest">Sort by: Newest</option>
-          <option value="oldest">Sort by: Oldest</option>
-        </select>
+        <input type="text" id="newsSearch" placeholder="Search news...">
       </div>
 
       <!-- Category Tabs -->
-      <div class="tabs categories">
-        <button class="tab active" data-cat="">All</button>
-        <button class="tab" data-cat="recent">Recently Added</button>
-        <button class="tab" data-cat="Govt">Govt</button>
-        <button class="tab" data-cat="Exam">Exam</button>
-        <button class="tab" data-cat="Announcement">Announcements</button>
+      <div class="tabs" id="newsTabs">
+        <div class="tab active" data-cat="">All</div>
+        <div class="tab" data-cat="Recruitment">Recruitment</div>
+        <div class="tab" data-cat="Exam">Exams</div>
+        <div class="tab" data-cat="Result">Results</div>
+        <div class="tab" data-cat="Other">Other</div>
       </div>
 
-      <!-- News List -->
-      <div id="newsList" class="card-grid"></div>
-      <button id="loadMoreNews" class="load-more">Load More</button>
-    </section>
-  </main>
+      <!-- News Cards -->
+      <div class="card-grid" id="newsList">
+        <!-- Filled by JS -->
+      </div>
+    </main>
+  </div>
 
   <footer>
-    <p>© 2025 JobPulse West Bengal</p>
+    <p>&copy; 2025 JobPulse Kolkata – All Rights Reserved</p>
   </footer>
 
   <script src="app.js"></script>
