@@ -255,3 +255,30 @@ footer {
   margin-top: 20px;
   background: var(--card);
 }
+
+/* === Responsive Layout === */
+@media (max-width: 768px) {
+  .layout-main {
+    grid-template-columns: 1fr; /* single column on mobile */
+  }
+
+  .sidebar {
+    order: 2; /* sidebar goes below main content */
+    margin-top: 20px;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr; /* one card per row on mobile */
+  }
+
+  .header-inner {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  nav a {
+    padding: 4px 8px;
+    font-size: 14px;
+  }
+}
