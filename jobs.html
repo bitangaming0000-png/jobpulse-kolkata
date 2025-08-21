@@ -7,71 +7,66 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="jobs">
-  <!-- === Header === -->
   <header>
     <div class="header-inner">
+      <span id="dateTime"></span>
       <img src="logo.svg" alt="JobPulse Logo" width="40">
-      <nav>
+
+      <button id="menuToggle" class="menu-toggle">☰</button>
+      <nav id="mainNav" class="hidden">
         <a href="index.html">Home</a>
         <a href="jobs.html" class="active">Jobs</a>
         <a href="news.html">News</a>
-        <a href="breaking.html">Breaking</a>
-        <a href="saved.html">⭐ Saved</a>
+        <a href="breaking.html">Trending</a>
+        <a href="exams.html">Exams</a>
       </nav>
+
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <!-- === Layout === -->
-  <div class="layout-main with-sidebar">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <h3>Notifications</h3>
-      <div class="scroll-box"><ul id="notificationsList"></ul></div>
+  <div id="breakingBanner" class="breaking-banner"></div>
 
-      <h3>Latest Announcements</h3>
-      <div class="scroll-box"><ul id="announcementsList"></ul></div>
+  <main class="content-only">
+    <section class="filters-bar">
+      <input type="text" id="jobSearch" placeholder="🔍 Search jobs...">
+      <select id="jobTypeFilter">
+        <option value="">All Types</option>
+        <option value="govt">Government</option>
+        <option value="private">Private</option>
+      </select>
+      <select id="locationFilter">
+        <option value="">All Locations</option>
+        <option>Kolkata</option><option>Howrah</option><option>Siliguri</option>
+        <option>Asansol</option><option>Durgapur</option><option>Haldia</option>
+        <option>Kharagpur</option><option>Burdwan</option><option>Jalpaiguri</option>
+        <option>Malda</option><option>Bankura</option><option>Purulia</option>
+      </select>
+      <select id="educationFilter">
+        <option value="">All Education</option>
+        <option value="10th">10th</option>
+        <option value="12th">12th</option>
+        <option value="graduate">Graduate</option>
+        <option value="postgraduate">Post Graduate</option>
+        <option value="diploma">Diploma/ITI</option>
+      </select>
+    </section>
 
-      <h3>Others</h3>
-      <div class="scroll-box"><ul id="othersList"></ul></div>
-    </aside>
+    <section>
+      <div id="jobsList" class="grid"></div>
+    </section>
+  </main>
 
-    <!-- Main Content -->
-    <main>
-      <h2>All Jobs</h2>
-      
-      <!-- Search + Filters -->
-      <div class="filters">
-        <input type="text" id="jobSearch" placeholder="Search jobs...">
-        <select id="educationFilter">
-          <option value="">All Education</option>
-          <option value="10th">10th Pass</option>
-          <option value="12th">12th Pass</option>
-          <option value="Graduate">Graduate</option>
-          <option value="Post Graduate">Post Graduate</option>
-        </select>
-      </div>
-
-      <!-- Category Tabs -->
-      <div class="tabs" id="jobTabs">
-        <div class="tab active" data-cat="">All</div>
-        <div class="tab" data-cat="Govt">Govt</div>
-        <div class="tab" data-cat="Private">Private</div>
-        <div class="tab" data-cat="IT">IT</div>
-        <div class="tab" data-cat="Banking">Banking</div>
-      </div>
-
-      <!-- Job Cards -->
-      <div class="card-grid" id="jobsList">
-        <!-- Filled by JS -->
-      </div>
-    </main>
+  <div class="bottom-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="jobs.html" class="active">💼 Jobs</a>
+    <a href="news.html">📰 News</a>
+    <a href="breaking.html">🔥 Trending</a>
+    <a href="exams.html">📘 Exams</a>
+    <span id="visitorCount">👥 0 Visitors</span>
   </div>
 
-  <footer>
-    <p>&copy; 2025 JobPulse Kolkata – All Rights Reserved</p>
-  </footer>
-
+  <footer><p>&copy; 2025 JobPulse</p></footer>
   <script src="app.js"></script>
 </body>
 </html>
