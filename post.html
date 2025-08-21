@@ -9,24 +9,30 @@
 </head>
 <body data-page="post">
 
+  <!-- 🔴 Breaking Banner -->
+  <div id="breakingBanner" class="breaking-banner">
+    <span id="breakingText"></span>
+  </div>
+
+  <!-- Header -->
   <header>
     <div class="header-inner">
-      <div class="logo-area">
-        <img src="logo.svg" alt="JobPulse Logo" class="logo"/>
-        <h1><a href="index.html">JobPulse</a></h1>
-      </div>
+      <h1><a href="index.html">JobPulse</a></h1>
       <nav>
         <a href="index.html">Home</a>
         <a href="jobs.html">Jobs</a>
         <a href="news.html">News</a>
+        <a href="breaking.html">Breaking</a>
+        <a href="saved.html">⭐ Saved Jobs</a>
       </nav>
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main class="layout-main">
-    <article id="postDetail" class="post-detail">
-      <!-- JS will load post details here -->
+  <main>
+    <article id="postContent" class="post-detail">
+      <h2>Loading...</h2>
+      <p>Please wait while we load the post.</p>
     </article>
   </main>
 
@@ -35,5 +41,31 @@
   </footer>
 
   <script src="app.js"></script>
+  <script>
+    // Get post ID from query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get("id");
+
+    // Get cached posts from sessionStorage (faster navigation)
+    const posts = JSON.parse(sessionStorage.getItem("allPosts") || "[]");
+    const post = posts.find(p => p.id === postId);
+
+    if(post){
+      document.getElementById("postContent").innerHTML = `
+        <h2>${post.title}</h2>
+        <img src="${post.thumbnail || 'dummy-photo.svg'}" alt="${post.title}" class="post-image"/>
+        <p class="meta">Published: ${post.pubDate ? new Date(post.pubDate).toLocaleString() : "N/A"}</p>
+        <div class="post-body">${post.description || "No description available."}</div>
+        <p class="source-link">
+          🔗 <a href="${post.link}" target="_blank">Original Source</a>
+        </p>
+      `;
+    } else {
+      document.getElementById("postContent").innerHTML = `
+        <h2>Post not found</h2>
+        <p>Sorry, the post you are looking for is not available.</p>
+      `;
+    }
+  </script>
 </body>
 </html>
