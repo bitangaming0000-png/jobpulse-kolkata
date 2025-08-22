@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Post – JobPulse</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body data-page="post">
   <header>
     <div class="header-inner">
       <span id="dateTime"></span>
-      <img src="logo.svg" alt="JobPulse Logo" width="40">
-
+      <img src="logo.svg" width="40" alt="Logo" />
       <button id="menuToggle" class="menu-toggle">☰</button>
       <nav id="mainNav" class="hidden">
         <a href="index.html">Home</a>
@@ -20,42 +19,31 @@
         <a href="breaking.html">Trending</a>
         <a href="exams.html">Exams</a>
       </nav>
-
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main class="post-page">
+  <div class="post-page">
     <div class="post-detail">
       <div class="post-head">
-        <span id="postBadge" class="badge">Job</span>
+        <span id="postBadge" class="badge">Type</span>
         <h1 id="postTitle">Loading…</h1>
       </div>
-      <p id="postMeta" class="meta"></p>
-      <img id="postImage" class="post-image" src="dummy-photo.svg" alt="Post Image">
-      <div id="postBody" class="post-body"></div>
-
-      <div class="post-actions">
-        <a id="applyBtn" class="btn" target="_blank" rel="noopener">Apply Now</a>
-        <a id="postSource" class="btn-outline" target="_blank" rel="noopener">Original Source</a>
-      </div>
-
-      <div class="back-home">
-        <a href="index.html" class="back-btn" id="backBtn">⬅ Back</a>
-      </div>
+      <div class="meta" id="postMeta">—</div>
+      <img id="postImage" class="post-image" src="dummy-photo.svg" alt="cover" />
+      <div id="postBody" class="post-body">—</div>
+      <p class="back-home">
+        <a id="postSource" class="btn-outline" href="#" target="_blank" rel="noopener">🔗 Original Source</a>
+        <a id="applyBtn" class="btn" href="#" target="_blank" rel="noopener">Apply / Read More</a>
+      </p>
+      <p class="back-home"><a id="backBtn" class="back-btn" href="index.html">⬅ Back</a></p>
     </div>
-  </main>
-
-  <div class="bottom-nav">
-    <a href="index.html">🏠 Home</a>
-    <a href="jobs.html">💼 Jobs</a>
-    <a href="news.html">📰 News</a>
-    <a href="breaking.html">🔥 Trending</a>
-    <a href="exams.html">📘 Exams</a>
-    <span id="visitorCount">👥 0 Visitors</span>
   </div>
 
-  <footer><p>&copy; 2025 JobPulse</p></footer>
+  <div class="bottom-nav">
+    <a href="index.html">🏠</a><a href="jobs.html">💼</a><a href="news.html">📰</a><a href="breaking.html">🔥</a><a href="exams.html">📘</a>
+    <span id="visitorCount">👥 0 Visitors</span>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>
