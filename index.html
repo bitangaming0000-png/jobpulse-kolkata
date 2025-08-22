@@ -1,108 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>JobPulse – West Bengal Jobs & News</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <title>JobPulse Kolkata</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Google AdSense Verification -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461"
+     crossorigin="anonymous"></script>
 </head>
-<body data-page="home">
-  <header>
-    <div class="header-inner">
-      <span id="dateTime"></span>
-      <img src="logo.svg" alt="JobPulse Logo" width="40" />
-      <button id="menuToggle" class="menu-toggle">☰</button>
-      <nav id="mainNav" class="hidden">
-        <a href="index.html" class="active">Home</a>
-        <a href="jobs.html">Jobs</a>
-        <a href="news.html">News</a>
-        <a href="breaking.html">Trending</a>
-        <a href="exams.html">Exams</a>
-      </nav>
-      <button id="modeToggle">🌙</button>
-    </div>
-  </header>
+<body>
+  <h1>Welcome to JobPulse Kolkata</h1>
+  <p>Your trusted portal for job updates in West Bengal</p>
 
-  <div id="breakingBanner" class="breaking-banner"></div>
-
-  <section class="hero">
-    <h1>Find Your Dream Job in West Bengal</h1>
-    <p>Stay updated with the latest jobs, news & announcements.</p>
-    <input type="text" id="homeSearch" placeholder="🔍 Search jobs & news..." />
-  </section>
-
-  <main class="content-layout">
-    <aside class="sidebar">
-      <h2>Notifications</h2>
-      <div id="notificationsList" class="scroll-list"></div>
-      <h2>Latest Announcements</h2>
-      <div id="announcementsList" class="scroll-list"></div>
-      <h2>Others</h2>
-      <div id="othersList" class="scroll-list"></div>
-      <h2>Trending Keywords</h2>
-      <div id="trendingKeywords" class="keywords"></div>
-    </aside>
-
-    <section class="main-feed">
-      <!-- Mobile accordion for sidebar -->
-      <section class="mobile-accordion">
-        <div class="accordion-item">
-          <button class="accordion-header">Notifications</button>
-          <div class="accordion-content"><div id="notificationsListMobile" class="scroll-list"></div></div>
-        </div>
-        <div class="accordion-item">
-          <button class="accordion-header">Latest Announcements</button>
-          <div class="accordion-content"><div id="announcementsListMobile" class="scroll-list"></div></div>
-        </div>
-        <div class="accordion-item">
-          <button class="accordion-header">Others</button>
-          <div class="accordion-content"><div id="othersListMobile" class="scroll-list"></div></div>
-        </div>
-      </section>
-
-      <!-- Dashboard panels -->
-      <section class="dashboard">
-        <div class="panel">
-          <div class="panel-head"><h3>Latest Jobs</h3></div>
-          <div id="latestPosts" class="grid"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Latest News</h3></div>
-          <div id="latestNews" class="grid"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Government Jobs</h3></div>
-          <div id="govtJobs" class="grid"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Private Jobs</h3></div>
-          <div id="privateJobs" class="grid"></div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <div class="bottom-nav">
-    <a href="index.html">🏠 Home</a>
-    <a href="jobs.html">💼 Jobs</a>
-    <a href="news.html">📰 News</a>
-    <a href="breaking.html">🔥 Trending</a>
-    <a href="exams.html">📘 Exams</a>
-    <span id="visitorCount">👥 0 Visitors</span>
-  </div>
-
-  <footer><p>&copy; 2025 JobPulse Kolkata – All Rights Reserved</p></footer>
-
-  <script src="app.js"></script>
-  <script>
-    document.getElementById("homeSearch")?.addEventListener("input", (e) => {
-      const q = e.target.value.toLowerCase();
-      const filtered = ALL_POSTS.filter(p =>
-        (p.title||"").toLowerCase().includes(q) ||
-        (p.description||"").toLowerCase().includes(q)
-      );
-      renderCards("#latestPosts", filtered.slice(0,6), "home");
-    });
-  </script>
+  <nav>
+    <a href="privacy.html">Privacy Policy</a> | 
+    <a href="contact.html">Contact Us</a>
+  </nav>
 </body>
 </html>
