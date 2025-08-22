@@ -5,25 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>JobPulse Kolkata – Latest Jobs & News</title>
   <link rel="stylesheet" href="styles.css" />
-  <!-- AdSense (ok to keep here) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
-  <!-- Header -->
   <header>
     <div class="container header-bar">
       <h1 class="site-title"><a href="index.html">JobPulse Kolkata</a></h1>
+      <nav><a href="jobs.html">Jobs</a> • <a href="news.html">News</a> • <a href="exams.html">Exams</a> • <a href="trending.html">Trending</a></nav>
       <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
     </div>
   </header>
 
-  <!-- Scrolling notifications (must exist for app.js) -->
   <div id="notifications-scroll"></div>
 
-  <!-- Main content (IDs must match app.js) -->
+  <ins class="adsbygoogle" style="display:block; text-align:center; margin:16px auto;"
+       data-ad-client="ca-pub-5732778753912461" data-ad-slot="1111111111"
+       data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
   <main class="container">
-    <h2>Latest Jobs</h2>
+    <h2>Latest Jobs (West Bengal)</h2>
     <div id="home-latest-jobs" class="grid"></div>
+
+    <ins class="adsbygoogle" style="display:block; text-align:center; margin:16px auto;"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="2222222222"
+         data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 
     <h2>Latest News</h2>
     <div id="home-latest-news" class="grid"></div>
@@ -32,29 +39,15 @@
     <div id="home-latest-exams" class="grid"></div>
   </main>
 
-  <!-- Footer (static, will not cover page) -->
-  <footer>
-    <p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p>
-  </footer>
+  <footer><p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p></footer>
 
-  <!-- Scripts at the very end so DOM exists before JS runs -->
-  <script src="app.js"></script>
+  <script src="js/app.js"></script>
   <script>
-    // Footer year
     document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Theme toggle with persistence
-    const htmlEl = document.documentElement;
-    const btn = document.getElementById('themeToggle');
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    htmlEl.setAttribute('data-theme', savedTheme);
-    btn.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
-    btn.addEventListener('click', () => {
-      const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      htmlEl.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      btn.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
-    });
+    const htmlEl=document.documentElement,btn=document.getElementById('themeToggle');
+    const saved=localStorage.getItem('theme')||'light'; htmlEl.setAttribute('data-theme',saved);
+    btn.textContent=saved==='dark'?'☀️ Light':'🌙 Dark';
+    btn.onclick=()=>{const next=htmlEl.getAttribute('data-theme')==='dark'?'light':'dark'; htmlEl.setAttribute('data-theme',next); localStorage.setItem('theme',next); btn.textContent=next==='dark'?'☀️ Light':'🌙 Dark';};
   </script>
 </body>
 </html>
