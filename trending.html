@@ -1,61 +1,52 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Trending | JobPulse</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>📈 Trending – JobPulse Kolkata</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
-  <header>
-    <h1>JobPulse</h1>
-    <div class="menu-toggle">☰</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="jobs.html">Jobs</a>
-      <a href="news.html">News</a>
-      <a href="trending.html" class="active">Trending</a>
-    </nav>
-  </header>
+<header>
+  <div class="container header-bar">
+    <a class="brand" href="index.html">JobPulse Kolkata</a>
+    <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+    <nav class="main-nav" id="mainNav"><ul class="nav-list">
+      <li><a href="jobs.html">💼 Jobs</a></li><li><a href="news.html">📰 News</a></li><li><a href="exams.html">📢 Exams</a></li>
+    </ul></nav>
+    <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
+  </div>
+</header>
 
-  <main style="padding:80px 20px 80px; max-width:1000px; margin:auto;">
-    <h2 class="section-title">🔥 Trending Updates</h2>
+<div class="visitor-counter">👥 Total Visits: <span id="visitCount">0</span></div>
 
-    <!-- Ads Top -->
-    <div class="ads-block">
-      <!-- Display Ads -->
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5732778753912461"
-           data-ad-slot="2400432399"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
+<main class="container">
+  <ins class="adsbygoogle" style="display:block"
+       data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400432399"
+       data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 
-    <section id="trending-list"></section>
+  <h2>📈 Trending (Latest Jobs & News)</h2>
+  <div id="trendingList" class="grid"></div>
 
-    <!-- Ads Bottom -->
-    <div class="ads-block">
-      <!-- Multiplex Ads -->
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-format="autorelaxed"
-           data-ad-client="ca-pub-5732778753912461"
-           data-ad-slot="7381264518"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-  </main>
+  <ins class="adsbygoogle" style="display:block; text-align:center;"
+       data-ad-layout="in-article" data-ad-format="fluid"
+       data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400400574"></ins>
+  <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 
-  <footer>
-    <p>© <span id="year"></span> JobPulse. All rights reserved.</p>
-  </footer>
+  <ins class="adsbygoogle" style="display:block"
+       data-ad-format="autorelaxed" data-ad-client="ca-pub-5732778753912461"
+       data-ad-slot="7381264518"></ins>
+  <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 
-  <script src="app.js"></script>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <ins class="adsbygoogle" style="display:block"
+       data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400432399"
+       data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+</main>
+
+<footer><p>© <span id="year"></span> JobPulse Kolkata</p></footer>
+<script src="js/app.js"></script>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 </body>
 </html>
