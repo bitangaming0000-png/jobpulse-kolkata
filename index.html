@@ -4,215 +4,133 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>JobPulse Kolkata – West Bengal Jobs, News & Exams</title>
+  <meta name="description" content="Live West Bengal job alerts: Govt & private jobs, exams, and job news. Auto-updated."/>
   <link rel="stylesheet" href="styles.css"/>
   <!-- AdSense loader (once per page) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
-<header class="site-header">
+<header>
   <div class="container header-bar">
-    <a class="brand" href="index.html">
-      <img src="assets/logo.svg" alt="JobPulse Kolkata" class="brand-logo"/>
-      <span class="brand-name">JobPulse</span><span class="brand-sub">Kolkata</span>
-    </a>
-
-    <form class="header-search" role="search" aria-label="Search">
-      <input type="search" placeholder="Search jobs, news or exams…" aria-label="Search"/>
-      <button type="submit" aria-label="Search">🔎</button>
-    </form>
-
-    <div class="header-actions">
-      <button id="themeToggle" class="icon-btn" title="Toggle theme">🌙</button>
-      <button id="navToggle" class="icon-btn only-mobile" aria-label="Menu" aria-expanded="false">☰</button>
-    </div>
-
-    <nav class="main-nav" id="mainNav" aria-label="Primary">
+    <a class="brand" href="index.html">JobPulse Kolkata</a>
+    <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+    <nav class="main-nav" id="mainNav">
       <ul class="nav-list">
         <li><a href="jobs.html">💼 Jobs</a></li>
         <li><a href="news.html">📰 News</a></li>
         <li><a href="exams.html">📢 Exams</a></li>
         <li><a href="trending.html">📈 Trending</a></li>
+        <li class="divider"></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="terms.html">Terms</a></li>
+        <li><a href="ai-disclosure.html">AI Disclosure</a></li>
+        <li><a href="contact.html">Contact</a></li>
       </ul>
     </nav>
-  </div>
-  <div class="top-utility">
-    <div class="container util-row">
-      <div class="visitor-counter">👥 Total Visits: <span id="visitCount">0</span></div>
-      <div class="clock" id="clock"></div>
-    </div>
+    <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
   </div>
 </header>
 
+<div class="visitor-counter">👥 Total Visits: <span id="visitCount">0</span></div>
+
 <section class="hero" style="--hero-img:url('assets/hero-banner.jpg')">
-  <div class="container hero-wrap">
-    <div class="hero-copy">
-      <h1>Find the latest jobs across West Bengal</h1>
-      <p>Govt & private openings, exam notices, and job news—updated automatically.</p>
-      <div class="hero-ctas">
-        <a class="btn btn-primary" href="jobs.html">Browse Jobs</a>
-        <a class="btn btn-ghost" href="trending.html">See Trending</a>
-      </div>
-      <div class="hero-tags">
-        <span class="chip">Govt</span>
-        <span class="chip">Private</span>
-        <span class="chip">Work From Home</span>
-        <span class="chip">Freshers</span>
-      </div>
-    </div>
+  <div class="hero-overlay">
+    <h1>Find the latest jobs across West Bengal</h1>
+    <p>💼 Govt & Private openings, 📢 announcements, and 📰 job news — updated automatically.</p>
   </div>
 </section>
 
-<!-- TOP Display Ad -->
+<!-- TOP Display -->
 <ins class="adsbygoogle" style="display:block"
-     data-ad-client="ca-pub-5732778753912461"
-     data-ad-slot="2400432399"
+     data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400432399"
      data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 
-<!-- Ticker -->
-<div id="notifications-scroll" class="ticker"></div>
+<!-- Horizontal ticker -->
+<div id="notifications-scroll"></div>
 
-<main class="container layout-3col">
-  <!-- Left column (hidden on mobile) -->
-  <aside class="col-left hide-on-mobile">
-    <div class="card soft">
-      <h3 class="card-title">Quick Filters</h3>
-      <div class="chip-row">
-        <a class="chip" href="jobs.html">Banking</a>
-        <a class="chip" href="jobs.html">Railway</a>
-        <a class="chip" href="jobs.html">Teaching</a>
-        <a class="chip" href="jobs.html">IT</a>
-        <a class="chip" href="jobs.html">WFH</a>
-      </div>
-    </div>
-
-    <!-- Left Display Ad -->
+<main class="container home-layout">
+  <!-- LEFT sidebar Display -->
+  <aside class="ads-side">
     <ins class="adsbygoogle" style="display:block"
-         data-ad-client="ca-pub-5732778753912461"
-         data-ad-slot="2400432399"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400432399"
+         data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400432399"
          data-ad-format="auto" data-full-width-responsive="true"></ins>
     <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
   </aside>
 
-  <!-- Center column -->
-  <section class="col-main">
-    <!-- Jobs -->
-    <div class="section-head">
-      <h2>💼 Latest Jobs (West Bengal)</h2>
-      <a class="action" href="jobs.html">View all →</a>
-    </div>
-    <div id="home-latest-jobs" class="grid cards-sm"></div>
+  <!-- CENTER -->
+  <section class="main-column">
+    <h2>💼 Latest Jobs (West Bengal)</h2>
+    <nav class="chipbar" aria-label="Quick job filters">
+      <a class="chip" href="jobs.html?cat=govt">Govt</a>
+      <a class="chip" href="jobs.html?cat=private">Private</a>
+      <a class="chip" href="jobs.html?cat=wfh">Work From Home</a>
+      <a class="chip" href="jobs.html?cat=freshers">Freshers</a>
+    </nav>
+    <div id="home-latest-jobs" class="grid"></div>
 
-    <!-- In-article ad -->
+    <!-- In-article -->
     <ins class="adsbygoogle" style="display:block; text-align:center;"
          data-ad-layout="in-article" data-ad-format="fluid"
          data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400400574"></ins>
     <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 
-    <!-- News -->
-    <div class="section-head">
-      <h2>📰 Latest News</h2>
-      <a class="action" href="news.html">View all →</a>
-    </div>
-    <div id="home-latest-news" class="grid cards-sm"></div>
+    <h2>📰 Latest News</h2>
+    <div id="home-latest-news" class="grid"></div>
 
-    <!-- In-article ad -->
+    <!-- In-article -->
     <ins class="adsbygoogle" style="display:block; text-align:center;"
          data-ad-layout="in-article" data-ad-format="fluid"
          data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400400574"></ins>
     <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 
-    <!-- Exams -->
-    <div class="section-head">
-      <h2>📢 Latest Exams</h2>
-      <a class="action" href="exams.html">View all →</a>
-    </div>
-    <div id="home-latest-exams" class="grid cards-sm"></div>
+    <h2>📢 Latest Exams</h2>
+    <div id="home-latest-exams" class="grid"></div>
 
     <!-- Multiplex -->
     <ins class="adsbygoogle" style="display:block"
-         data-ad-format="autorelaxed"
-         data-ad-client="ca-pub-5732778753912461"
+         data-ad-format="autorelaxed" data-ad-client="ca-pub-5732778753912461"
          data-ad-slot="7381264518"></ins>
     <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 
     <!-- Bottom Display -->
     <ins class="adsbygoogle" style="display:block"
-         data-ad-client="ca-pub-5732778753912461"
-         data-ad-slot="2400432399"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400432399"
          data-ad-format="auto" data-full-width-responsive="true"></ins>
     <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
   </section>
 
-  <!-- Right column: sticky widgets -->
-  <aside class="col-right">
-    <div class="widget">
-      <div class="widget-head">
-        <h3>🔔 Notifications</h3>
-      </div>
+  <!-- RIGHT sidebar lists -->
+  <aside class="sidebar">
+    <div class="side-card">
+      <h3>🔔 Notifications</h3>
       <div id="notificationsList" class="scroll-list"><ul></ul></div>
     </div>
-
-    <div class="widget">
-      <div class="widget-head">
-        <h3>📢 Announcements</h3>
-      </div>
+    <div class="side-card">
+      <h3>📢 Latest Announcements</h3>
       <div id="announcementsList" class="scroll-list"><ul></ul></div>
     </div>
-
-    <div class="widget">
-      <div class="widget-head">
-        <h3>⭐ Others</h3>
-      </div>
+    <div class="side-card">
+      <h3>⭐ Others</h3>
       <div id="othersList" class="scroll-list"><ul></ul></div>
     </div>
-
-    <!-- Right Display Ad -->
     <ins class="adsbygoogle" style="display:block"
-         data-ad-client="ca-pub-5732778753912461"
-         data-ad-slot="2400432399"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="2400432399"
          data-ad-format="auto" data-full-width-responsive="true"></ins>
     <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
   </aside>
 </main>
 
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <div class="brand footer-brand">
-          <img src="assets/logo.svg" alt="" class="brand-logo"/>
-          <span class="brand-name">JobPulse</span><span class="brand-sub">Kolkata</span>
-        </div>
-        <p class="muted">Live West Bengal jobs, exams & news. Auto-updated feeds. No login required.</p>
-      </div>
-      <div>
-        <h4>Explore</h4>
-        <ul class="list-clean">
-          <li><a href="jobs.html">Jobs</a></li>
-          <li><a href="news.html">News</a></li>
-          <li><a href="exams.html">Exams</a></li>
-          <li><a href="trending.html">Trending</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Legal</h4>
-        <ul class="list-clean">
-          <li><a href="privacy.html">Privacy</a></li>
-          <li><a href="terms.html">Terms</a></li>
-        </ul>
-      </div>
-    </div>
-    <p class="tiny muted">© <span id="year"></span> JobPulse Kolkata — All rights reserved.</p>
-  </div>
+<footer>
+  <p>© <span id="year"></span> JobPulse Kolkata • <a href="privacy.html">Privacy</a> • <a href="terms.html">Terms</a> • <a href="ai-disclosure.html">AI Disclosure</a> • <a href="contact.html">Contact</a></p>
 </footer>
 
 <script src="js/app.js"></script>
-<script>
-  document.getElementById('year').textContent=new Date().getFullYear();
-  // live clock
-  const clk=document.getElementById('clock');
-  if(clk){ setInterval(()=>{ clk.textContent=new Date().toLocaleString('en-IN',{dateStyle:'medium', timeStyle:'short'}); },1000); }
-</script>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 </body>
 </html>
