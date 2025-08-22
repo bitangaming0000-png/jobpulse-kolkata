@@ -2,7 +2,7 @@
 function safe(s){ return s ? String(s).replace(/</g,"&lt;").replace(/>/g,"&gt;") : ""; }
 function formatDate(d){ return d ? new Date(d).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) : ""; }
 function isNew(post){
-  try { return (Date.now() - new Date(post.pubDate).getTime()) < 1000*60*60*48; } // < 48 hours
+  try { return (Date.now() - new Date(post.pubDate).getTime()) < 1000*60*60*48; }
   catch(e){ return false; }
 }
 function createCard(item){
@@ -25,7 +25,7 @@ function createCard(item){
   </article>`;
 }
 
-/* ========= Visitor Counter (per-device) ========= */
+/* ========= Visitor Counter ========= */
 (function(){
   let count = parseInt(localStorage.getItem("visitCount") || "0", 10) + 1;
   localStorage.setItem("visitCount", String(count));
@@ -33,7 +33,7 @@ function createCard(item){
   if (el) el.textContent = count.toLocaleString("en-IN");
 })();
 
-/* ========= Theme Persistence ========= */
+/* ========= Theme ========= */
 (function(){
   const htmlEl = document.documentElement;
   const btn = document.getElementById("themeToggle");
@@ -50,7 +50,7 @@ function createCard(item){
   }
 })();
 
-/* ========= Mobile Hamburger ========= */
+/* ========= Mobile Nav ========= */
 (function(){
   const navToggle = document.getElementById("navToggle");
   const mainNav = document.getElementById("mainNav");
@@ -64,7 +64,7 @@ function createCard(item){
   });
 })();
 
-/* ========= Data Fetchers ========= */
+/* ========= Data ========= */
 async function fetchJSON(url){
   const res = await fetch(url, { headers: { "cache-control": "no-cache" } });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -75,12 +75,12 @@ async function loadWBJobsOnly(){
   const j = await fetchJSON("/.netlify/functions/jobful?type=jobs&onlyWB=1");
   return j.jobs || [];
 }
-async function loadType(type){ // 'jobs' | 'news' | 'exams'
+async function loadType(type){
   const j = await fetchJSON(`/.netlify/functions/jobful?type=${encodeURIComponent(type)}`);
   return (j.jobs || j.news || j.exams || []);
 }
 
-/* ========= Render Helpers ========= */
+/* ========= Render helpers ========= */
 function renderList(id, arr, limit = 0){
   const el = document.getElementById(id); if (!el) return;
   const list = limit ? (arr || []).slice(0, limit) : (arr || []);
@@ -95,31 +95,53 @@ function mountAutoScroll(elId, items, from = "home"){
   ).join("")}</ul>`;
 }
 
-/* ========= Post Finding Helpers ========= */
-function normalizeId(x){ return decodeURIComponent(String(x||"")).trim(); }
-function findPostById(targetId, arrays){
-  const id = normalizeId(targetId);
-  const flat = arrays.flat().filter(Boolean);
-  // direct id match
-  let hit = flat.find(p => String(p.id) === id);
-  if (hit) return hit;
-  // match by link
-  hit = flat.find(p => (p.link && (p.link === id || p.link.startsWith(id) || id.startsWith(p.link))));
-  if (hit) return hit;
-  // weak match by title (last resort)
-  hit = flat.find(p => (p.title && p.title.trim() === id));
-  return hit || null;
+/* ========= Category logic (Govt / Private / WFH / Freshers) ========= */
+const JOB_CATS = {
+  govt:     { label: "Govt",     slug: "govt"     },
+  private:  { label: "Private",  slug: "private"  },
+  wfh:      { label: "Work From Home", slug: "wfh" },
+  freshers: { label: "Freshers", slug: "freshers" }
+};
+
+function jobMatches(job, cat){
+  const hay = (`${job.title||""} ${job.description||""} ${job.source||""}`).toLowerCase();
+
+  const KW = {
+    govt:     ["govt","government","wbpsc","state govt","public service","ssc","railway","psu","municipal","wb police","kolkata police","bank of india","wbpdcl","kmda","kmc","high court","judicial","wbhrb","wbset","food inspector","panchayat","wbsub"],
+    wfh:      ["remote","work from home","wfh","home-based","telecommute","anywhere","hybrid"],
+    freshers: ["fresher","freshers","entry level","0-1 year","0-2 year","no experience","graduate trainee","trainee","intern"]
+  };
+
+  if (cat === "govt")     return KW.govt.some(k => hay.includes(k));
+  if (cat === "wfh")      return KW.wfh.some(k => hay.includes(k));
+  if (cat === "freshers") return KW.freshers.some(k => hay.includes(k));
+  if (cat === "private")  return !KW.govt.some(k => hay.includes(k)); // everything not detected as govt
+  return true;
 }
 
-/* ========= Save clicked item to sessionStorage (instant post render) ========= */
+function filterJobsByCategory(jobs, cat){
+  if (!cat || !JOB_CATS[cat]) return jobs;
+  return (jobs || []).filter(j => jobMatches(j, cat));
+}
+
+function highlightActiveChip(cat){
+  document.querySelectorAll(".chipbar .chip").forEach(a => {
+    const isActive = a.getAttribute("href").includes(`cat=${cat}`);
+    a.classList.toggle("active", !!cat && isActive);
+  });
+  const title = document.getElementById("jobs-title");
+  if (title && JOB_CATS[cat]) title.textContent = `💼 ${JOB_CATS[cat].label} Jobs`;
+}
+
+/* ========= Save clicked post for instant detail render ========= */
 document.addEventListener("click", (e) => {
   const a = e.target.closest("a.post-link");
   if (!a) return;
   const id = a.getAttribute("data-id");
   const from = a.getAttribute("data-from") || "Post";
   try {
-    const allPosts = (window.__CACHE_ALL_POSTS || []);
-    const hit = findPostById(id, [allPosts]);
+    const flat = (window.__CACHE_ALL_POSTS || []);
+    const hit = flat.find(p => String(p.id) === String(id));
     if (hit) {
       sessionStorage.setItem("lastPost", JSON.stringify(hit));
       sessionStorage.setItem("lastPostFrom", from);
@@ -127,106 +149,82 @@ document.addEventListener("click", (e) => {
   } catch(_) {}
 });
 
-/* ========= Main Boot ========= */
+/* ========= Boot ========= */
 (async function init(){
   const homeJobs   = document.getElementById("home-latest-jobs");
   const homeNews   = document.getElementById("home-latest-news");
   const homeExams  = document.getElementById("home-latest-exams");
-  const allJobs    = document.getElementById("all-jobs");
+  const allJobsEl  = document.getElementById("all-jobs");
   const allNews    = document.getElementById("all-news");
   const allExams   = document.getElementById("all-exams");
   const trendingEl = document.getElementById("trendingList");
   const notifBar   = document.getElementById("notifications-scroll");
   const postBody   = document.getElementById("postBody");
 
-  let all = { jobs: [], news: [], exams: [], trending: [] }, wbJobs = [];
-  try {
-    [all, wbJobs] = await Promise.all([ loadAll(), loadWBJobsOnly() ]);
-  } catch (e) {
-    console.warn("Function fetch failed. Lists will be empty until functions work.", e);
+  let all = { jobs: [], news: [], exams: [], trending: [] }, wbJobs=[];
+  try { [all, wbJobs] = await Promise.all([loadAll(), loadWBJobsOnly()]); }
+  catch(e){ console.warn("Function fetch failed:", e); }
+
+  // Cache for quick lookups
+  window.__CACHE_ALL_POSTS = [ ...(wbJobs||[]), ...(all.jobs||[]), ...(all.news||[]), ...(all.exams||[]) ];
+
+  // Home sections
+  if (homeJobs)  renderList("home-latest-jobs",  wbJobs,    6);
+  if (homeNews)  renderList("home-latest-news",  all.news,  6);
+  if (homeExams) renderList("home-latest-exams", all.exams, 6);
+
+  // Jobs page w/ category
+  if (allJobsEl){
+    const params = new URLSearchParams(location.search);
+    const cat = params.get("cat") || ""; // govt|private|wfh|freshers
+    highlightActiveChip(cat);
+    const list = filterJobsByCategory(wbJobs, cat);
+    renderList("all-jobs", list);
   }
 
-  // Cache all posts globally for quick lookups (used by sessionStorage saver)
-  window.__CACHE_ALL_POSTS = [
-    ...(wbJobs || []),
-    ...(all.jobs || []),
-    ...(all.news || []),
-    ...(all.exams || [])
-  ];
-
-  // Home sections (show latest 6)
-  if (homeJobs)  renderList("home-latest-jobs",  wbJobs,     6);
-  if (homeNews)  renderList("home-latest-news",  all.news,   6);
-  if (homeExams) renderList("home-latest-exams", all.exams,  6);
-
-  // Full pages
-  if (allJobs)    renderList("all-jobs",   wbJobs);
-  if (allNews)    renderList("all-news",   all.news);
-  if (allExams)   renderList("all-exams",  all.exams);
+  // Other list pages
+  if (allNews)    renderList("all-news",  all.news);
+  if (allExams)   renderList("all-exams", all.exams);
   if (trendingEl) renderList("trendingList", all.trending);
 
-  // Sidebar auto-scrollers
+  // Side auto-scrollers
   mountAutoScroll("notificationsList", all.news, "news");
   mountAutoScroll("announcementsList", wbJobs,   "jobs");
-  const othersMix = [...(all.news || []).slice(6,16), ...(wbJobs || []).slice(6,16)];
+  const othersMix = [...(all.news||[]).slice(6,16), ...(wbJobs||[]).slice(6,16)];
   mountAutoScroll("othersList", othersMix, "home");
 
-  // Top horizontal ticker
+  // Top ticker
   if (notifBar){
-    const heads = [...(wbJobs || []).slice(0,10), ...(all.news || []).slice(0,10)];
+    const heads = [...(wbJobs||[]).slice(0,10), ...(all.news||[]).slice(0,10)];
     notifBar.innerHTML = heads.length
       ? heads.map(h => `<span>🔔 ${safe(h.title)}</span>`).join(" • ")
       : `<span>🔔 Welcome to JobPulse Kolkata — live WB jobs & news</span>`;
-    let x = 0;
-    setInterval(() => {
-      x += 2;
-      notifBar.scrollLeft = x;
-      if (x >= notifBar.scrollWidth - notifBar.clientWidth) x = 0;
-    }, 50);
+    let x=0; setInterval(()=>{ x+=2; notifBar.scrollLeft=x; if(x>=notifBar.scrollWidth-notifBar.clientWidth){ x=0; }}, 50);
   }
 
-  // ====== Post page hydration (robust) ======
+  // Post page hydrate (robust)
   if (postBody){
-    // show a quick loading state
-    const titleEl = document.getElementById("postTitle");
-    if (titleEl) titleEl.textContent = "Loading…";
-
     const params = new URLSearchParams(location.search);
-    const targetId = params.get("id") || "";
-    const fromParam = (params.get("from") || "").toLowerCase(); // jobs|news|exams|post
+    const rawId  = params.get("id") || "";
+    const id     = decodeURIComponent(rawId);
 
-    // 1) Try saved sessionStorage item (fastest)
+    // 1) sessionStorage
     try {
       const cached = JSON.parse(sessionStorage.getItem("lastPost") || "null");
-      if (cached && String(cached.id) === normalizeId(targetId)) {
-        renderPost(cached);
-        return;
-      }
+      if (cached && String(cached.id) === String(id)) { return renderPost(cached); }
     } catch(_) {}
 
-    // 2) Try current memory (what we already fetched on this page)
-    let hit = findPostById(targetId, [
-      (wbJobs || []), (all.jobs || []), (all.news || []), (all.exams || [])
-    ]);
-    if (hit){ renderPost(hit); return; }
+    // 2) current memory
+    let hit = window.__CACHE_ALL_POSTS.find(p => String(p.id)===String(id));
+    if (hit) return renderPost(hit);
 
-    // 3) Try fetching specific list (based on ?from=)
-    try {
-      if (["jobs","news","exams"].includes(fromParam)) {
-        const list = await loadType(fromParam);
-        hit = findPostById(targetId, [list]);
-        if (hit){ renderPost(hit); return; }
-      }
-    } catch(_) {}
-
-    // 4) Final fallback: fetch ALL again and try fuzzy
+    // 3) fallback: fetch all
     try {
       const all2 = await loadAll();
-      hit = findPostById(targetId, [(all2.jobs||[]),(all2.news||[]),(all2.exams||[])]);
-      if (hit){ renderPost(hit); return; }
+      hit = [ ...(all2.jobs||[]), ...(all2.news||[]), ...(all2.exams||[]) ].find(p => String(p.id)===String(id));
+      if (hit) return renderPost(hit);
     } catch(_) {}
 
-    // If still not found
     postBody.innerHTML = `<p class="muted">Sorry, this article could not be loaded. Please go back and try again.</p>`;
   }
 
@@ -243,7 +241,6 @@ document.addEventListener("click", (e) => {
     if (body) body.innerHTML = safe(hit.description || "");
     const src = document.getElementById("postSource"); if (src)   src.href   = hit.link || "#";
     const apply = document.getElementById("applyBtn"); if (apply) apply.href = hit.link || "#";
-    // store for reloads
     try { sessionStorage.setItem("lastPost", JSON.stringify(hit)); } catch(_) {}
   }
 })();
