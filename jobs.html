@@ -1,67 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <title>Jobs – JobPulse Kolkata</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All Jobs – JobPulse Kolkata (WB)</title>
   <link rel="stylesheet" href="styles.css" />
-  <!-- AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div id="header"></div>
-  <div class="content-only">
-    <h1>All Jobs</h1>
-
-    <div class="subtabs">
-      <a class="pill" href="#jobsList">All</a>
-      <a class="pill" href="#jobs-govt">Govt</a>
-      <a class="pill" href="#jobs-private">Private</a>
-      <a class="pill" href="#jobs-wfh">WFH</a>
-      <a class="pill" href="#jobs-locations">By Location</a>
-      <a class="pill" href="#jobs-education">By Education</a>
+  <header>
+    <div class="container header-bar">
+      <h1 class="site-title"><a href="index.html">JobPulse Kolkata</a></h1>
+      <nav><a href="categories.html?kind=govt&onlyWB=1">Govt</a> • <a href="categories.html?kind=private&onlyWB=1">Private</a> • <a href="categories.html?wfh=1">WFH</a></nav>
+      <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
     </div>
+  </header>
 
-    <div class="filters-bar">
-      <input id="jobSearch" placeholder="Search jobs..." />
-      <select id="jobTypeFilter">
-        <option value="">All Types</option>
-        <option value="govt">Government</option>
-        <option value="private">Private</option>
-      </select>
-      <select id="locationFilter">
-        <option value="">All Locations</option>
-        <option>Kolkata</option><option>Howrah</option><option>Siliguri</option>
-        <option>Asansol</option><option>Durgapur</option><option>Haldia</option>
-        <option>Kharagpur</option><option>Burdwan</option><option>Jalpaiguri</option>
-        <option>Malda</option><option>Bankura</option><option>Purulia</option>
-      </select>
-      <select id="educationFilter">
-        <option value="">Education (keyword)</option>
-        <option>10th</option><option>12th</option><option>Diploma</option>
-        <option>Graduate</option><option>Postgraduate</option><option>ITI</option>
-        <option>B.Tech</option><option>MBA</option>
-      </select>
-      <label class="check"><input type="checkbox" id="wfhOnly" /> Work From Home</label>
-    </div>
+  <main class="container">
+    <h2>All West Bengal Jobs</h2>
+    <div id="all-jobs" class="grid"></div>
 
-    <div id="jobsList" class="grid"></div>
-    <button class="load-more" data-more="jobsList">Load more</button>
-
-    <ins class="adsbygoogle" style="display:block; margin:12px auto; min-height:90px"
-         data-ad-client="ca-pub-5732778753912461" data-ad-slot="2345678901"
+    <ins class="adsbygoogle" style="display:block; text-align:center; margin:16px auto;"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="4444444444"
          data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </main>
 
-    <h2 style="margin-top:18px" id="jobs-sections">Sections</h2>
-    <section id="jobsSections" class="sectioned"></section>
-  </div>
+  <footer><p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p></footer>
 
-  <div id="footer"></div>
-  <script src="app.js"></script>
+  <script src="js/app.js"></script>
   <script>
-    async function loadPart(id,file){const r=await fetch(file);document.getElementById(id).innerHTML=await r.text();}
-    loadPart("header","header.html"); loadPart("footer","footer.html");
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const htmlEl=document.documentElement,btn=document.getElementById('themeToggle');
+    const saved=localStorage.getItem('theme')||'light'; htmlEl.setAttribute('data-theme',saved);
+    btn.textContent=saved==='dark'?'☀️ Light':'🌙 Dark';
+    btn.onclick=()=>{const next=htmlEl.getAttribute('data-theme')==='dark'?'light':'dark'; htmlEl.setAttribute('data-theme',next); localStorage.setItem('theme',next); btn.textContent=next==='dark'?'☀️ Light':'🌙 Dark';};
   </script>
 </body>
 </html>
