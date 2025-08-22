@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Jobs – JobPulse</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body data-page="jobs">
   <header>
     <div class="header-inner">
       <span id="dateTime"></span>
-      <img src="logo.svg" alt="JobPulse Logo" width="40">
-
+      <img src="logo.svg" alt="Logo" width="40" />
       <button id="menuToggle" class="menu-toggle">☰</button>
       <nav id="mainNav" class="hidden">
         <a href="index.html">Home</a>
@@ -20,16 +19,14 @@
         <a href="breaking.html">Trending</a>
         <a href="exams.html">Exams</a>
       </nav>
-
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <div id="breakingBanner" class="breaking-banner"></div>
-
-  <main class="content-only">
-    <section class="filters-bar">
-      <input type="text" id="jobSearch" placeholder="🔍 Search jobs...">
+  <div class="content-only">
+    <h1>All Jobs</h1>
+    <div class="filters-bar">
+      <input id="jobSearch" placeholder="Search jobs..." />
       <select id="jobTypeFilter">
         <option value="">All Types</option>
         <option value="govt">Government</option>
@@ -43,30 +40,19 @@
         <option>Malda</option><option>Bankura</option><option>Purulia</option>
       </select>
       <select id="educationFilter">
-        <option value="">All Education</option>
-        <option value="10th">10th</option>
-        <option value="12th">12th</option>
-        <option value="graduate">Graduate</option>
-        <option value="postgraduate">Post Graduate</option>
-        <option value="diploma">Diploma/ITI</option>
+        <option value="">Education (keyword)</option>
+        <option>10th</option><option>12th</option><option>Diploma</option>
+        <option>Graduate</option><option>Postgraduate</option><option>ITI</option>
+        <option>B.Tech</option><option>MBA</option>
       </select>
-    </section>
-
-    <section>
-      <div id="jobsList" class="grid"></div>
-    </section>
-  </main>
-
-  <div class="bottom-nav">
-    <a href="index.html">🏠 Home</a>
-    <a href="jobs.html" class="active">💼 Jobs</a>
-    <a href="news.html">📰 News</a>
-    <a href="breaking.html">🔥 Trending</a>
-    <a href="exams.html">📘 Exams</a>
-    <span id="visitorCount">👥 0 Visitors</span>
+    </div>
+    <div id="jobsList" class="grid"></div>
   </div>
 
-  <footer><p>&copy; 2025 JobPulse</p></footer>
+  <div class="bottom-nav">
+    <a href="index.html">🏠</a><a href="jobs.html">💼</a><a href="news.html">📰</a><a href="breaking.html">🔥</a><a href="exams.html">📘</a>
+    <span id="visitorCount">👥 0 Visitors</span>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>
