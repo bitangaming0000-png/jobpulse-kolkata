@@ -1,36 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <title>Exams – JobPulse Kolkata</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exams & Notifications – JobPulse Kolkata</title>
   <link rel="stylesheet" href="styles.css" />
-  <!-- AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div id="header"></div>
-  <div class="content-only">
-    <h1>Exam Alerts</h1>
-
-    <div class="subtabs">
-      <a class="pill" href="#examsList">All</a>
-      <a class="pill" href="#exams-admit">Admit Cards</a>
-      <a class="pill" href="#exams-results">Results</a>
-      <a class="pill" href="#exams-syllabus">Syllabus/Keys/Cutoffs</a>
+  <header>
+    <div class="container header-bar">
+      <h1 class="site-title"><a href="index.html">JobPulse Kolkata</a></h1>
+      <nav><a href="jobs.html">Jobs</a> • <a href="news.html">News</a> • <a href="trending.html">Trending</a></nav>
+      <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
     </div>
+  </header>
 
-    <div id="examsList" class="grid"></div>
-    <button class="load-more" data-more="examsList">Load more</button>
+  <main class="container">
+    <h2>Exams & Notifications</h2>
+    <div id="all-exams" class="grid"></div>
 
-    <h2 style="margin-top:18px" id="exams-sections">Sections</h2>
-    <section id="examSections" class="sectioned"></section>
-  </div>
-  <div id="footer"></div>
-  <script src="app.js"></script>
+    <ins class="adsbygoogle" style="display:block; text-align:center; margin:16px auto;"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="6666666666"
+         data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </main>
+
+  <footer><p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p></footer>
+
+  <script src="js/app.js"></script>
   <script>
-    async function loadPart(id,file){const r=await fetch(file);document.getElementById(id).innerHTML=await r.text();}
-    loadPart("header","header.html"); loadPart("footer","footer.html");
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const htmlEl=document.documentElement,btn=document.getElementById('themeToggle');
+    const saved=localStorage.getItem('theme')||'light'; htmlEl.setAttribute('data-theme',saved);
+    btn.textContent=saved==='dark'?'☀️ Light':'🌙 Dark';
+    btn.onclick=()=>{const next=htmlEl.getAttribute('data-theme')==='dark'?'light':'dark'; htmlEl.setAttribute('data-theme',next); localStorage.setItem('theme',next); btn.textContent=next==='dark'?'☀️ Light':'🌙 Dark';};
   </script>
 </body>
 </html>
