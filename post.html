@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Post Details – JobPulse Kolkata</title>
   <link rel="stylesheet" href="styles.css"/>
-  <!-- AdSense -->
+  <!-- AdSense loader -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -33,42 +33,58 @@
     <h1 id="postTitle">Loading…</h1>
     <div class="meta-line"><span id="postBadge" class="badge">Post</span> <span id="postMeta"></span></div>
     <img id="postImage" class="post-image" src="assets/dummy-photo.svg" alt="Post image"/>
-    
-    <!-- Post Body with inline ads -->
+
+    <!-- Post body where inline ads will be inserted -->
     <div id="postBody" class="post-body"></div>
 
-    <!-- Bottom apply links -->
     <p style="margin-top:12px;">
       <a id="applyBtn" href="#" target="_blank" rel="noopener">Apply / Original Link</a> |
       <a id="postSource" href="#" target="_blank" rel="noopener">🔗 Source</a>
     </p>
 
-    <!-- Ad bottom -->
-    <div class="ad-block">[Ad: post_bottom]</div>
+    <!-- Multiplex under article -->
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-format="autorelaxed"
+         data-ad-client="ca-pub-5732778753912461"
+         data-ad-slot="7381264518"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+
+    <!-- Bottom Display -->
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-5732778753912461"
+         data-ad-slot="2400432399" data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
   </article>
 </main>
 
-<footer>
-  <p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p>
-</footer>
+<footer><p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p></footer>
 
 <script src="js/app.js"></script>
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 
-  // Insert inline ads after every 2 paragraphs
+  // Insert In-article ads after every 2 paragraphs
   document.addEventListener("DOMContentLoaded", () => {
     const bodyEl = document.getElementById("postBody");
     if (!bodyEl) return;
 
-    setTimeout(() => { // wait until app.js loads content
-      const paras = bodyEl.querySelectorAll("p");
+    setTimeout(() => { // wait for app.js to fill content
+      const paras = Array.from(bodyEl.querySelectorAll("p"));
       paras.forEach((p, i) => {
-        if ((i+1) % 2 === 0) {
-          const ad = document.createElement("div");
-          ad.className = "ad-block";
-          ad.innerHTML = `[Ad: post_inline_${i+1}]`;
-          p.insertAdjacentElement("afterend", ad);
+        if ((i + 1) % 2 === 0) {
+          const adWrap = document.createElement("div");
+          adWrap.className = "ad-inline-wrap";
+          adWrap.innerHTML = `
+            <ins class="adsbygoogle"
+                 style="display:block; text-align:center;"
+                 data-ad-layout="in-article"
+                 data-ad-format="fluid"
+                 data-ad-client="ca-pub-5732778753912461"
+                 data-ad-slot="2400400574"></ins>
+          `;
+          p.insertAdjacentElement("afterend", adWrap);
+          try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
         }
       });
     }, 500);
