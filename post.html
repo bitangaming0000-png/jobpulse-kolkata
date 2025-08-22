@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Post – JobPulse Kolkata</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container header-bar">
+      <a class="brand" href="index.html"><img src="assets/logo.svg" alt="JobPulse Kolkata" style="height:28px;vertical-align:middle" /></a>
+      <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+      <nav class="main-nav" id="mainNav">
+        <ul class="nav-list">
+          <li><a href="jobs.html">Jobs</a></li>
+          <li><a href="news.html">News</a></li>
+          <li><a href="exams.html">Exams</a></li>
+          <li><a href="trending.html">Trending</a></li>
+        </ul>
+      </nav>
+      <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
+    </div>
+  </header>
+
+
+  <main class="container post-page">
+    <article class="post-detail">
+      <a id="backBtn" href="index.html">⬅ Back</a>
+      <h1 id="postTitle"></h1>
+      <div class="meta-line"><span id="postBadge" class="badge">Job</span> <span id="postMeta"></span></div>
+      <img id="postImage" class="post-image" src="assets/dummy-photo.svg" alt="Post image">
+      <div id="postBody" class="post-body"></div>
+      <p style="margin-top:12px;">
+        <a id="applyBtn" href="#" target="_blank" rel="noopener">Apply / Original Link</a> |
+        <a id="postSource" href="#" target="_blank" rel="noopener" title="Original source">🔗 Source</a>
+      </p>
+    </article>
+  </main>
+
+  <footer><p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p></footer>
+  <script src="js/app.js"></script>
+  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
