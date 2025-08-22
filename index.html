@@ -1,21 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>JobPulse Kolkata</title>
+  <title>JobPulse Kolkata – Jobs & News</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Google AdSense Verification -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461"
-     crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
-  <h1>Welcome to JobPulse Kolkata</h1>
-  <p>Your trusted portal for job updates in West Bengal</p>
+  <div id="header"></div>
 
-  <nav>
-    <a href="privacy.html">Privacy Policy</a> | 
-    <a href="contact.html">Contact Us</a>
-  </nav>
+  <div class="hero">
+    <h1>Find Your Dream Job in West Bengal</h1>
+    <p>Latest openings, news, exams & announcements — all in one place.</p>
+    <input type="text" id="homeSearch" placeholder="🔍 Search jobs & news..." />
+  </div>
+
+  <!-- Home sub-tabs -->
+  <div class="subtabs">
+    <a class="pill" href="#home-latest-jobs">Latest Jobs</a>
+    <a class="pill" href="#home-latest-news">Latest News</a>
+    <a class="pill" href="#home-govt">Govt</a>
+    <a class="pill" href="#home-private">Private</a>
+    <a class="pill" href="#home-wfh">WFH</a>
+    <a class="pill" href="#home-location">By Location</a>
+    <a class="pill" href="#home-interests">Your Interests</a>
+  </div>
+
+  <main class="content-layout">
+    <aside class="sidebar">
+      <h3>Notifications</h3>
+      <div id="notificationsList" class="scroll-list"></div>
+
+      <h3>Latest Announcements</h3>
+      <div id="announcementsList" class="scroll-list"></div>
+
+      <h3>Others</h3>
+      <div id="othersList" class="scroll-list"></div>
+    </aside>
+
+    <section class="main-feed">
+      <div class="panel">
+        <div class="panel-head"><h3>Categories</h3></div>
+        <div id="homeCategories" class="cats-bar"></div>
+      </div>
+
+      <section id="home-latest-jobs" class="panel">
+        <div class="panel-head"><h3>Latest Jobs</h3></div>
+        <div id="latestPosts" class="grid"></div>
+        <button class="load-more" data-more="latestPosts">Load more</button>
+        <!-- Ad slot -->
+        <ins class="adsbygoogle" style="display:block; margin:12px auto; min-height:90px"
+             data-ad-client="ca-pub-5732778753912461" data-ad-slot="1234567890"
+             data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+      </section>
+
+      <section id="home-latest-news" class="panel">
+        <div class="panel-head"><h3>Latest News</h3></div>
+        <div id="latestNews" class="grid"></div>
+        <button class="load-more" data-more="latestNews">Load more</button>
+      </section>
+
+      <section id="home-govt" class="panel">
+        <div class="panel-head"><h3>Government Jobs</h3></div>
+        <div id="govtJobs" class="grid"></div>
+        <button class="load-more" data-more="govtJobs">Load more</button>
+      </section>
+
+      <section id="home-private" class="panel">
+        <div class="panel-head"><h3>Private Jobs</h3></div>
+        <div id="privateJobs" class="grid"></div>
+        <button class="load-more" data-more="privateJobs">Load more</button>
+      </section>
+
+      <section id="home-wfh" class="panel">
+        <div class="panel-head"><h3>Work From Home</h3></div>
+        <div id="homeWFH" class="grid"></div>
+        <button class="load-more" data-more="homeWFH">Load more</button>
+      </section>
+
+      <section id="home-location" class="panel">
+        <div class="panel-head"><h3>Jobs by Location (WB)</h3></div>
+        <div id="homeLocKolkata" class="grid"></div>
+        <button class="load-more" data-more="homeLocKolkata">Load more</button>
+        <div id="homeLocHowrah" class="grid" style="margin-top:12px"></div>
+        <button class="load-more" data-more="homeLocHowrah">Load more</button>
+      </section>
+
+      <section id="home-interests" class="panel interests-wrap">
+        <div class="panel-head"><h3>Your Interests</h3></div>
+        <div id="interestBar" class="cats-bar"></div>
+        <p class="hint" id="interestHint">Tap categories you like — we’ll keep a feed here.</p>
+        <div id="interestFeed" class="grid"></div>
+        <button class="load-more" data-more="interestFeed">Load more</button>
+      </section>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="app.js"></script>
+  <script>
+    async function loadPart(id,file){const r=await fetch(file);document.getElementById(id).innerHTML=await r.text();}
+    loadPart("header","header.html"); loadPart("footer","footer.html");
+  </script>
 </body>
-</html>
+  </html>
