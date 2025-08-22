@@ -1,5 +1,5 @@
 // Generic HTML list scraper for sites without RSS
-// Usage from jobful.js: scrapeList({ url, itemSelector, titleSelector, linkSelector, dateSelector, base, type, name, region })
+// Used in jobful.js when "mode":"scrape" is set in sources.json
 const cheerio = require("cheerio");
 
 /** Resolve relative URLs */
@@ -7,7 +7,7 @@ function abs(base, href) {
   try { return new URL(href, base).toString(); } catch { return href || base; }
 }
 
-/** Parse a date string safely; fall back to now */
+/** Parse a date string safely; fallback to now */
 function parseDate(txt){
   if(!txt) return new Date().toISOString();
   const d = new Date(txt);
@@ -19,13 +19,13 @@ function parseDate(txt){
  * Scrape a generic list page.
  * @param {Object} cfg
  *   - url: page URL
- *   - itemSelector: CSS selector for each item row/card
+ *   - itemSelector: CSS selector for each row/card
  *   - titleSelector: CSS selector inside item for title text
- *   - linkSelector: CSS selector inside item for href (if omitted, use titleSelector@href or first <a>)
- *   - dateSelector: CSS selector inside item for date text (optional)
+ *   - linkSelector: CSS selector inside item for href
+ *   - dateSelector: CSS selector inside item for date text
  *   - base: base URL for resolving relative links
  *   - type: "job"|"news"
- *   - name: source name to attach
+ *   - name: source name
  *   - region: optional region tag
  */
 async function scrapeList(cfg) {
@@ -35,7 +35,9 @@ async function scrapeList(cfg) {
     type, name, region
   } = cfg;
 
-  const res = await fetch(url, { headers: { "User-Agent": "JobPulseBot/1.0 (+https://jobpulse-kolkata.netlify.app)" }});
+  const res = await fetch(url, {
+    headers: { "User-Agent": "JobPulseBot/1.0 (+https://jobpulse-kolkata.netlify.app)" }
+  });
   if (!res.ok) throw new Error(`Fetch failed ${res.status} for ${url}`);
   const html = await res.text();
   const $ = cheerio.load(html);
@@ -45,6 +47,7 @@ async function scrapeList(cfg) {
     const $el = $(el);
     const $title = titleSelector ? $el.find(titleSelector).first() : $el.find("a").first();
     const title = ($title.text() || "").trim();
+
     let href = "";
     if (linkSelector) {
       const $a = $el.find(linkSelector).first();
@@ -53,6 +56,7 @@ async function scrapeList(cfg) {
       href = $title.attr("href") || $el.find("a").first().attr("href") || "";
     }
     const link = abs(base || url, href);
+
     const dateTxt = dateSelector ? ($el.find(dateSelector).first().text() || "").trim() : "";
     const pubDate = parseDate(dateTxt);
 
@@ -61,9 +65,9 @@ async function scrapeList(cfg) {
         id: `${link}`,
         title,
         link,
-        description: "", // could add summary by taking a snippet from $el.text()
+        description: "",
         pubDate,
-        thumbnail: "",   // most govt sites have no thumbs; frontend falls back to dummy
+        thumbnail: "",
         category: type === "job" ? "Job" : "News",
         source: name,
         sourceKey: name.toLowerCase().replace(/\s+/g,"_"),
