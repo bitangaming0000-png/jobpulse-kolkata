@@ -1,27 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Post – JobPulse</title>
+  <meta charset="UTF-8">
+  <title>Post – JobPulse Kolkata</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
+  <!-- AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
-<body data-page="post">
-  <header>
-    <div class="header-inner">
-      <span id="dateTime"></span>
-      <img src="logo.svg" width="40" alt="Logo" />
-      <button id="menuToggle" class="menu-toggle">☰</button>
-      <nav id="mainNav" class="hidden">
-        <a href="index.html">Home</a>
-        <a href="jobs.html">Jobs</a>
-        <a href="news.html">News</a>
-        <a href="breaking.html">Trending</a>
-        <a href="exams.html">Exams</a>
-      </nav>
-      <button id="modeToggle">🌙</button>
-    </div>
-  </header>
+<body>
+  <div id="header"></div>
 
   <div class="post-page">
     <div class="post-detail">
@@ -32,7 +20,16 @@
       <div class="meta" id="postMeta">—</div>
       <img id="postImage" class="post-image" src="dummy-photo.svg" alt="cover" />
       <div id="postBody" class="post-body">—</div>
-      <p class="back-home">
+
+      <ins class="adsbygoogle"
+           style="display:block; text-align:center; margin:12px 0; min-height:90px"
+           data-ad-client="ca-pub-5732778753912461"
+           data-ad-slot="4567890123"
+           data-ad-format="fluid"
+           data-ad-layout="in-article"></ins>
+      <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+
+      <p class="back-home" style="margin-top:10px">
         <a id="postSource" class="btn-outline" href="#" target="_blank" rel="noopener">🔗 Original Source</a>
         <a id="applyBtn" class="btn" href="#" target="_blank" rel="noopener">Apply / Read More</a>
       </p>
@@ -40,10 +37,11 @@
     </div>
   </div>
 
-  <div class="bottom-nav">
-    <a href="index.html">🏠</a><a href="jobs.html">💼</a><a href="news.html">📰</a><a href="breaking.html">🔥</a><a href="exams.html">📘</a>
-    <span id="visitorCount">👥 0 Visitors</span>
-  </div>
+  <div id="footer"></div>
   <script src="app.js"></script>
+  <script>
+    async function loadPart(id,file){const r=await fetch(file);document.getElementById(id).innerHTML=await r.text();}
+    loadPart("header","header.html"); loadPart("footer","footer.html");
+  </script>
 </body>
 </html>
