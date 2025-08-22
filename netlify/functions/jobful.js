@@ -95,10 +95,7 @@ async function buildAll(SOURCES){
     try{
       const arr = (src.mode === "scrape") ? await fetchSCRAPE(key, src) : await fetchRSS(key, src);
       if (src.type === "job") jobs.push(...arr); else news.push(...arr);
-      arr.forEach(p=>{
-        const hay=(p.title||"")+" "+(p.description||"");
-        if (EXAM_KEYS.test(hay)) exams.push(p);
-      });
+      arr.forEach(p=>{ const hay=(p.title||"")+" "+(p.description||""); if (EXAM_KEYS.test(hay)) exams.push(p); });
     }catch(e){ console.error("Feed error:", key, e.message); }
   }
   jobs.sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate));
@@ -138,7 +135,7 @@ function route(payload, { source, type, region, SOURCES }){
   if (source && SOURCES[source]) {
     const bucket = SOURCES[source].type === "job" ? "jobs" : "news";
     return ok(filterRegion(payload[bucket].filter(i=>i.sourceKey===source), region));
-  }
+    }
   if (type === "jobs")  return ok(filterRegion(payload.jobs, region));
   if (type === "news")  return ok(filterRegion(payload.news, region));
   if (type === "exams") return ok(filterRegion(payload.exams, region));
@@ -148,11 +145,6 @@ function route(payload, { source, type, region, SOURCES }){
     exams: filterRegion(payload.exams, region)
   });
 }
-
-function filterRegion(items, region){
-  if (!region) return items;
-  const R = String(region).toLowerCase();
-  return (items||[]).filter(i => (i.region||"").toLowerCase() === R);
-}
+function filterRegion(items, region){ if (!region) return items; const R=String(region).toLowerCase(); return (items||[]).filter(i => (i.region||"").toLowerCase() === R); }
 function ok(body){ return { statusCode: 200, headers: cors(), body: JSON.stringify(body) }; }
 function cors(){ return { "Content-Type":"application/json", "Access-Control-Allow-Origin":"*", "Cache-Control":"public, max-age=60" }; }
