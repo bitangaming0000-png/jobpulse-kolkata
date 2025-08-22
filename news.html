@@ -1,46 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <title>News – JobPulse Kolkata</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Job News – JobPulse Kolkata</title>
   <link rel="stylesheet" href="styles.css" />
-  <!-- AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div id="header"></div>
-  <div class="content-only">
-    <h1>All News</h1>
-
-    <div class="subtabs">
-      <a class="pill" href="#newsList">All</a>
-      <a class="pill" href="#news-wb">West Bengal</a>
-      <a class="pill" href="#news-national">National/Other</a>
-      <a class="pill" href="#news-source">By Source</a>
+  <header>
+    <div class="container header-bar">
+      <h1 class="site-title"><a href="index.html">JobPulse Kolkata</a></h1>
+      <nav><a href="jobs.html">Jobs</a> • <a href="exams.html">Exams</a> • <a href="trending.html">Trending</a></nav>
+      <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
     </div>
+  </header>
 
-    <div class="filters-bar">
-      <input id="newsSearch" placeholder="Search news..." />
-    </div>
+  <main class="container">
+    <h2>All Job News</h2>
+    <div id="all-news" class="grid"></div>
 
-    <div id="newsList" class="grid"></div>
-    <button class="load-more" data-more="newsList">Load more</button>
-
-    <ins class="adsbygoogle" style="display:block; margin:12px auto; min-height:90px"
-         data-ad-client="ca-pub-5732778753912461" data-ad-slot="3456789012"
+    <ins class="adsbygoogle" style="display:block; text-align:center; margin:16px auto;"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="5555555555"
          data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </main>
 
-    <h2 style="margin-top:18px" id="news-sections">Sections</h2>
-    <section id="newsSections" class="sectioned"></section>
-  </div>
+  <footer><p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p></footer>
 
-  <div id="footer"></div>
-  <script src="app.js"></script>
+  <script src="js/app.js"></script>
   <script>
-    async function loadPart(id,file){const r=await fetch(file);document.getElementById(id).innerHTML=await r.text();}
-    loadPart("header","header.html"); loadPart("footer","footer.html");
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const htmlEl=document.documentElement,btn=document.getElementById('themeToggle');
+    const saved=localStorage.getItem('theme')||'light'; htmlEl.setAttribute('data-theme',saved);
+    btn.textContent=saved==='dark'?'☀️ Light':'🌙 Dark';
+    btn.onclick=()=>{const next=htmlEl.getAttribute('data-theme')==='dark'?'light':'dark'; htmlEl.setAttribute('data-theme',next); localStorage.setItem('theme',next); btn.textContent=next==='dark'?'☀️ Light':'🌙 Dark';};
   </script>
 </body>
 </html>
