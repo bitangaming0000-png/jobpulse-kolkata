@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trending – JobPulse Kolkata</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <div class="container header-bar">
+      <h1 class="site-title"><a href="index.html">JobPulse Kolkata</a></h1>
+      <nav><a href="jobs.html">Jobs</a> • <a href="news.html">News</a> • <a href="exams.html">Exams</a></nav>
+      <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Trending (Latest Jobs & News)</h2>
+    <div id="trendingList" class="grid"></div>
+
+    <ins class="adsbygoogle" style="display:block; text-align:center; margin:16px auto;"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="7777777777"
+         data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </main>
+
+  <footer><p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p></footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const htmlEl=document.documentElement,btn=document.getElementById('themeToggle');
+    const saved=localStorage.getItem('theme')||'light'; htmlEl.setAttribute('data-theme',saved);
+    btn.textContent=saved==='dark'?'☀️ Light':'🌙 Dark';
+    btn.onclick=()=>{const next=htmlEl.getAttribute('data-theme')==='dark'?'light':'dark'; htmlEl.setAttribute('data-theme',next); localStorage.setItem('theme',next); btn.textContent=next==='dark'?'☀️ Light':'🌙 Dark';};
+  </script>
+</body>
+</html>
