@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>JobPulse Kolkata – Latest Jobs & News</title>
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461"
+       crossorigin="anonymous"></script>
 </head>
 <body>
   <!-- Header -->
@@ -15,19 +19,46 @@
     </div>
   </header>
 
-  <!-- Notification Scroll -->
+  <!-- Notifications -->
   <div id="notifications-scroll"></div>
 
-  <!-- Main Content -->
+  <!-- Ad Below Notifications -->
+  <ins class="adsbygoogle"
+       style="display:block; text-align:center; margin:20px auto;"
+       data-ad-client="ca-pub-5732778753912461"
+       data-ad-slot="1111111111"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  <!-- Main -->
   <main class="container">
     <h2>Latest Jobs</h2>
     <div id="home-latest-jobs" class="grid"></div>
+
+    <!-- Ad after Jobs -->
+    <ins class="adsbygoogle"
+         style="display:block; text-align:center; margin:20px auto;"
+         data-ad-client="ca-pub-5732778753912461"
+         data-ad-slot="2222222222"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 
     <h2>Latest News</h2>
     <div id="home-latest-news" class="grid"></div>
 
     <h2>Latest Exams</h2>
     <div id="home-latest-exams" class="grid"></div>
+
+    <!-- Ad before Footer -->
+    <ins class="adsbygoogle"
+         style="display:block; text-align:center; margin:20px auto;"
+         data-ad-client="ca-pub-5732778753912461"
+         data-ad-slot="3333333333"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </main>
 
   <!-- Footer -->
@@ -37,19 +68,15 @@
 
   <script src="app.js"></script>
   <script>
-    // Footer year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Theme toggle with persistence
     const body = document.documentElement;
     const btn = document.getElementById('themeToggle');
     const savedTheme = localStorage.getItem('theme') || 'light';
     body.setAttribute('data-theme', savedTheme);
     btn.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
-
     btn.addEventListener('click', () => {
-      const current = body.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
+      const next = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       body.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
       btn.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
