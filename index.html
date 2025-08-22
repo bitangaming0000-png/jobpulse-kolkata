@@ -1,107 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <title>JobPulse Kolkata – Jobs & News</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JobPulse Kolkata – Latest Jobs & News</title>
   <link rel="stylesheet" href="styles.css" />
-  <!-- AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div id="header"></div>
+  <!-- Header -->
+  <header>
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;">
+      <h1>JobPulse Kolkata</h1>
+      <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
+    </div>
+  </header>
 
-  <div class="hero">
-    <h1>Find Your Dream Job in West Bengal</h1>
-    <p>Latest openings, news, exams & announcements — all in one place.</p>
-    <input type="text" id="homeSearch" placeholder="🔍 Search jobs & news..." />
-  </div>
+  <!-- Notification Scroll -->
+  <div id="notifications-scroll"></div>
 
-  <!-- Home sub-tabs (anchors) -->
-  <div class="subtabs">
-    <a class="pill" href="#home-latest-jobs">Latest Jobs</a>
-    <a class="pill" href="#home-latest-news">Latest News</a>
-    <a class="pill" href="#home-govt">Govt</a>
-    <a class="pill" href="#home-private">Private</a>
-    <a class="pill" href="#home-wfh">WFH</a>
-    <a class="pill" href="#home-location">By Location</a>
-    <a class="pill" href="#home-interests">Your Interests</a>
-  </div>
+  <!-- Main Content -->
+  <main class="container">
+    <h2>Latest Jobs</h2>
+    <div id="home-latest-jobs" class="grid"></div>
 
-  <main class="content-layout">
-    <!-- Left sidebar with AUTO-SCROLL lists -->
-    <aside class="sidebar">
-      <h3>Notifications</h3>
-      <div id="notificationsList" class="scroll-list" aria-live="polite"></div>
+    <h2>Latest News</h2>
+    <div id="home-latest-news" class="grid"></div>
 
-      <h3>Latest Announcements</h3>
-      <div id="announcementsList" class="scroll-list" aria-live="polite"></div>
-
-      <h3>Others</h3>
-      <div id="othersList" class="scroll-list" aria-live="polite"></div>
-    </aside>
-
-    <!-- Main content panels -->
-    <section class="main-feed">
-      <div class="panel">
-        <div class="panel-head"><h3>Categories</h3></div>
-        <div id="homeCategories" class="cats-bar"></div>
-      </div>
-
-      <section id="home-latest-jobs" class="panel">
-        <div class="panel-head"><h3>Latest Jobs</h3></div>
-        <div id="latestPosts" class="grid" aria-live="polite"></div>
-        <button class="load-more" data-more="latestPosts">Load more</button>
-      </section>
-
-      <section id="home-latest-news" class="panel">
-        <div class="panel-head"><h3>Latest News</h3></div>
-        <div id="latestNews" class="grid" aria-live="polite"></div>
-        <button class="load-more" data-more="latestNews">Load more</button>
-      </section>
-
-      <section id="home-govt" class="panel">
-        <div class="panel-head"><h3>Government Jobs</h3></div>
-        <div id="govtJobs" class="grid"></div>
-        <button class="load-more" data-more="govtJobs">Load more</button>
-      </section>
-
-      <section id="home-private" class="panel">
-        <div class="panel-head"><h3>Private Jobs</h3></div>
-        <div id="privateJobs" class="grid"></div>
-        <button class="load-more" data-more="privateJobs">Load more</button>
-      </section>
-
-      <section id="home-wfh" class="panel">
-        <div class="panel-head"><h3>Work From Home</h3></div>
-        <div id="homeWFH" class="grid"></div>
-        <button class="load-more" data-more="homeWFH">Load more</button>
-      </section>
-
-      <section id="home-location" class="panel">
-        <div class="panel-head"><h3>Jobs by Location (WB)</h3></div>
-        <div id="homeLocKolkata" class="grid"></div>
-        <button class="load-more" data-more="homeLocKolkata">Load more</button>
-        <div id="homeLocHowrah" class="grid" style="margin-top:12px"></div>
-        <button class="load-more" data-more="homeLocHowrah">Load more</button>
-      </section>
-
-      <section id="home-interests" class="panel interests-wrap">
-        <div class="panel-head"><h3>Your Interests</h3></div>
-        <div id="interestBar" class="cats-bar"></div>
-        <p class="hint" id="interestHint">Tap categories you like — we’ll keep a feed here.</p>
-        <div id="interestFeed" class="grid"></div>
-        <button class="load-more" data-more="interestFeed">Load more</button>
-      </section>
-    </section>
+    <h2>Latest Exams</h2>
+    <div id="home-latest-exams" class="grid"></div>
   </main>
 
-  <div id="footer"></div>
+  <!-- Footer -->
+  <footer>
+    <p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p>
+  </footer>
 
   <script src="app.js"></script>
   <script>
-    async function loadPart(id,file){const r=await fetch(file);document.getElementById(id).innerHTML=await r.text();}
-    loadPart("header","header.html"); loadPart("footer","footer.html");
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Theme toggle with persistence
+    const body = document.documentElement;
+    const btn = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    body.setAttribute('data-theme', savedTheme);
+    btn.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+    btn.addEventListener('click', () => {
+      const current = body.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      btn.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+    });
   </script>
 </body>
 </html>
