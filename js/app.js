@@ -162,3 +162,42 @@ function mountAutoScroll(elId, items, from = "home"){
     }
   }
 })();
+// Trending Page Loader
+async function loadTrending() {
+  const container = document.getElementById("trending-list");
+  if (!container) return;
+
+  try {
+    const res = await fetch("/.netlify/functions/fetchFeeds");
+    const posts = await res.json();
+
+    // Count keywords
+    let keywordCount = {};
+    posts.forEach(p => {
+      let words = (p.title + " " + (p.contentSnippet || "")).toLowerCase().split(/\W+/);
+      words.forEach(w => {
+        if (w.length > 3) keywordCount[w] = (keywordCount[w] || 0) + 1;
+      });
+    });
+
+    // Pick top keywords
+    let trendingKeywords = Object.entries(keywordCount)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(k => k[0]);
+
+    container.innerHTML = posts
+      .filter(p => trendingKeywords.some(k => p.title.toLowerCase().includes(k)))
+      .slice(0, 12)
+      .map(p => `
+        <div class="card">
+          <h3>🔥 ${p.title}</h3>
+          <p>${p.contentSnippet || ""}</p>
+          <a href="${p.link}" target="_blank">Read more →</a>
+        </div>
+      `).join("");
+  } catch (err) {
+    container.innerHTML = `<p>⚠️ Failed to load trending news</p>`;
+  }
+}
+loadTrending();
