@@ -1,40 +1,53 @@
 {
   "pib_press": {
-    "enabled": true, "mode": "rss", "type": "news",
+    "enabled": true,
+    "mode": "rss",
+    "type": "news",
     "name": "PIB – Press Releases (Govt of India)",
     "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
     "region": "IN"
   },
   "oneindia_west_bengal": {
-    "enabled": true, "mode": "rss", "type": "news",
+    "enabled": true,
+    "mode": "rss",
+    "type": "news",
     "name": "OneIndia Bengali – West Bengal",
     "url": "https://bengali.oneindia.com/rss/feeds/west-bengal-news-fb.xml",
     "region": "IN-WB"
   },
   "oneindia_kolkata": {
-    "enabled": true, "mode": "rss", "type": "news",
+    "enabled": true,
+    "mode": "rss",
+    "type": "news",
     "name": "OneIndia Bengali – Kolkata",
     "url": "https://bengali.oneindia.com/rss/feeds/bengali-kolkata-fb.xml",
     "region": "IN-WB"
   },
 
+  /* ---------- WBPSC (enabled, scraper) ---------- */
   "wbpsc_notifications": {
-    "enabled": false, "mode": "scrape", "type": "news",
+    "enabled": true,
+    "mode": "scrape",
+    "type": "news",
     "name": "WBPSC – Notifications",
     "url": "https://wbpsc.gov.in/notifications.jsp",
     "base": "https://wbpsc.gov.in/",
     "itemSelector": ".table-responsive table tr",
-    "titleSelector": "td:nth-child(2) a",
-    "linkSelector": "td:nth-child(2) a",
-    "dateSelector": "td:nth-child(3)",
+    "titleSelector": "td a",
+    "linkSelector": "td a",
+    "dateSelector": "td:nth-child(3), td:nth-child(2)",
     "region": "IN-WB"
   },
+
+  /* You can enable this later if you want WB Police too */
   "wb_police_recruitment": {
-    "enabled": false, "mode": "scrape", "type": "news",
+    "enabled": false,
+    "mode": "scrape",
+    "type": "news",
     "name": "West Bengal Police – Recruitment",
     "url": "https://wbpolice.gov.in/WBP/Common/Recruitment.aspx",
     "base": "https://wbpolice.gov.in/",
-    "itemSelector": ".table tbody tr",
+    "itemSelector": ".table tbody tr, table tbody tr",
     "titleSelector": "td a",
     "linkSelector": "td a",
     "dateSelector": "td:nth-child(2)",
