@@ -1,7 +1,11 @@
 {
-  "private": true,
+  "name": "jobpulse-kolkata",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo 'No build step'",
+    "start": "netlify dev"
+  },
   "dependencies": {
-    "rss-parser": "^3.13.0",
-    "cheerio": "^1.0.0-rc.12"
+    "rss-parser": "^3.12.0"
   }
 }
