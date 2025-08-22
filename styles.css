@@ -130,3 +130,25 @@ body{
 /* ====== Ads helpers ====== */
 .adsbygoogle{display:block;margin:14px auto}
 .ad-inline-wrap{margin:16px 0}
+/* Chips bar */
+.chipbar {
+  display: flex; gap: 10px;
+  overflow-x: auto; padding: 10px 2px; margin: 8px 0 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.chipbar::-webkit-scrollbar { height: 6px; }
+.chipbar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+.chip {
+  flex: 0 0 auto;
+  padding: 10px 16px;
+  background: #0f1a2a20;
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+}
+[data-theme="dark"] .chip { background: #0b1220; border-color: #1f2a3a; color: #e6ebf5; }
+.chip:hover { transform: translateY(-1px); }
+.chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
