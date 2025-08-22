@@ -1,40 +1,46 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>News – JobPulse</title>
+  <meta charset="UTF-8">
+  <title>News – JobPulse Kolkata</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
+  <!-- AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
-<body data-page="news">
-  <header>
-    <div class="header-inner">
-      <span id="dateTime"></span>
-      <img src="logo.svg" width="40" alt="Logo" />
-      <button id="menuToggle" class="menu-toggle">☰</button>
-      <nav id="mainNav" class="hidden">
-        <a href="index.html">Home</a>
-        <a href="jobs.html">Jobs</a>
-        <a href="news.html" class="active">News</a>
-        <a href="breaking.html">Trending</a>
-        <a href="exams.html">Exams</a>
-      </nav>
-      <button id="modeToggle">🌙</button>
-    </div>
-  </header>
-
+<body>
+  <div id="header"></div>
   <div class="content-only">
     <h1>All News</h1>
+
+    <div class="subtabs">
+      <a class="pill" href="#newsList">All</a>
+      <a class="pill" href="#news-wb">West Bengal</a>
+      <a class="pill" href="#news-national">National/Other</a>
+      <a class="pill" href="#news-source">By Source</a>
+    </div>
+
     <div class="filters-bar">
       <input id="newsSearch" placeholder="Search news..." />
     </div>
+
     <div id="newsList" class="grid"></div>
+    <button class="load-more" data-more="newsList">Load more</button>
+
+    <ins class="adsbygoogle" style="display:block; margin:12px auto; min-height:90px"
+         data-ad-client="ca-pub-5732778753912461" data-ad-slot="3456789012"
+         data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+
+    <h2 style="margin-top:18px" id="news-sections">Sections</h2>
+    <section id="newsSections" class="sectioned"></section>
   </div>
 
-  <div class="bottom-nav">
-    <a href="index.html">🏠</a><a href="jobs.html">💼</a><a href="news.html">📰</a><a href="breaking.html">🔥</a><a href="exams.html">📘</a>
-    <span id="visitorCount">👥 0 Visitors</span>
-  </div>
+  <div id="footer"></div>
   <script src="app.js"></script>
+  <script>
+    async function loadPart(id,file){const r=await fetch(file);document.getElementById(id).innerHTML=await r.text();}
+    loadPart("header","header.html"); loadPart("footer","footer.html");
+  </script>
 </body>
 </html>
