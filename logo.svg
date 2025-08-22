@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
-  <circle cx="32" cy="32" r="32" fill="#ff5722"/>
-  <text x="32" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="white" font-family="Arial">JP</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="#0077ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/><path d="M7 12h10M7 8h10M7 16h6"/></svg>
