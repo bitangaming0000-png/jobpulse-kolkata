@@ -35,7 +35,7 @@
   </section>
 
   <main class="content-layout">
-    <!-- Sidebar (only on home) -->
+    <!-- Desktop Sidebar (hidden on mobile) -->
     <aside class="sidebar">
       <h2>Notifications</h2>
       <div id="notificationsList" class="scroll-list"></div>
@@ -52,6 +52,28 @@
 
     <!-- Main Feed -->
     <section class="main-feed">
+      <!-- Mobile Accordion (shown only on mobile) -->
+      <section class="mobile-accordion">
+        <div class="accordion-item">
+          <button class="accordion-header">Notifications</button>
+          <div class="accordion-content">
+            <div id="notificationsListMobile" class="scroll-list"></div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header">Latest Announcements</button>
+          <div class="accordion-content">
+            <div id="announcementsListMobile" class="scroll-list"></div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header">Others</button>
+          <div class="accordion-content">
+            <div id="othersListMobile" class="scroll-list"></div>
+          </div>
+        </div>
+      </section>
+
       <h2>Latest Jobs</h2>
       <div id="latestPosts" class="grid"></div>
 
@@ -82,6 +104,7 @@
 
   <script src="app.js"></script>
   <script>
+    // Home search filters across ALL_POSTS
     document.getElementById("homeSearch")?.addEventListener("input", (e) => {
       const q = e.target.value.toLowerCase();
       const filtered = ALL_POSTS.filter(
