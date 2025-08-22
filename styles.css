@@ -28,3 +28,6 @@ header{background:var(--card);border-bottom:1px solid var(--border);position:sti
 .scroll-list a{text-decoration:none;color:var(--text)}
 @keyframes scroll-up{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
 .ad-block{background:var(--card);border:1px dashed var(--border);text-align:center;padding:10px;margin:12px auto;color:var(--muted)}
+/* Ad spacing helpers */
+.adsbygoogle { display:block; margin:14px auto; }
+.ad-inline-wrap { margin: 16px 0; }
