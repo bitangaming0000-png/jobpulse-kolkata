@@ -1,3 +1,23 @@
+/* ========= AI cover image (fallback when no thumbnail) ========= */
+function coverSVG(title="JobPulse"){
+  const colors = [
+    ["#1e3a8a","#0ea5e9"],
+    ["#7c3aed","#ec4899"],
+    ["#065f46","#22c55e"],
+    ["#9d174d","#f97316"]
+  ];
+  const [c1,c2] = colors[Math.floor(Math.random()*colors.length)];
+  const t = encodeURIComponent((title||"").slice(0,48));
+  return "data:image/svg+xml;charset=utf-8," +
+    `<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='628'>
+      <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+        <stop stop-color='${c1}'/><stop offset='1' stop-color='${c2}'/>
+      </linearGradient></defs>
+      <rect fill='url(%23g)' width='100%' height='100%'/>
+      <text x='50' y='340' font-family='system-ui,Segoe UI,Roboto' font-size='64' fill='white'>${t}</text>
+    </svg>`;
+}
+
 /* ========= Utilities ========= */
 function safe(s){ return s ? String(s).replace(/</g,"&lt;").replace(/>/g,"&gt;") : ""; }
 function formatDate(d){ return d ? new Date(d).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) : ""; }
@@ -7,8 +27,9 @@ function isNew(post){
 }
 function createCard(item){
   const from = item.category || "Post";
+  const imgSrc = item.thumbnail || coverSVG(item.title);
   return `<article class="card">
-    <img src="${item.thumbnail}" alt="${safe(item.title)}" class="thumb"/>
+    <img src="${imgSrc}" alt="${safe(item.title)}" class="thumb"/>
     <div class="content">
       <h3>
         <a class="post-link"
@@ -239,7 +260,7 @@ document.addEventListener("click", (e) => {
   // Cache globally for quick lookups
   window.__CACHE_ALL_POSTS = [ ...(wbJobs||[]), ...(all.jobs||[]), ...(all.news||[]), ...(all.exams||[]) ];
 
-  // Home sections
+  // Home sections (latest 6)
   if (homeJobs)  renderList("home-latest-jobs",  wbJobs,    6);
   if (homeNews)  renderList("home-latest-news",  all.news,  6);
   if (homeExams) renderList("home-latest-exams", all.exams, 6);
@@ -306,10 +327,13 @@ document.addEventListener("click", (e) => {
     if (titleEl) titleEl.innerHTML = `${isNew(hit) ? '<span class="badge-new">NEW 🔥</span> ' : ''}${safe(hit.title || "Untitled")}`;
     const metaEl = document.getElementById("postMeta");
     if (metaEl) metaEl.textContent = `${formatDate(hit.pubDate)} • ${hit.source || ""}`;
+
     const imgEl = document.getElementById("postImage");
-    if (imgEl) imgEl.src = hit.thumbnail || "assets/dummy-photo.svg";
+    if (imgEl) imgEl.src = hit.thumbnail || coverSVG(hit.title);
+
     const body = document.getElementById("postBody");
     if (body) body.innerHTML = safe(hit.description || "");
+
     const src = document.getElementById("postSource"); if (src)   src.href   = hit.link || "#";
     const apply = document.getElementById("applyBtn"); if (apply) apply.href = hit.link || "#";
 
