@@ -23,8 +23,6 @@
     "url": "https://bengali.oneindia.com/rss/feeds/bengali-kolkata-fb.xml",
     "region": "IN-WB"
   },
-
-  /* ---------- WBPSC (enabled, scraper) ---------- */
   "wbpsc_notifications": {
     "enabled": true,
     "mode": "scrape",
@@ -36,21 +34,6 @@
     "titleSelector": "td a",
     "linkSelector": "td a",
     "dateSelector": "td:nth-child(3), td:nth-child(2)",
-    "region": "IN-WB"
-  },
-
-  /* You can enable this later if you want WB Police too */
-  "wb_police_recruitment": {
-    "enabled": false,
-    "mode": "scrape",
-    "type": "news",
-    "name": "West Bengal Police – Recruitment",
-    "url": "https://wbpolice.gov.in/WBP/Common/Recruitment.aspx",
-    "base": "https://wbpolice.gov.in/",
-    "itemSelector": ".table tbody tr, table tbody tr",
-    "titleSelector": "td a",
-    "linkSelector": "td a",
-    "dateSelector": "td:nth-child(2)",
     "region": "IN-WB"
   }
 }
