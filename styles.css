@@ -92,6 +92,15 @@ header{
 .keywords{display:flex; flex-wrap:wrap; gap:8px}
 .keywords .tag{background:var(--card); padding:6px 10px; border-radius:999px; font-size:.85rem; box-shadow:var(--shadow)}
 
+/* ============= Mobile Accordion (Home) ============= */
+.mobile-accordion{display:none; margin-bottom:14px}
+.accordion-item{background:var(--card); border-radius:10px; box-shadow:var(--shadow); margin-bottom:10px; overflow:hidden}
+.accordion-header{
+  width:100%; text-align:left; background:none; border:none; padding:12px 14px; font-weight:700; cursor:pointer; color:var(--text)
+}
+.accordion-content{max-height:0; overflow:hidden; transition:max-height .25s ease}
+.accordion-item.open .accordion-content{max-height:320px}
+
 /* ============= Filters ============= */
 .filters-bar{display:flex; flex-wrap:wrap; gap:10px; margin:8px 0 14px}
 .filters-bar input,.filters-bar select{
@@ -136,29 +145,31 @@ header{
 .bottom-nav a{color:var(--nav-fg); font-weight:600}
 #visitorCount{font-size:.9rem; color:var(--nav-fg); opacity:.85}
 
-/* ============= RESPONSIVE ============= */
-/* <= 900px: switch to single column and hide sidebar */
+/* ============= Responsive ============= */
 @media (max-width: 900px){
-  /* collapse desktop nav; menu button reveals it (already in JS) */
-  #mainNav.hidden{display:none}
-  /* sidebar hidden on mobile for a clean feed */
+  /* Sidebar hidden on mobile; accordion visible */
   .sidebar{display:none}
-  /* main grid becomes one column */
+  .mobile-accordion{display:block}
+
+  /* Single-column on phones */
   .content-layout{grid-template-columns:1fr}
-  /* card grid: 1 per row (true mobile feel) */
   .grid{grid-template-columns:1fr}
-  /* smaller hero */
-  .hero{padding:32px 14px}
-  .hero h1{font-size:1.4rem}
-  /* filters take full width */
+
+  /* Full-width filters */
   .filters-bar{gap:8px}
   .filters-bar input,.filters-bar select{flex:1 1 100%; width:100%}
-}
 
-/* <= 480px: tighten paddings & sizes */
+  /* Dropdown nav panel */
+  #mainNav.hidden{display:none}
+  #mainNav{
+    position:absolute; top:var(--header-h); right:8px; padding:10px;
+    flex-direction:column; background:var(--nav-bg);
+    border:1px solid var(--nav-border); border-radius:10px; box-shadow:var(--shadow);
+  }
+}
 @media (max-width: 480px){
   body{padding-top:var(--header-h); padding-bottom:calc(var(--bottom-h) + 4px)}
   .card img{height:140px}
   .header-inner{padding:6px 10px}
   .bottom-nav{padding:6px 8px}
-            }
+}
