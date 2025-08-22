@@ -1,0 +1,52 @@
+{
+  "remotive": { "enabled": true, "type": "job",  "name": "Remotive",                         "url": "https://remotive.com/feed",                                "region": "GLOBAL" },
+  "wwr":      { "enabled": true, "type": "job",  "name": "We Work Remotely",                 "url": "https://weworkremotely.com/remote-jobs.rss",               "region": "GLOBAL" },
+  "highered": { "enabled": true, "type": "job",  "name": "HigherEdJobs",                     "url": "https://www.higheredjobs.com/rss/",                        "region": "GLOBAL" },
+
+  "ucr":      { "enabled": true, "type": "news", "name": "Undercover Recruiter",             "url": "https://theundercoverrecruiter.com/feed",                  "region": "GLOBAL" },
+  "acara":    { "enabled": true, "type": "news", "name": "Acara Solutions (Job Seeker Blog)","url": "https://acarasolutions.com/blog/category/job-seeker/feed", "region": "GLOBAL" },
+
+  "pib_press": {
+    "enabled": true,
+    "type": "news",
+    "name": "PIB – Press Releases (Govt of India)",
+    "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
+    "region": "IN"
+  },
+  "oneindia_west_bengal": {
+    "enabled": true,
+    "type": "news",
+    "name": "OneIndia Bengali – West Bengal",
+    "url": "https://bengali.oneindia.com/rss/feeds/west-bengal-news-fb.xml",
+    "region": "IN-WB"
+  },
+  "oneindia_kolkata": {
+    "enabled": true,
+    "type": "news",
+    "name": "OneIndia Bengali – Kolkata",
+    "url": "https://bengali.oneindia.com/rss/feeds/bengali-kolkata-fb.xml",
+    "region": "IN-WB"
+  },
+
+  "oneindia_jobs_bn": {
+    "enabled": false,
+    "type": "news",
+    "name": "OneIndia Bengali – Jobs/Career",
+    "url": "https://bengali.oneindia.com/rss/feeds/bengali-jobs-fb.xml",
+    "region": "IN"
+  },
+  "toi_main": {
+    "enabled": false,
+    "type": "news",
+    "name": "Times of India – Main RSS hub",
+    "url": "https://timesofindia.indiatimes.com/rss.cms",
+    "region": "IN"
+  },
+  "timesjobs_content": {
+    "enabled": false,
+    "type": "news",
+    "name": "TimesJobs Content (hub)",
+    "url": "https://content.timesjobs.com/rss_feeds.cms",
+    "region": "IN"
+  }
+}
