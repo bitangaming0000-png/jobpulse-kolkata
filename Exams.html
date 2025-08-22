@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Exams – JobPulse</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body data-page="exams">
   <header>
     <div class="header-inner">
       <span id="dateTime"></span>
-      <img src="logo.svg" alt="JobPulse Logo" width="40">
-
+      <img src="logo.svg" width="40" alt="Logo" />
       <button id="menuToggle" class="menu-toggle">☰</button>
       <nav id="mainNav" class="hidden">
         <a href="index.html">Home</a>
@@ -20,26 +19,19 @@
         <a href="breaking.html">Trending</a>
         <a href="exams.html" class="active">Exams</a>
       </nav>
-
       <button id="modeToggle">🌙</button>
     </div>
   </header>
 
-  <main class="content-only">
-    <h2>Exam Alerts (Admit Cards • Results • Dates)</h2>
+  <div class="content-only">
+    <h1>Exam Alerts</h1>
     <div id="examsList" class="grid"></div>
-  </main>
-
-  <div class="bottom-nav">
-    <a href="index.html">🏠 Home</a>
-    <a href="jobs.html">💼 Jobs</a>
-    <a href="news.html">📰 News</a>
-    <a href="breaking.html">🔥 Trending</a>
-    <a href="exams.html" class="active">📘 Exams</a>
-    <span id="visitorCount">👥 0 Visitors</span>
   </div>
 
-  <footer><p>&copy; 2025 JobPulse</p></footer>
+  <div class="bottom-nav">
+    <a href="index.html">🏠</a><a href="jobs.html">💼</a><a href="news.html">📰</a><a href="breaking.html">🔥</a><a href="exams.html">📘</a>
+    <span id="visitorCount">👥 0 Visitors</span>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>
