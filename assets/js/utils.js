@@ -1,25 +1,40 @@
 // assets/js/utils.js
-export function formatDateTimeIST(date = new Date()){
-  return new Intl.DateTimeFormat('en-IN', {
-    dateStyle:'medium', timeStyle:'short', hour12:true, timeZone:'Asia/Kolkata'
+
+// Helper to format IST date/time
+export function formatDateTimeIST(date = new Date()) {
+  return new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "medium",
+    timeStyle: "short"
   }).format(date);
 }
 
-export function el(tag, cls, html){
-  const e = document.createElement(tag);
-  if(cls) e.className = cls;
-  if(html) e.innerHTML = html;
-  return e;
+// Safe element creator
+export function el(tag, cls, text) {
+  const x = document.createElement(tag);
+  if (cls) x.className = cls;
+  if (text) x.textContent = text;
+  return x;
 }
 
-export function truncate(text, n=120){
-  if(!text) return '';
-  return text.length > n ? text.slice(0,n) + '…' : text;
+// Truncate text
+export function truncate(text, n = 120) {
+  if (!text) return "";
+  return text.length > n ? text.slice(0, n) + "…" : text;
 }
 
-export function safeURL(u){ try{ return new URL(u).toString() }catch{ return '#' } }
+// Safe URL check
+export function safeURL(url) {
+  try {
+    const u = new URL(url);
+    if (["http:", "https:"].includes(u.protocol)) return u.href;
+    return "#";
+  } catch {
+    return "#";
+  }
+}
 
-export function getQuery(name){
-  const url = new URL(window.location.href);
-  return url.searchParams.get(name);
+// Get query string param
+export function getQuery(name) {
+  return new URLSearchParams(location.search).get(name);
 }
