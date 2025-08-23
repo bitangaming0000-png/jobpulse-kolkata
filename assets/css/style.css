@@ -8,8 +8,23 @@
   --border:#232838;
 }
 
+/* Light theme overrides (data-theme set by theme-boot.js / main.js) */
+:root[data-theme="light"]{
+  --bg:#f7f8fc;
+  --card:#ffffff;
+  --text:#0d0f14;
+  --muted:#4b5563;
+  --brand:#1f4fff;
+  --accent:#0ea5e9;
+  --border:#e5e7eb;
+}
+
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";}
+html,body{
+  margin:0;padding:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";
+}
+body, .card, .nav-link, .theme-toggle{ transition: background-color .20s ease, color .20s ease, border-color .20s ease; }
 
 a{color:var(--brand);text-decoration:none}
 a:hover{text-decoration:underline}
@@ -20,6 +35,8 @@ a:hover{text-decoration:underline}
   padding:10px 16px;background:rgba(13,15,20,.8);backdrop-filter: blur(8px);
   border-bottom:1px solid var(--border);
 }
+:root[data-theme="light"] .site-header{ background:rgba(255,255,255,.85); }
+
 .brand{display:flex;align-items:center;gap:10px}
 .logo{font-weight:700;letter-spacing:.3px}
 .meta{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
@@ -35,11 +52,14 @@ a:hover{text-decoration:underline}
 .side-nav.open{transform:translateX(0)}
 .nav-link{padding:10px 12px;border-radius:8px;background:transparent;border:1px solid var(--border)}
 .nav-link:hover{background:#0f1320}
+:root[data-theme="light"] .nav-link:hover{background:#f0f4ff}
 
 .container{max-width:1100px;margin:0 auto;padding:16px}
 
+h1{font-size:24px;margin:6px 6px 14px}
+h2{font-size:18px;margin:0 0 10px 6px;color:var(--muted)}
+
 .section{margin:20px 0}
-.section h2{margin:0 0 10px 6px;font-size:18px;color:var(--muted)}
 
 .scroller-x{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory}
 .card{min-width:280px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;scroll-snap-align:start}
@@ -47,6 +67,7 @@ a:hover{text-decoration:underline}
 .card .meta{gap:8px}
 
 .badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#0e1628;border:1px solid var(--border);color:var(--muted);font-size:12px}
+:root[data-theme="light"] .badge{ background:#eef2ff; color:#334155; }
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
 .notice{border-left:3px solid var(--accent);padding-left:10px}
@@ -57,10 +78,7 @@ a:hover{text-decoration:underline}
 
 .ad-slot{display:block;min-height:120px;border:1px dashed var(--border);border-radius:12px;margin:10px 0;padding:6px;color:var(--muted);text-align:center}
 
-@media (min-width: 900px){
-  .card{min-width:330px}
-}
-/* --- Auto-scrolling ticker (notifications) --- */
+/* --- Auto-scrolling ticker --- */
 .ticker-wrap{
   position: relative;
   overflow: hidden;
@@ -76,35 +94,20 @@ a:hover{text-decoration:underline}
   background:#0e1628; border:1px solid var(--border);
   padding:2px 8px; border-radius:999px;
 }
+:root[data-theme="light"] .ticker-head{ background:#eef2ff; color:#334155; }
 .ticker{
   white-space: nowrap;
   display:flex; align-items:center;
-  gap:24px; padding:14px 12px 14px 90px; /* space for label */
+  gap:24px; padding:14px 12px 14px 90px;
 }
-.ticker a{
-  color: var(--text);
-  text-decoration: none;
-  border-bottom:1px dashed var(--border);
-  padding-bottom:2px;
-}
+.ticker a{ color: var(--text); text-decoration: none; border-bottom:1px dashed var(--border); padding-bottom:2px; }
 .ticker .bullet{
-  display:inline-block; width:6px; height:6px;
-  border-radius:50%; background:var(--accent);
-  margin:0 8px;
+  display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); margin:0 8px;
 }
+.ticker-track{ display:inline-block; will-change: transform; animation: ticker-scroll 45s linear infinite; }
+@keyframes ticker-scroll{ 0%{ transform: translateX(0); } 100%{ transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce){ .ticker-track{ animation: none; } }
 
-/* seamless scroll */
-.ticker-track{
-  display:inline-block;
-  will-change: transform;
-  animation: ticker-scroll 45s linear infinite;
-}
-@keyframes ticker-scroll{
-  0%{ transform: translateX(0); }
-  100%{ transform: translateX(-50%); }
-}
-
-/* reduce motion */
-@media (prefers-reduced-motion: reduce){
-  .ticker-track{ animation: none; }
+@media (min-width: 900px){
+  .card{min-width:330px}
 }
