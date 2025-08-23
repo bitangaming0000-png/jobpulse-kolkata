@@ -1,0 +1,4 @@
+#consentBanner{position:fixed;left:0;right:0;bottom:0;background:#0b1220;color:#e6ebf5;padding:12px;z-index:9999;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;border-top:1px solid #1f2a3a}
+#consentBanner button{border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+#consentAccept{background:#10b981;color:#fff}
+#consentManage{background:#1f2937;color:#e5e7eb}
