@@ -10,10 +10,7 @@ const parser = new XMLParser({
 function rewriteText(text) {
   if (!text) return '';
   let t = text.replace(/\s+/g, ' ').trim();
-  if (t.length > 220) {
-    return t.slice(0, 220) + '...';
-  }
-  return t;
+  return t.length > 220 ? t.slice(0, 220) + '...' : t;
 }
 
 function normalizeFeed(json, sourceUrl) {
@@ -62,22 +59,28 @@ export const handler = async () => {
 
     const fetches = FEEDS.map(async s => {
       try {
-        const resp = await fetch(s.url, { headers: { 'Accept': 'application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.8' } });
+        const resp = await fetch(s.url, {
+          headers: {
+            'Accept': 'application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.8',
+            'User-Agent': 'Mozilla/5.0 (NetlifyFunction; +rss-jobpulse-kolkata)'
+          }
+        });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const xml = await resp.text();
         const json = parser.parse(xml);
         let items = normalizeFeed(json, s.url);
-        // attach category from feeds.json
         items = items.map(it => ({ ...it, category: s.category || 'news' }));
         items = items.filter(it => includesAny(it.title + ' ' + it.description, KEYWORDS));
         items = items.map(it => ({ ...it, description: rewriteText(it.description) }));
         return items;
-      } catch {
+      } catch (e) {
+        console.error('Feed error', s.url, e.message);
         return [];
       }
     });
 
     const results = (await Promise.all(fetches)).flat();
+
     const seen = new Set();
     const deduped = [];
     for (const it of results) {
@@ -92,10 +95,15 @@ export const handler = async () => {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json','Access-Control-Allow-Origin': '*','Cache-Control': 'public, max-age=300' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=300'
+      },
       body: JSON.stringify({ items: deduped })
     };
   } catch (err) {
+    console.error('RSS function error', err);
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
