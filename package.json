@@ -2,7 +2,7 @@
   "name": "jobpulse-kolkata",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "build": "echo \"No build step required\"",
     "dev": "netlify dev"
