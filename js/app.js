@@ -1,426 +1,116 @@
-/* ========= AI cover image (fallback when no thumbnail) ========= */
-function coverSVG(title="JobPulse"){
-  const colors = [
-    ["#1e3a8a","#0ea5e9"],
-    ["#7c3aed","#ec4899"],
-    ["#065f46","#22c55e"],
-    ["#9d174d","#f97316"]
-  ];
-  const [c1,c2] = colors[Math.floor(Math.random()*colors.length)];
-  const t = encodeURIComponent((title||"").slice(0,48));
-  return "data:image/svg+xml;charset=utf-8," +
-    `<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='628'>
-      <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
-        <stop stop-color='${c1}'/><stop offset='1' stop-color='${c2}'/>
-      </linearGradient></defs>
-      <rect fill='url(%23g)' width='100%' height='100%'/>
-      <text x='50' y='340' font-family='system-ui,Segoe UI,Roboto' font-size='64' fill='white'>${t}</text>
-    </svg>`;
-}
+/* Utility */
+function safe(str){ return (str||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])) }
 
-/* ========= Utilities ========= */
-function safe(s){ return s ? String(s).replace(/</g,"&lt;").replace(/>/g,"&gt;") : ""; }
-function formatDate(d){ return d ? new Date(d).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) : ""; }
-function isNew(post){
-  try { return (Date.now() - new Date(post.pubDate).getTime()) < 1000*60*60*48; }
-  catch(e){ return false; }
+/* === Breaking News Ticker === */
+function makeBreakingHTML(list, from="news"){
+  const items = list.map(p =>
+    `<span class="breaking-item">
+       <span class="badge-live" aria-hidden="true"></span>
+       <a class="post-link" data-id="${safe(p.id)}" data-from="${safe(from)}"
+          href="post.html?id=${encodeURIComponent(p.id)}&from=${encodeURIComponent(from)}">
+          ${safe(p.title)}
+       </a>
+     </span>`
+  ).join("");
+  return `<div class="inner">${items}${items}</div>`;
 }
-function createCard(item){
-  const from = item.category || "Post";
-  const imgSrc = item.thumbnail || coverSVG(item.title);
-  return `<article class="card">
-    <img src="${imgSrc}" alt="${safe(item.title)}" class="thumb"/>
-    <div class="content">
-      <h3>
-        <a class="post-link"
-           data-id="${safe(item.id)}"
-           data-from="${safe(from)}"
-           href="post.html?id=${encodeURIComponent(item.id)}&from=${encodeURIComponent(from)}">
-          ${safe(item.title)}
-        </a>
-        ${isNew(item) ? '<span class="badge-new">NEW 🔥</span>' : ''}
-      </h3>
-      <p class="desc">${safe((item.description || "").slice(0, 160))}...</p>
-      <div class="meta"><span>${formatDate(item.pubDate)}</span><span>${safe(item.source || "")}</span></div>
-    </div>
-  </article>`;
-}
-
-/* ========= Visitor Counter ========= */
-(() => {
-  let count = parseInt(localStorage.getItem("visitCount") || "0", 10) + 1;
-  localStorage.setItem("visitCount", String(count));
-  const el = document.getElementById("visitCount");
-  if (el) el.textContent = count.toLocaleString("en-IN");
-})();
-
-/* ========= Theme ========= */
-(() => {
-  const htmlEl = document.documentElement;
-  const btn = document.getElementById("themeToggle");
-  const saved = localStorage.getItem("theme") || "light";
-  htmlEl.setAttribute("data-theme", saved);
-  if (btn) {
-    btn.textContent = saved === "dark" ? "☀️ Light" : "🌙 Dark";
-    btn.addEventListener("click", () => {
-      const next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      htmlEl.setAttribute("data-theme", next);
-      localStorage.setItem("theme", next);
-      btn.textContent = next === "dark" ? "☀️ Light" : "🌙 Dark";
-    });
+function mountBreakingTicker(elId, items, from="news"){
+  const el=document.getElementById(elId); if(!el) return;
+  const list=(items||[]).slice(0,20);
+  if(!list.length){
+    el.innerHTML=`<div class="inner"><span class="breaking-item"><span class="badge-live"></span><span>Welcome to JobPulse Kolkata</span></span></div>`;
+    return;
   }
-})();
-
-/* ========= Mobile Nav ========= */
-(() => {
-  const navToggle = document.getElementById("navToggle");
-  const mainNav = document.getElementById("mainNav");
-  if (!navToggle || !mainNav) return;
-  navToggle.addEventListener("click", () => {
-    const open = mainNav.classList.toggle("open");
-    navToggle.setAttribute("aria-expanded", open ? "true" : "false");
-  });
-  document.addEventListener("click", (e) => {
-    if (!mainNav.contains(e.target) && !navToggle.contains(e.target)) mainNav.classList.remove("open");
-  });
-})();
-
-/* ========= Data ========= */
-async function fetchJSON(url){
-  const res = await fetch(url, { headers: { "cache-control": "no-cache" } });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
-}
-async function loadAll(){ return fetchJSON("/.netlify/functions/jobful"); }
-async function loadWBJobsOnly(){
-  const j = await fetchJSON("/.netlify/functions/jobful?type=jobs&onlyWB=1");
-  return j.jobs || [];
-}
-async function loadType(type){
-  const j = await fetchJSON(`/.netlify/functions/jobful?type=${encodeURIComponent(type)}`);
-  return (j.jobs || j.news || j.exams || []);
+  el.innerHTML=makeBreakingHTML(list,from);
 }
 
-/* ========= Render helpers ========= */
-function renderList(id, arr, limit = 0){
-  const el = document.getElementById(id); if (!el) return;
-  const list = limit ? (arr || []).slice(0, limit) : (arr || []);
-  el.innerHTML = list.length ? list.map(createCard).join("") : `<p class="muted">No posts available</p>`;
-}
-function mountAutoScroll(elId, items, from = "home"){
-  const el = document.getElementById(elId); if (!el) return;
-  const list = (items || []).slice(0, 16);
-  if (!list.length){ el.innerHTML = `<ul><li>No updates</li></ul>`; return; }
-  el.innerHTML = `<ul>${[...list, ...list].map(p =>
-    `<li><a class="post-link" data-id="${safe(p.id)}" data-from="${safe(from)}" href="post.html?id=${encodeURIComponent(p.id)}&from=${encodeURIComponent(from)}">${safe(p.title)}</a></li>`
-  ).join("")}</ul>`;
+/* Visitor count */
+function incrementVisits(){
+  let c=+localStorage.getItem("visits")||0;
+  c++; localStorage.setItem("visits",c);
+  document.querySelectorAll("#visitCount").forEach(x=>x.textContent=c);
 }
 
-/* ========= Headline Rotator (animated, reusable) ========= */
-function injectRotator(afterHeadingEl, id){
-  if (!afterHeadingEl || document.getElementById(id)) return;
-  const rot = document.createElement("div");
-  rot.className = "headline-rotator";
-  rot.id = id;
-  rot.setAttribute("aria-live", "polite");
-  afterHeadingEl.insertAdjacentElement("afterend", rot);
-}
-function mountHeadlineRotator(id, items, from="Post", interval=3000){
-  const el = document.getElementById(id); if (!el) return;
-  const list = (items||[]).slice(0, 20);
-  if (!list.length){ el.innerHTML = `<span class="muted">No headlines</span>`; return; }
-  let i = 0;
-  function render(idx, phase="in"){
-    const it = list[idx % list.length];
-    const href = `post.html?id=${encodeURIComponent(it.id)}&from=${encodeURIComponent(from)}`;
-    el.innerHTML = `<a class="rot-link ${phase==='in'?'fade-in':''} post-link" data-id="${safe(it.id)}" data-from="${safe(from)}" href="${href}">
-      ${safe(it.title)}
-    </a>`;
-  }
-  render(i,"in");
-  setInterval(() => {
-    el.firstElementChild && el.firstElementChild.classList.add("fade-out");
-    setTimeout(() => { i=(i+1)%list.length; render(i,"in"); }, 250);
-  }, interval);
-}
-
-/* ========= Category chips (Govt / Private / WFH / Freshers) ========= */
-const JOB_CATS = {
-  govt:     { label: "Govt",     slug: "govt"     },
-  private:  { label: "Private",  slug: "private"  },
-  wfh:      { label: "Work From Home", slug: "wfh" },
-  freshers: { label: "Freshers", slug: "freshers" }
-};
-function jobMatches(job, cat){
-  const hay = (`${job.title||""} ${job.description||""} ${job.source||""}`).toLowerCase();
-  const KW = {
-    govt:     ["govt","government","wbpsc","state govt","public service","ssc","railway","psu","municipal","wb police","kolkata police","bank of india","wbpdcl","kmda","kmc","high court","judicial","wbhrb","wbset","food inspector","panchayat","wbsub"],
-    wfh:      ["remote","work from home","wfh","home-based","telecommute","anywhere","hybrid"],
-    freshers: ["fresher","freshers","entry level","0-1 year","0-2 year","no experience","graduate trainee","trainee","intern"]
-  };
-  if (cat === "govt")     return KW.govt.some(k => hay.includes(k));
-  if (cat === "wfh")      return KW.wfh.some(k => hay.includes(k));
-  if (cat === "freshers") return KW.freshers.some(k => hay.includes(k));
-  if (cat === "private")  return !KW.govt.some(k => hay.includes(k));
-  return true;
-}
-function filterJobsByCategory(jobs, cat){
-  if (!cat || !JOB_CATS[cat]) return jobs;
-  return (jobs || []).filter(j => jobMatches(j, cat));
-}
-function highlightActiveChip(cat){
-  document.querySelectorAll(".chipbar .chip").forEach(a => {
-    const isActive = a.getAttribute("href").includes(`cat=${cat}`);
-    a.classList.toggle("active", !!cat && isActive);
-  });
-  const title = document.getElementById("jobs-title");
-  if (title && JOB_CATS[cat]) title.textContent = `💼 ${JOB_CATS[cat].label} Jobs`;
-}
-
-/* ========= AI-style Enhancer (no API) ========= */
-const WB_PLACES = ["Kolkata","Howrah","Asansol","Durgapur","Siliguri","Haldia","Kharagpur","Burdwan","Jalpaiguri","Malda","Bankura","Purulia","Hooghly","Nadia","Birbhum","Murshidabad","Darjeeling","Cooch Behar","Alipurduar","North 24 Parganas","South 24 Parganas","Paschim Medinipur","Purba Medinipur","Kalimpong","Bidhannagar","Salt Lake","New Town","Barrackpore","Serampore","Kalyani"];
-function words(s){ return (s||"").trim().split(/\s+/).filter(Boolean); }
-function readingTime(text){ return Math.max(1, Math.round(words(text).length / 180)); }
-function extractSalary(text){
-  const m = (text||"").match(/₹\s?([\d,]+)\s?[-–to]+\s?₹?\s?([\d,]+)/i) || (text||"").match(/salary[^₹]*₹\s?([\d,]+)/i);
-  if(!m) return "";
-  return m[2] ? `₹${m[1]} – ₹${m[2]}` : `₹${m[1]}`;
-}
-function extractLastDate(text){
-  const m = (text||"").match(/last date(?: to apply)?[:\s]*([0-9]{1,2}[-\/\s][A-Za-z]{3,9}|[0-9]{1,2}[-\/][0-9]{1,2}[-\/][0-9]{2,4})/i);
-  return m ? m[1] : "";
-}
-function extractDates(text){
-  const dates = [];
-  (text||"").replace(/(\b\d{1,2}\s?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s?\d{2,4})/ig,(a)=>{dates.push(a);return a;});
-  (text||"").replace(/(\b\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})/g,(a)=>{dates.push(a);return a;});
-  return Array.from(new Set(dates)).slice(0,6);
-}
-function extractLocation(text){
-  const hay=(text||"").toLowerCase();
-  const hits = WB_PLACES.filter(p=>hay.includes(p.toLowerCase()));
-  return hits.slice(0,4).join(", ");
-}
-function bulletsFromText(text){
-  const lines = (text||"").split(/[\n•\-–]+/).map(s=>s.trim()).filter(s=>s.length>40&&s.length<220).slice(0,6);
-  return lines.length? lines : [];
-}
-function mkFactsTable(facts){
-  const rows = Object.entries(facts).filter(([,v])=>v).map(([k,v])=>`<tr><td><strong>${k}</strong></td><td>${safe(String(v))}</td></tr>`).join("");
-  return `<table>${rows||'<tr><td>No key facts detected</td></tr>'}</table>`;
-}
-function mkList(items){ return items.length? `<ul>${items.map(i=>`<li>${safe(i)}</li>`).join("")}</ul>` : "<p>—</p>"; }
-function buildEnhanced(post){
-  const sumSrc = post.description || post.title || "";
-  const rt = readingTime(sumSrc);
-  const salary = extractSalary(sumSrc);
-  const lastDate = extractLastDate(sumSrc);
-  const dates = extractDates(sumSrc);
-  const place = extractLocation(sumSrc + " " + post.title);
-  const facts = {
-    "Category": post.category || "Post",
-    "Source": post.source || "",
-    "Location": place || "West Bengal (as per description)",
-    "Posted": formatDate(post.pubDate),
-    "Last Date": lastDate || (dates[0]||""),
-    "Salary (approx.)": salary || "",
-  };
-  return {
-    summaryHTML: `<p><span class="badge-pill">${rt} min read</span> ${safe(post.title||"")}</p><p>${safe((post.description||"").slice(0,600))}${(post.description||"").length>600?"…":""}</p>`,
-    factsHTML: mkFactsTable(facts),
-    applyHTML: mkList([
-      "Open the official link (Apply / Source above).",
-      "Read the eligibility & instructions carefully.",
-      "Keep documents ready (ID, photo, signature, certificates).",
-      "Complete the form and double-check details.",
-      "Pay the fee (if applicable) and submit.",
-      "Download/print the acknowledgement."
-    ]),
-    faqsHTML: mkList([
-      "Who can apply? – See eligibility in the notification.",
-      `What is the last date? – ${lastDate || "Mentioned in the official notice"}.`,
-      `Where is the job located? – ${place || "West Bengal / specified in notice"}.`,
-      "How will I be selected? – As per official selection process (exam/interview).",
-      "Is this Govt or Private? – Based on the source & description."
-    ]),
-    tipsHTML: mkList([
-      "Match your resume keywords to the role.",
-      "Apply early; don’t wait for the last day.",
-      "Use an active email & phone number.",
-      "Prepare scanned copies within size limits.",
-      "Save a PDF copy of the application."
-    ])
+/* Theme toggle */
+function initTheme(){
+  const btn=document.getElementById("themeToggle");
+  const root=document.documentElement;
+  let mode=localStorage.getItem("theme")||"light";
+  root.dataset.theme=mode;
+  btn.textContent=mode==="light"?"🌙 Dark":"☀️ Light";
+  btn.onclick=()=>{
+    mode=mode==="light"?"dark":"light";
+    root.dataset.theme=mode;
+    localStorage.setItem("theme",mode);
+    btn.textContent=mode==="light"?"🌙 Dark":"☀️ Light";
   };
 }
 
-/* ========= Save clicked item ========= */
-document.addEventListener("click", (e) => {
-  const a = e.target.closest("a.post-link");
-  if (!a) return;
-  const id = a.getAttribute("data-id");
-  const from = a.getAttribute("data-from") || "Post";
-  try {
-    const allPosts = (window.__CACHE_ALL_POSTS || []);
-    const hit = allPosts.find(p => String(p.id) === String(id));
-    if (hit) {
-      sessionStorage.setItem("lastPost", JSON.stringify(hit));
-      sessionStorage.setItem("lastPostFrom", from);
-    }
-  } catch(_) {}
-});
+/* Mobile nav */
+function initNav(){
+  const btn=document.getElementById("navToggle");
+  const nav=document.getElementById("mainNav");
+  if(!btn||!nav) return;
+  btn.onclick=()=>{
+    const expanded=btn.getAttribute("aria-expanded")==="true";
+    btn.setAttribute("aria-expanded",String(!expanded));
+    nav.style.display=expanded?"none":"block";
+  };
+}
 
-/* ========= Boot ========= */
+/* Placeholder fetch function (replace with real Netlify function) */
+async function fetchFeeds(){ return {jobs:[],news:[],exams:[]} }
+
+/* Render cards */
+function createCard(item, from="jobs"){
+  const img=item.image||"assets/dummy-photo.svg";
+  return `<div class="card">
+    <a href="post.html?id=${encodeURIComponent(item.id)}&from=${encodeURIComponent(from)}" class="post-link" data-id="${safe(item.id)}" data-from="${safe(from)}">
+      <img src="${img}" alt="${safe(item.title)}" class="thumb" loading="lazy"/>
+      <div class="card-body"><h3>${safe(item.title)}</h3><p>${safe(item.snippet||"")}</p></div>
+    </a>
+  </div>`;
+}
+
+/* Init */
 (async function init(){
-  const homeJobs   = document.getElementById("home-latest-jobs");
-  const homeNews   = document.getElementById("home-latest-news");
-  const homeExams  = document.getElementById("home-latest-exams");
-  const allJobsEl  = document.getElementById("all-jobs");
-  const allNews    = document.getElementById("all-news");
-  const allExams   = document.getElementById("all-exams");
-  const trendingEl = document.getElementById("trendingList");
-  const notifBar   = document.getElementById("notifications-scroll");
-  const postBody   = document.getElementById("postBody");
+  initTheme(); initNav(); incrementVisits();
 
-  let all = { jobs: [], news: [], exams: [], trending: [] }, wbJobs=[];
-  try { [all, wbJobs] = await Promise.all([ loadAll(), loadWBJobsOnly() ]); }
-  catch(e){ console.warn("Function fetch failed. Lists may be empty.", e); }
+  const all=await fetchFeeds(); // {jobs, news, exams}
 
-  // Cache globally
-  window.__CACHE_ALL_POSTS = [ ...(wbJobs||[]), ...(all.jobs||[]), ...(all.news||[]), ...(all.exams||[]) ];
+  // Breaking News
+  mountBreakingTicker("breaking",(all.news||[]).slice(0,20),"news");
 
-  // Home sections (latest 6)
-  if (homeJobs)  renderList("home-latest-jobs",  wbJobs,    6);
-  if (homeNews)  renderList("home-latest-news",  all.news,  6);
-  if (homeExams) renderList("home-latest-exams", all.exams, 6);
+  // Render home
+  if(document.getElementById("home-latest-jobs"))
+    document.getElementById("home-latest-jobs").innerHTML=(all.jobs||[]).slice(0,6).map(x=>createCard(x,"jobs")).join("");
+  if(document.getElementById("home-latest-news"))
+    document.getElementById("home-latest-news").innerHTML=(all.news||[]).slice(0,6).map(x=>createCard(x,"news")).join("");
+  if(document.getElementById("home-latest-exams"))
+    document.getElementById("home-latest-exams").innerHTML=(all.exams||[]).slice(0,6).map(x=>createCard(x,"exams")).join("");
 
-  // Inject rotators under each H2 on Home
-  const home = document.querySelector(".main-column");
-  if (home){
-    const h2s = home.querySelectorAll("h2");
-    if (h2s[0]) { injectRotator(h2s[0], "rotator-home-jobs");    mountHeadlineRotator("rotator-home-jobs", wbJobs, "jobs", 2500); }
-    if (h2s[1]) { injectRotator(h2s[1], "rotator-home-news");    mountHeadlineRotator("rotator-home-news", all.news, "news", 2500); }
-    if (h2s[2]) { injectRotator(h2s[2], "rotator-home-exams");   mountHeadlineRotator("rotator-home-exams", all.exams, "exams", 2500); }
-  }
+  // Jobs/News/Exams/Trending pages
+  if(document.getElementById("all-jobs"))
+    document.getElementById("all-jobs").innerHTML=(all.jobs||[]).map(x=>createCard(x,"jobs")).join("");
+  if(document.getElementById("all-news"))
+    document.getElementById("all-news").innerHTML=(all.news||[]).map(x=>createCard(x,"news")).join("");
+  if(document.getElementById("all-exams"))
+    document.getElementById("all-exams").innerHTML=(all.exams||[]).map(x=>createCard(x,"exams")).join("");
+  if(document.getElementById("trendingList"))
+    document.getElementById("trendingList").innerHTML=[...(all.jobs||[]).slice(0,5),...(all.news||[]).slice(0,5)]
+      .map(x=>createCard(x,"jobs")).join("");
 
-  // Jobs page with ?cat=
-  if (allJobsEl){
-    const params = new URLSearchParams(location.search);
-    const cat = params.get("cat") || "";
-    highlightActiveChip(cat);
-    const list = filterJobsByCategory(wbJobs, cat);
-    const title = document.getElementById("jobs-title");
-    if (title){ injectRotator(title, "rotator-jobs"); mountHeadlineRotator("rotator-jobs", list.length?list:wbJobs, "jobs", 2500); }
-    renderList("all-jobs", list);
-  }
-
-  // Other list pages + rotators
-  if (allNews){
-    const h2 = document.querySelector("main h2");
-    if (h2){ injectRotator(h2, "rotator-news"); mountHeadlineRotator("rotator-news", all.news, "news", 2500); }
-    renderList("all-news",  all.news);
-  }
-  if (allExams){
-    const h2 = document.querySelector("main h2");
-    if (h2){ injectRotator(h2, "rotator-exams"); mountHeadlineRotator("rotator-exams", all.exams, "exams", 2800); }
-    renderList("all-exams", all.exams);
-  }
-  if (trendingEl){
-    const h2 = document.querySelector("main h2");
-    if (h2){ injectRotator(h2, "rotator-trending"); mountHeadlineRotator("rotator-trending", (all.trending||[]), "post", 2300); }
-    renderList("trendingList", all.trending);
-  }
-
-  // Sidebar auto-scrollers
-  mountAutoScroll("notificationsList", all.news, "news");
-  mountAutoScroll("announcementsList", wbJobs,   "jobs");
-  const othersMix = [...(all.news||[]).slice(6,16), ...(wbJobs||[]).slice(6,16)];
-  mountAutoScroll("othersList", othersMix, "home");
-
-  // Top horizontal ticker
-  if (notifBar){
-    const heads = [...(wbJobs||[]).slice(0,10), ...(all.news||[]).slice(0,10)];
-    notifBar.innerHTML = heads.length
-      ? heads.map(h => `<span>🔔 ${safe(h.title)}</span>`).join(" • ")
-      : `<span>🔔 Welcome to JobPulse Kolkata — live WB jobs & news</span>`;
-    let x = 0;
-    setInterval(() => {
-      x += 2;
-      notifBar.scrollLeft = x;
-      if (x >= notifBar.scrollWidth - notifBar.clientWidth) x = 0;
-    }, 50);
-  }
-
-  // ====== Post page hydrate ======
-  if (postBody){
-    const params = new URLSearchParams(location.search);
-    const rawId  = params.get("id") || "";
-    const id     = decodeURIComponent(rawId);
-
-    // 1) sessionStorage
-    try {
-      const cached = JSON.parse(sessionStorage.getItem("lastPost") || "null");
-      if (cached && String(cached.id) === String(id)) { return renderPost(cached); }
-    } catch(_) {}
-
-    // 2) current memory
-    let hit = window.__CACHE_ALL_POSTS.find(p => String(p.id)===String(id));
-    if (hit) return renderPost(hit);
-
-    // 3) fallback
-    try {
-      const all2 = await loadAll();
-      hit = [ ...(all2.jobs||[]), ...(all2.news||[]), ...(all2.exams||[]) ].find(p => String(p.id)===String(id));
-      if (hit) return renderPost(hit);
-    } catch(_) {}
-
-    postBody.innerHTML = `<p class="muted">Sorry, this article could not be loaded. Please go back and try again.</p>`;
-  }
-
-  function renderPost(hit){
-    const badge = document.getElementById("postBadge");
-    if (badge) badge.textContent = hit.category || "Post";
-    const titleEl = document.getElementById("postTitle");
-    if (titleEl) titleEl.innerHTML = `${isNew(hit) ? '<span class="badge-new">NEW 🔥</span> ' : ''}${safe(hit.title || "Untitled")}`;
-    const metaEl = document.getElementById("postMeta");
-    if (metaEl) metaEl.textContent = `${formatDate(hit.pubDate)} • ${hit.source || ""}`;
-
-    const imgEl = document.getElementById("postImage");
-    if (imgEl) imgEl.src = hit.thumbnail || coverSVG(hit.title);
-
-    const body = document.getElementById("postBody");
-    if (body) body.innerHTML = safe(hit.description || "");
-
-    const src = document.getElementById("postSource"); if (src)   src.href   = hit.link || "#";
-    const apply = document.getElementById("applyBtn"); if (apply) apply.href = hit.link || "#";
-
-    // Enhanced sections
-    const enh = buildEnhanced(hit);
-    const wrapper = document.getElementById("aiEnhanced");
-    if (wrapper){
-      document.getElementById("aiSummary").innerHTML = enh.summaryHTML;
-      document.getElementById("aiFacts").innerHTML   = enh.factsHTML;
-      document.getElementById("aiApply").innerHTML   = enh.applyHTML;
-      document.getElementById("aiFaqs").innerHTML    = enh.faqsHTML;
-      document.getElementById("aiTips").innerHTML    = enh.tipsHTML;
-      wrapper.hidden = false;
+  // Post page handling
+  const params=new URLSearchParams(location.search);
+  const pid=params.get("id"); const from=params.get("from");
+  if(pid&&document.getElementById("postTitle")){
+    const item=[...(all.jobs||[]),...(all.news||[]),...(all.exams||[])].find(x=>x.id==pid);
+    if(item){
+      document.getElementById("postTitle").textContent=item.title;
+      document.getElementById("postImage").src=item.image||"assets/dummy-photo.svg";
+      document.getElementById("postBody").innerHTML=item.content||item.snippet||"";
+      document.getElementById("postSource").href=item.link||"#";
+      document.getElementById("applyBtn").href=item.link||"#";
     }
-
-    try { sessionStorage.setItem("lastPost", JSON.stringify(hit)); } catch(_) {}
   }
-})();
-// --- Simple consent banner ---
-(() => {
-  if (localStorage.getItem("consentAccepted")) return;
-  const b = document.createElement("div");
-  b.id = "consentBanner";
-  b.innerHTML = `
-    <span>We use cookies for preferences, analytics & ads. By using this site, you accept our <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
-    <button id="consentAccept">Accept</button>
-    <button id="consentManage" onclick="location.href='privacy.html'">Learn more</button>
-  `;
-  document.body.appendChild(b);
-  document.getElementById("consentAccept").onclick = () => {
-    localStorage.setItem("consentAccepted","1");
-    b.remove();
-  };
 })();
