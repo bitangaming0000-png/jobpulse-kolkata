@@ -1,13 +1,8 @@
+// netlify/functions/archive.js
+// Archives WB job/news posts. Safe for Netlify upload (no top-level await).
+
 import { XMLParser } from 'fast-xml-parser';
 import { readFile } from 'fs/promises';
-
-let blobsOk = true;
-let getStore;
-try {
-  ({ getStore } = await import('@netlify/blobs'));
-} catch {
-  blobsOk = false;
-}
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -104,14 +99,25 @@ function ymd(d = new Date()) {
 }
 
 export const handler = async (event) => {
-  // If Blobs isn’t configured, return a friendly 200 instead of an error so your UI fallback works.
+  // Try to load Netlify Blobs inside the handler (no top-level await)
+  let blobsOk = false;
+  let getStoreFn = null;
+  try {
+    const mod = await import('@netlify/blobs');
+    getStoreFn = mod.getStore;
+    blobsOk = typeof getStoreFn === 'function';
+  } catch {
+    blobsOk = false;
+  }
+
+  // If Blobs isn’t available, just return live items (keeps UI working)
   if (!blobsOk) {
     const items = await fetchWBItems();
-    return { statusCode: 200, headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*'}, body: JSON.stringify({ archived: false, items }) };
+    return { statusCode: 200, headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*'}, body: JSON.stringify({ archived: false, items, note: 'Blobs unavailable; returned live items.' }) };
   }
 
   try {
-    const store = getStore('jobpulse-archive');
+    const store = getStoreFn('jobpulse-archive');
     const params = new URLSearchParams(event.rawQuery || '');
 
     if (params.has('list')) {
@@ -126,6 +132,7 @@ export const handler = async (event) => {
       return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ date: params.get('date'), items: json || [] }) };
     }
 
+    // Archive today's items
     const items = await fetchWBItems();
     const key = ymd() + '.json';
     const existing = await store.get(key, { type: 'json' }) || [];
@@ -140,6 +147,8 @@ export const handler = async (event) => {
     const n = Number(params.get('latest') || 50);
     return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ archived: key, latest: merged.slice(0, n) }) };
   } catch (err) {
-    return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ archived: false, items: await fetchWBItems(), note: 'Blobs store unavailable; returned live items instead.' }) };
+    // If anything goes wrong with Blobs, return live items instead of failing the deploy
+    const items = await fetchWBItems();
+    return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ archived: false, items, note: 'Blobs error; returned live items.' }) };
   }
 };
