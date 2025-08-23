@@ -1,20 +1,8 @@
 :root{
-  --bg:#0d0f14;
-  --card:#151924;
-  --text:#e7eaf3;
-  --muted:#9aa3b2;
-  --brand:#7aa2ff;
-  --accent:#5eead4;
-  --border:#232838;
+  --bg:#0d0f14; --card:#151924; --text:#e7eaf3; --muted:#9aa3b2; --brand:#7aa2ff; --accent:#5eead4; --border:#232838;
 }
 :root[data-theme="light"]{
-  --bg:#f7f8fc;
-  --card:#ffffff;
-  --text:#0d0f14;
-  --muted:#4b5563;
-  --brand:#1f4fff;
-  --accent:#0ea5e9;
-  --border:#e5e7eb;
+  --bg:#f7f8fc; --card:#ffffff; --text:#0d0f14; --muted:#4b5563; --brand:#1f4fff; --accent:#0ea5e9; --border:#e5e7eb;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";}
@@ -45,4 +33,30 @@ h2{font-size:18px;margin:0 0 10px 6px;color:var(--muted)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
 .notice{border-left:3px solid var(--accent);padding-left:10px}
 .site-footer{border-top:1px solid var(--border);padding:20px;color:var(--muted);text-align:center}
-.theme-toggle{background:
+.theme-toggle{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 10px;color:var(--text);cursor:pointer}
+.ad-slot{display:block;min-height:120px;border:1px dashed var(--border);border-radius:12px;margin:10px 0;padding:6px;color:var(--muted);text-align:center}
+
+/* --- Compact Live ticker --- */
+.ticker-wrap{
+  position: relative; overflow: hidden;
+  border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+  background: var(--card); margin: 6px 0 12px; border-radius: 10px;
+  min-height: 36px;
+}
+.ticker-head{
+  position:absolute; left:8px; top:6px;
+  font-size:11px; line-height:20px; color:var(--muted);
+  background:#0e1628; border:1px solid var(--border);
+  padding:0 8px; border-radius:999px;
+}
+:root[data-theme="light"] .ticker-head{background:#eef2ff;color:#334155}
+.ticker{
+  white-space: nowrap; display:flex; align-items:center;
+  gap:16px; padding:10px 10px 10px 80px;
+  font-size:13px; line-height:1.2;
+}
+.ticker a{color: var(--text); text-decoration:none; border-bottom:1px dashed var(--border); padding-bottom:1px}
+.ticker .bullet{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin:0 6px}
+.ticker-track{display:inline-block;will-change:transform;animation:ticker-scroll 38s linear infinite}
+@keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@media (prefers-reduced-motion: reduce){.ticker-track{animation:none}}
