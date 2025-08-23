@@ -51,14 +51,15 @@ async function mountShell(){
     }
   } catch(e){}
 
-  // Theme toggle
+  // Theme toggle (works with theme-boot)
   const themeKey = 'jp-theme';
   const root = document.documentElement;
   function applyTheme(t){ root.setAttribute('data-theme', t); }
-  applyTheme(localStorage.getItem(themeKey) || 'dark');
+  // DO NOT set default here; theme-boot.js already did it
   document.getElementById('themeToggle').addEventListener('click',()=>{
     const t = (root.getAttribute('data-theme')==='dark')?'light':'dark';
-    localStorage.setItem(themeKey, t); applyTheme(t);
+    localStorage.setItem(themeKey, t);
+    applyTheme(t);
   });
 
   // Hamburger nav (hover + click + outside/esc)
@@ -104,7 +105,8 @@ function cardForPost(p){
   const c = el('article','card');
   const date = p.pubDate ? new Date(p.pubDate) : null;
   c.innerHTML = `
-    <div class="meta"><span class="badge">${date? new Intl.DateTimeFormat('en-IN',{dateStyle:'medium'}).format(date):'New'}</span></div>
+    <div class="meta"><span class="badge">${date? new Intl.DateTimeFormat('en-IN',{dateStyle:'medium'}).format(date):'New'}</span>
+    <span class="badge">WB Only</span></div>
     <h3><a href="/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description)}&date=${encodeURIComponent(p.pubDate||'')}" target="_self">${p.title}</a></h3>
     <p>${truncate(p.description, 160)}</p>
     <a class="badge" href="${safeURL(p.link)}" target="_blank" rel="noopener">Source ↗</a>
@@ -113,7 +115,7 @@ function cardForPost(p){
 }
 
 // --- West Bengal-only filter ---
-const WB_FILTER = new RegExp("\\b(West Bengal|WB|Kolkata|Howrah|Siliguri|Durgapur|Kharagpur|Haldia)\\b","i");
+const WB_FILTER = new RegExp("\\b(West Bengal|WB|Kolkata|Howrah|Hooghly|Nadia|Siliguri|Durgapur|Kharagpur|Haldia|Medinipur|Bardhaman|Burdwan)\\b","i");
 function isWestBengalItem(item) {
   const fields = [item.title, item.description, item.link].filter(Boolean).join(" ");
   return WB_FILTER.test(fields);
