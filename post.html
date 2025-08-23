@@ -1,18 +1,16 @@
 <!doctype html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Post Details – JobPulse Kolkata</title>
-  <link rel="stylesheet" href="styles.css"/>
-  <!-- AdSense loader -->
+  <link rel="stylesheet" href="styles.css"/><link rel="icon" href="assets/dummy-photo.svg" type="image/svg+xml">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 </head>
 <body>
 <header>
   <div class="container header-bar">
     <a class="brand" href="index.html">JobPulse Kolkata</a>
-    <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+    <button id="navToggle" class="nav-toggle" aria-expanded="false">☰</button>
     <nav class="main-nav" id="mainNav">
       <ul class="nav-list">
         <li><a href="jobs.html">💼 Jobs</a></li>
@@ -24,35 +22,22 @@
     <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
   </div>
 </header>
-
 <div class="visitor-counter">👥 Total Visits: <span id="visitCount">0</span></div>
-
 <main class="container post-page">
   <article class="post-detail">
     <a href="index.html">⬅ Back to Home</a>
     <h1 id="postTitle">Loading…</h1>
     <div class="meta-line"><span id="postBadge" class="badge">Post</span> <span id="postMeta"></span></div>
-    <img id="postImage" class="post-image" src="assets/dummy-photo.svg" alt="Post image"/>
+    <img id="postImage" class="post-image" src="assets/dummy-photo.svg" alt="Post image" loading="lazy"/>
 
-    <!-- Post body where inline ads will be inserted -->
     <div id="postBody" class="post-body"></div>
 
-    <!-- ✨ AI-style enhanced article -->
     <section id="aiEnhanced" class="enhanced-box" hidden>
-      <h2>✨ Smart Summary</h2>
-      <div id="aiSummary"></div>
-
-      <h3>📌 Key Facts</h3>
-      <div id="aiFacts"></div>
-
-      <h3>📝 Step-by-Step: How to Apply</h3>
-      <div id="aiApply"></div>
-
-      <h3>❓ FAQs</h3>
-      <div id="aiFaqs"></div>
-
-      <h3>💡 Tips to Increase Your Chances</h3>
-      <div id="aiTips"></div>
+      <h2>✨ Smart Summary</h2><div id="aiSummary"></div>
+      <h3>📌 Key Facts</h3><div id="aiFacts"></div>
+      <h3>📝 Step-by-Step: How to Apply</h3><div id="aiApply"></div>
+      <h3>❓ FAQs</h3><div id="aiFaqs"></div>
+      <h3>💡 Tips to Increase Your Chances</h3><div id="aiTips"></div>
     </section>
 
     <p style="margin-top:12px;">
@@ -60,47 +45,42 @@
       <a id="postSource" href="#" target="_blank" rel="noopener">🔗 Source</a>
     </p>
 
-    <!-- Multiplex under article -->
-    <ins class="adsbygoogle" style="display:block"
-         data-ad-format="autorelaxed"
-         data-ad-client="ca-pub-5732778753912461"
-         data-ad-slot="7381264518"></ins>
-    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    <div class="ad-slot ad-multiplex">
+      <ins class="adsbygoogle" style="display:block"
+           data-ad-format="autorelaxed"
+           data-ad-client="ca-pub-5732778753912461"
+           data-ad-slot="7381264518"></ins>
+    </div><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 
-    <!-- Bottom Display -->
-    <ins class="adsbygoogle" style="display:block"
-         data-ad-client="ca-pub-5732778753912461"
-         data-ad-slot="2400432399" data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    <div class="ad-slot ad-top">
+      <ins class="adsbygoogle" style="display:block"
+           data-ad-client="ca-pub-5732778753912461"
+           data-ad-slot="2400432399" data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+    </div><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
   </article>
 </main>
-
 <footer><p>© <span id="year"></span> JobPulse Kolkata – All rights reserved</p></footer>
-
 <script src="js/app.js"></script>
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
-
-  // Insert In-article ads after every 2 paragraphs inside post body
+  // Insert in-article ads after some paragraphs
   document.addEventListener("DOMContentLoaded", () => {
     const bodyEl = document.getElementById("postBody");
     if (!bodyEl) return;
-
-    setTimeout(() => { // wait for app.js to fill content
+    setTimeout(() => {
       const paras = Array.from(bodyEl.querySelectorAll("p"));
       paras.forEach((p, i) => {
         if ((i + 1) % 2 === 0) {
           const adWrap = document.createElement("div");
-          adWrap.className = "ad-inline-wrap";
+          adWrap.className = "ad-slot ad-inarticle";
           adWrap.innerHTML = `
             <ins class="adsbygoogle"
                  style="display:block; text-align:center;"
                  data-ad-layout="in-article"
                  data-ad-format="fluid"
                  data-ad-client="ca-pub-5732778753912461"
-                 data-ad-slot="2400400574"></ins>
-          `;
+                 data-ad-slot="2400400574"></ins>`;
           p.insertAdjacentElement("afterend", adWrap);
           try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
         }
@@ -108,5 +88,4 @@
     }, 500);
   });
 </script>
-</body>
-</html>
+</body></html>
