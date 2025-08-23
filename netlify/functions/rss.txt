@@ -1,4 +1,5 @@
 import { XMLParser } from 'fast-xml-parser';
+import { readFile } from 'fs/promises';
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -9,12 +10,13 @@ const parser = new XMLParser({
 
 function rewriteText(text) {
   if (!text) return '';
-  let t = text.replace(/\s+/g, ' ').trim();
+  const t = text.replace(/\s+/g, ' ').trim();
   return t.length > 220 ? t.slice(0, 220) + '...' : t;
 }
 
 function normalizeFeed(json, sourceUrl) {
   const items = [];
+  // RSS 2.0
   if (json.rss && json.rss.channel) {
     const ch = json.rss.channel;
     const arr = Array.isArray(ch.item) ? ch.item : (ch.item ? [ch.item] : []);
@@ -28,10 +30,13 @@ function normalizeFeed(json, sourceUrl) {
       });
     }
   }
+  // Atom
   if (json.feed && json.feed.entry) {
     const arr = Array.isArray(json.feed.entry) ? json.feed.entry : [json.feed.entry];
     for (const it of arr) {
-      const link = Array.isArray(it.link) ? (it.link.find(l => l['@_rel'] === 'alternate')?.['@_href'] || it.link[0]['@_href']) : (it.link?.['@_href'] || '');
+      const link = Array.isArray(it.link)
+        ? (it.link.find(l => l['@_rel'] === 'alternate')?.['@_href'] || it.link[0]['@_href'])
+        : (it.link?.['@_href'] || '');
       items.push({
         title: it.title?._text || it.title || '',
         link,
@@ -51,10 +56,12 @@ function includesAny(haystack, needles) {
 
 export const handler = async () => {
   try {
-    const feedsResp = await import('../../data/feeds.json', { assert: { type: 'json' } });
-    const raw = feedsResp.default;
-    const FEEDS = Array.isArray(raw) ? raw : (raw.sources || []);
-    const KEYWORDS = (Array.isArray(raw) ? [] : (raw.filter_keywords_any || []))
+    // Read feeds.json via filesystem (works in Netlify Functions without import assertions)
+    const feedsPath = new URL('../../data/feeds.json', import.meta.url);
+    const rawText = await readFile(feedsPath, 'utf8');
+    const cfg = JSON.parse(rawText);
+    const FEEDS = Array.isArray(cfg) ? cfg : (cfg.sources || []);
+    const KEYWORDS = (Array.isArray(cfg) ? [] : (cfg.filter_keywords_any || []))
       .concat(['West Bengal','WB','Kolkata','Howrah','Hooghly','Hugli','Nadia','North 24 Parganas','South 24 Parganas','Darjeeling','Jalpaiguri','Alipurduar','Cooch Behar','Malda','Murshidabad','Bankura','Birbhum','Purulia','Paschim Medinipur','Purba Medinipur','Jhargram','Asansol','Durgapur','Siliguri','Kharagpur','Haldia','Bardhaman','Burdwan']);
 
     const fetches = FEEDS.map(async s => {
@@ -69,9 +76,11 @@ export const handler = async () => {
         const xml = await resp.text();
         const json = parser.parse(xml);
         let items = normalizeFeed(json, s.url);
+        // attach category
         items = items.map(it => ({ ...it, category: s.category || 'news' }));
-        items = items.filter(it => includesAny(it.title + ' ' + it.description, KEYWORDS));
-        items = items.map(it => ({ ...it, description: rewriteText(it.description) }));
+        // WB filter + rewrite
+        items = items.filter(it => includesAny(it.title + ' ' + it.description, KEYWORDS))
+                     .map(it => ({ ...it, description: rewriteText(it.description) }));
         return items;
       } catch (e) {
         console.error('Feed error', s.url, e.message);
@@ -81,6 +90,7 @@ export const handler = async () => {
 
     const results = (await Promise.all(fetches)).flat();
 
+    // de-dupe + sort
     const seen = new Set();
     const deduped = [];
     for (const it of results) {
