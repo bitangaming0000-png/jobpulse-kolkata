@@ -408,3 +408,19 @@ document.addEventListener("click", (e) => {
     try { sessionStorage.setItem("lastPost", JSON.stringify(hit)); } catch(_) {}
   }
 })();
+// --- Simple consent banner ---
+(() => {
+  if (localStorage.getItem("consentAccepted")) return;
+  const b = document.createElement("div");
+  b.id = "consentBanner";
+  b.innerHTML = `
+    <span>We use cookies for preferences, analytics & ads. By using this site, you accept our <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+    <button id="consentAccept">Accept</button>
+    <button id="consentManage" onclick="location.href='privacy.html'">Learn more</button>
+  `;
+  document.body.appendChild(b);
+  document.getElementById("consentAccept").onclick = () => {
+    localStorage.setItem("consentAccepted","1");
+    b.remove();
+  };
+})();
