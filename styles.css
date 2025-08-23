@@ -1,4 +1,14 @@
 :root {
+  /* LIGHT (default) */
+  --bg: #f7f8fb;
+  --surface: #ffffff;
+  --text: #0b1220;
+  --muted: #4b5563;
+  --accent: #0ea5e9;
+  --border: #e5e7eb;
+}
+html[data-theme="dark"]{
+  /* DARK */
   --bg: #0b0f14;
   --surface: #111827;
   --text: #e5e7eb;
@@ -61,7 +71,8 @@ footer a{color:var(--accent);text-decoration:none}
 .badge{background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-size:.75rem}
 
 /* Enhanced AI box */
-.enhanced-box{margin-top:20px;background:rgba(96,165,250,.1);padding:12px;border-radius:10px;border-left:4px solid var(--accent)}
+.enhanced-box{margin-top:20px;background:rgba(14,165,233,.12);padding:12px;border-radius:10px;border-left:4px solid var(--accent)}
+html[data-theme="dark"] .enhanced-box{background:rgba(96,165,250,.1)}
 
 /* Contact form */
 .contact-form{display:flex;flex-direction:column;gap:12px}
@@ -73,21 +84,9 @@ footer a{color:var(--accent);text-decoration:none}
 @media(max-width:600px){.main-nav{display:none}.nav-toggle{display:block}}
 
 /* === Breaking News – horizontal ticker === */
-.breaking-ticker{
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  overflow: hidden;
-  white-space: nowrap;
-  padding: 8px 0;
-}
-.breaking-ticker .inner{
-  display: inline-block;
-  white-space: nowrap;
-  will-change: transform;
-  animation: tickerScroll 38s linear infinite;
-}
-.breaking-ticker:hover .inner{ animation-play-state: paused; }
+.breaking-ticker{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;white-space:nowrap;padding:8px 0}
+.breaking-ticker .inner{display:inline-block;white-space:nowrap;will-change:transform;animation:tickerScroll 38s linear infinite}
+.breaking-ticker:hover .inner{animation-play-state:paused}
 .breaking-item{display:inline-flex;align-items:center;gap:8px;margin-right:28px;padding:0 4px}
 .breaking-item a{text-decoration:none;color:var(--text);font-weight:700}
 .breaking-item a:hover{text-decoration:underline}
