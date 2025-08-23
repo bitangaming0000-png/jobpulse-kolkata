@@ -1,9 +1,8 @@
 // netlify/functions/archive.js (CommonJS)
-// Archives WB posts. Uses Netlify Blobs if available; otherwise returns live items.
-
 const { XMLParser } = require('fast-xml-parser');
 const { readFile } = require('fs/promises');
 const path = require('path');
+const fs = require('fs');
 const fetch = global.fetch;
 
 const parser = new XMLParser({
@@ -58,10 +57,18 @@ function includesAny(haystack, needles) {
 }
 
 async function readFeedsConfig() {
-  const root = process.env.LAMBDA_TASK_ROOT || process.cwd();
-  const feedsPath = path.join(root, 'data', 'feeds.json');
-  const raw = await readFile(feedsPath, 'utf8');
-  return JSON.parse(raw);
+  const candidates = [
+    path.join(process.env.LAMBDA_TASK_ROOT || process.cwd(), 'data', 'feeds.json'),
+    path.join(__dirname, '..', '..', 'data', 'feeds.json'),
+    path.resolve(process.cwd(), 'data', 'feeds.json')
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      const raw = await readFile(p, 'utf8');
+      return JSON.parse(raw);
+    }
+  }
+  throw new Error('feeds.json not found. Ensure [functions].included_files=["data/feeds.json"] and the file is committed.');
 }
 
 async function fetchWBItems() {
@@ -139,18 +146,4 @@ module.exports.handler = async (event) => {
     const items = await fetchWBItems();
     const key = ymd() + '.json';
     const existing = await store.get(key, { type: 'json' }) || [];
-    const merged = [...existing];
-    const seen = new Set(existing.map(e => (e.link||'') + '|' + (e.title||'')));
-    for (const it of items) {
-      const k = (it.link||'') + '|' + (it.title||'');
-      if (!seen.has(k)) { seen.add(k); merged.push(it); }
-    }
-    await store.set(key, JSON.stringify(merged), { metadata: { contentType: 'application/json' } });
-
-    const n = Number(params.get('latest') || 50);
-    return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ archived: key, latest: merged.slice(0, n) }) };
-  } catch (err) {
-    const items = await fetchWBItems();
-    return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ archived: false, items, note: 'Blobs error; returned live items.' }) };
-  }
-};
+    const mer
