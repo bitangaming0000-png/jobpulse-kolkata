@@ -60,3 +60,51 @@ a:hover{text-decoration:underline}
 @media (min-width: 900px){
   .card{min-width:330px}
 }
+/* --- Auto-scrolling ticker (notifications) --- */
+.ticker-wrap{
+  position: relative;
+  overflow: hidden;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background: var(--card);
+  margin: 8px 0 16px;
+  border-radius: 10px;
+}
+.ticker-head{
+  position:absolute; left:8px; top:8px;
+  font-size:12px; color:var(--muted);
+  background:#0e1628; border:1px solid var(--border);
+  padding:2px 8px; border-radius:999px;
+}
+.ticker{
+  white-space: nowrap;
+  display:flex; align-items:center;
+  gap:24px; padding:14px 12px 14px 90px; /* space for label */
+}
+.ticker a{
+  color: var(--text);
+  text-decoration: none;
+  border-bottom:1px dashed var(--border);
+  padding-bottom:2px;
+}
+.ticker .bullet{
+  display:inline-block; width:6px; height:6px;
+  border-radius:50%; background:var(--accent);
+  margin:0 8px;
+}
+
+/* seamless scroll */
+.ticker-track{
+  display:inline-block;
+  will-change: transform;
+  animation: ticker-scroll 45s linear infinite;
+}
+@keyframes ticker-scroll{
+  0%{ transform: translateX(0); }
+  100%{ transform: translateX(-50%); }
+}
+
+/* reduce motion */
+@media (prefers-reduced-motion: reduce){
+  .ticker-track{ animation: none; }
+}
