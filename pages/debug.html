@@ -16,12 +16,10 @@
     async function go(){
       const out = document.getElementById('out');
       const arch = document.getElementById('arch');
-      try{
-        const r = await fetch('/api/rss'); out.textContent = JSON.stringify(await r.json(), null, 2);
-      }catch(e){ out.textContent = 'RSS error: '+e.message; }
-      try{
-        const r2 = await fetch('/.netlify/functions/archive?latest=50'); arch.textContent = JSON.stringify(await r2.json(), null, 2);
-      }catch(e){ arch.textContent = 'Archive error: '+e.message; }
+      try{ const r = await fetch('/api/rss'); out.textContent = JSON.stringify(await r.json(), null, 2); }
+      catch(e){ out.textContent = 'RSS error: '+e.message; }
+      try{ const r2 = await fetch('/.netlify/functions/archive?latest=50'); arch.textContent = JSON.stringify(await r2.json(), null, 2); }
+      catch(e){ arch.textContent = 'Archive error: '+e.message; }
     }
     go();
   </script>
