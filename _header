@@ -3,4 +3,4 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Content-Security-Policy: default-src 'self' blob: data: https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net; img-src 'self' data: blob: https://*; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*; frame-src https://*;
+  Content-Security-Policy: default-src 'self' blob: data: https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net; img-src 'self' data: blob: https:; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-src https:;
