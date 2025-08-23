@@ -106,24 +106,29 @@ function isWestBengalItem(item) {
   return WB_FILTER.test(fields);
 }
 
+// Compact live ticker
 function buildTicker(items){
   const wrap = document.getElementById('notify-ticker');
   if(!wrap) return;
   const filtered = items.filter(isWestBengalItem);
   if(!filtered.length){ wrap.outerHTML = '<div class="notice">No new West Bengal updates yet.</div>'; return; }
+
+  const subset = filtered.slice(0,18);
   const track = document.createElement('div'); track.className = 'ticker-track';
+
   const makeRun = () => {
     const span = document.createElement('span'); span.className = 'ticker';
-    filtered.slice(0,40).forEach(p=>{
+    subset.forEach(p=>{
       const bullet = el('span','bullet','');
       const a=document.createElement('a');
       a.href=`/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description)}&date=${encodeURIComponent(p.pubDate||'')}`;
-      a.textContent=p.title; span.appendChild(bullet); span.appendChild(a);
+      a.textContent=p.title;
+      span.appendChild(bullet); span.appendChild(a);
     });
     return span;
   };
   track.appendChild(makeRun()); track.appendChild(makeRun());
-  wrap.appendChild(track);
+  wrap.innerHTML=''; wrap.appendChild(track);
 }
 
 async function loadCategories(){
