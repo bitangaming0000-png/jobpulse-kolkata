@@ -1,128 +1,32 @@
 {
   "sources": [
-    /* ---------- West Bengal Official ---------- */
-    {
-      "name": "PSCWB — Public Service Commission",
-      "url": "https://pscwbapplication.in/feed/",
-      "type": "rss",
-      "category": "govt"
-    },
-    {
-      "name": "WB Health Recruitment Board",
-      "url": "https://www.wbhrb.in/rss",
-      "type": "rss",
-      "category": "health"
-    },
-    {
-      "name": "West Bengal Police",
-      "url": "https://wbpolice.gov.in/writereaddata/rss/Recruitment.xml",
-      "type": "rss",
-      "category": "police"
-    },
-    {
-      "name": "WB Transport Department",
-      "url": "https://transport.wb.gov.in/feed/",
-      "type": "rss",
-      "category": "govt"
-    },
+    { "name": "PSCWB — Public Service Commission", "url": "https://pscwbapplication.in/feed/", "type": "rss", "category": "govt" },
+    { "name": "WB Health Recruitment Board", "url": "https://www.wbhrb.in/rss", "type": "rss", "category": "health" },
+    { "name": "West Bengal Police", "url": "https://wbpolice.gov.in/writereaddata/rss/Recruitment.xml", "type": "rss", "category": "police" },
+    { "name": "WB Transport Department", "url": "https://transport.wb.gov.in/feed/", "type": "rss", "category": "govt" },
 
-    /* ---------- Universities / Institutions ---------- */
-    {
-      "name": "IIT Kharagpur — KGP Chronicle",
-      "url": "https://kgpchronicle.iitkgp.ac.in/feed/",
-      "type": "rss",
-      "category": "education"
-    },
-    {
-      "name": "IIM Calcutta News",
-      "url": "https://www.iimcal.ac.in/rss.xml",
-      "type": "rss",
-      "category": "education"
-    },
-    {
-      "name": "Calcutta University",
-      "url": "https://www.caluniv.ac.in/news/feed.xml",
-      "type": "rss",
-      "category": "education"
-    },
-    {
-      "name": "Jadavpur University",
-      "url": "https://jaduniv.edu.in/rss.xml",
-      "type": "rss",
-      "category": "education"
-    },
-    {
-      "name": "ISI Kolkata Announcements",
-      "url": "https://www.isical.ac.in/~feed/announcements.xml",
-      "type": "rss",
-      "category": "education"
-    },
+    { "name": "IIT Kharagpur — KGP Chronicle", "url": "https://kgpchronicle.iitkgp.ac.in/feed/", "type": "rss", "category": "education" },
+    { "name": "IIM Calcutta News", "url": "https://www.iimcal.ac.in/rss.xml", "type": "rss", "category": "education" },
+    { "name": "Calcutta University", "url": "https://www.caluniv.ac.in/news/feed.xml", "type": "rss", "category": "education" },
+    { "name": "Jadavpur University", "url": "https://jaduniv.edu.in/rss.xml", "type": "rss", "category": "education" },
+    { "name": "ISI Kolkata Announcements", "url": "https://www.isical.ac.in/~feed/announcements.xml", "type": "rss", "category": "education" },
 
-    /* ---------- News Media ---------- */
-    {
-      "name": "Indian Express — Kolkata City",
-      "url": "https://indianexpress.com/section/cities/kolkata/feed/",
-      "type": "rss",
-      "category": "news"
-    },
-    {
-      "name": "Indian Express — Jobs",
-      "url": "https://indianexpress.com/section/jobs/feed/",
-      "type": "rss",
-      "category": "jobs"
-    },
-    {
-      "name": "HT Bangla — Kolkata",
-      "url": "https://bangla.hindustantimes.com/rss/bengal/kolkata",
-      "type": "rss",
-      "category": "news"
-    },
-    {
-      "name": "ABP Ananda — WB",
-      "url": "https://bengali.abplive.com/rss",
-      "type": "rss",
-      "category": "news"
-    },
+    { "name": "Indian Express — Kolkata City", "url": "https://indianexpress.com/section/cities/kolkata/feed/", "type": "rss", "category": "news" },
+    { "name": "Indian Express — Jobs", "url": "https://indianexpress.com/section/jobs/feed/", "type": "rss", "category": "jobs" },
+    { "name": "HT Bangla — Kolkata", "url": "https://bangla.hindustantimes.com/rss/bengal/kolkata", "type": "rss", "category": "news" },
+    { "name": "ABP Ananda — WB", "url": "https://bengali.abplive.com/rss", "type": "rss", "category": "news" },
 
-    /* ---------- Google News Searches ---------- */
-    {
-      "name": "Google News — West Bengal Recruitment",
-      "url": "https://news.google.com/rss/search?q=West+Bengal+recruitment",
-      "type": "rss",
-      "category": "jobs"
-    },
-    {
-      "name": "Google News — Kolkata Jobs",
-      "url": "https://news.google.com/rss/search?q=Kolkata+jobs",
-      "type": "rss",
-      "category": "jobs"
-    },
+    { "name": "Google News — West Bengal Recruitment", "url": "https://news.google.com/rss/search?q=West+Bengal+recruitment", "type": "rss", "category": "jobs" },
+    { "name": "Google News — Kolkata Jobs", "url": "https://news.google.com/rss/search?q=Kolkata+jobs", "type": "rss", "category": "jobs" },
 
-    /* ---------- All-India Fallbacks (filtered to WB via keywords) ---------- */
-    {
-      "name": "Employment News",
-      "url": "https://employmentnews.gov.in/Rss.aspx",
-      "type": "rss",
-      "category": "jobs"
-    },
-    {
-      "name": "Sarkari Result",
-      "url": "https://www.sarkariresult.com/feed/",
-      "type": "rss",
-      "category": "jobs"
-    },
-    {
-      "name": "FreeJobAlert — All India",
-      "url": "https://www.freejobalert.com/feed/",
-      "type": "rss",
-      "category": "jobs"
-    }
+    { "name": "Employment News", "url": "https://employmentnews.gov.in/Rss.aspx", "type": "rss", "category": "jobs" },
+    { "name": "Sarkari Result", "url": "https://www.sarkariresult.com/feed/", "type": "rss", "category": "jobs" },
+    { "name": "FreeJobAlert — All India", "url": "https://www.freejobalert.com/feed/", "type": "rss", "category": "jobs" }
   ],
-
   "filter_keywords_any": [
-    "West Bengal","WB","Kolkata","Howrah","Hooghly","Hugli","Nadia","North 24 Parganas","South 24 Parganas",
-    "Darjeeling","Jalpaiguri","Alipurduar","Cooch Behar","Malda","Murshidabad","Bankura","Birbhum","Purulia",
-    "Paschim Medinipur","Purba Medinipur","Jhargram","Asansol","Durgapur","Siliguri","Kharagpur","Haldia","Bardhaman","Burdwan",
-    "Recruitment","Vacancy","Apply Online","Notification","Admit Card","Result","Walk-in","Apprentice","Contractual"
+    "West Bengal", "WB", "Kolkata", "Howrah", "Hooghly", "Hugli", "Nadia", "North 24 Parganas", "South 24 Parganas",
+    "Darjeeling", "Jalpaiguri", "Alipurduar", "Cooch Behar", "Malda", "Murshidabad", "Bankura", "Birbhum", "Purulia",
+    "Paschim Medinipur", "Purba Medinipur", "Jhargram", "Asansol", "Durgapur", "Siliguri", "Kharagpur", "Haldia", "Bardhaman", "Burdwan",
+    "Recruitment", "Vacancy", "Apply Online", "Notification", "Admit Card", "Result", "Walk-in", "Apprentice", "Contractual"
   ]
 }
