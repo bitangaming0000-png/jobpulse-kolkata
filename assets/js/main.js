@@ -1,6 +1,16 @@
 // assets/js/main.js
 import { formatDateTimeIST, el, truncate, safeURL } from './utils.js';
 
+// ---- Small helper for empty states on sections ----
+function showEmpty(id, msg){
+  const elx = document.getElementById(id);
+  if(elx && !elx.children.length){
+    const p = document.createElement('p');
+    p.className = 'notice'; p.textContent = msg;
+    elx.parentElement.appendChild(p);
+  }
+}
+
 // Mount header & footer
 async function mountShell(){
   const [header, footer] = await Promise.all([
@@ -10,6 +20,7 @@ async function mountShell(){
   document.body.insertAdjacentHTML('afterbegin', header);
   document.body.insertAdjacentHTML('beforeend', footer);
   document.getElementById('year').textContent = new Date().getFullYear();
+
   // ---- AdSense head include (once per page) ----
   try {
     const adsHead = await fetch('/components/ads-head.html').then(r=>r.text());
@@ -32,27 +43,6 @@ async function mountShell(){
       ph.outerHTML = unit;
     }
   } catch(e){}
-
-  // ---- AdSense head include (once per page) ----
-  try {
-    const adsHead = await fetch('/components/ads-head.html').then(r=>r.text());
-    const frag = document.createElement('template');
-    frag.innerHTML = adsHead.trim();
-    // insert only if not already present
-    const hasAdScript = !!document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
-    if(!hasAdScript){
-      document.head.appendChild(frag.content.cloneNode(true));
-    }
-  } catch(e){ /* ignore if not configured */ }
-
-  // ---- Replace ad placeholders with your unit ----
-  try {
-    const unit = await fetch('/components/ads-unit.html').then(r=>r.text());
-    document.querySelectorAll('.ad-slot').forEach(ph => {
-      ph.outerHTML = unit;
-    });
-  } catch(e){ /* ignore if not configured */ }
-
 
   // Theme toggle
   const themeKey = 'jp-theme';
@@ -91,10 +81,12 @@ async function mountShell(){
 
 async function getRSS(){
   const url = '/api/rss';
-  const r = await fetch(url);
-  if(!r.ok) throw new Error('RSS API failed');
-  const j = await r.json();
-  return j.items || [];
+  try{
+    const r = await fetch(url);
+    if(!r.ok) throw new Error('RSS API failed');
+    const j = await r.json();
+    return j.items || [];
+  }catch(e){ console.error(e); return []; }
 }
 
 function cardForPost(p){
@@ -110,6 +102,64 @@ function cardForPost(p){
   return c;
 }
 
+// --- West Bengal-only filter (frontend safety net) ---
+const WB_FILTER = new RegExp(
+  "\\b(West Bengal|WB|Kolkata|Howrah|Hooghly|Hugli|Nadia|North 24 Parganas|South 24 Parganas|Darjeeling|Jalpaiguri|Alipurduar|Cooch Behar|Malda|Murshidabad|Bankura|Birbhum|Purulia|Paschim Medinipur|Purba Medinipur|Jhargram|Asansol|Durgapur|Siliguri|Kharagpur|Haldia)\\b",
+  "i"
+);
+function isWestBengalItem(item) {
+  const fields = [item.title, item.description, item.link].filter(Boolean).join(" ");
+  return WB_FILTER.test(fields);
+}
+
+// Build the auto-scrolling ticker (latest items)
+function buildTicker(items){
+  const wrap = document.getElementById('notify-ticker');
+  if(!wrap) return;
+
+  const filtered = items.filter(isWestBengalItem);
+  if(!filtered.length){
+    wrap.outerHTML = '<div class="notice" style="margin:10px;">No new West Bengal updates yet.</div>';
+    return;
+  }
+  const track = document.createElement('div');
+  track.className = 'ticker-track';
+
+  // Build two copies back-to-back for seamless loop
+  const makeRun = () => {
+    const span = document.createElement('span');
+    span.className = 'ticker';
+    filtered.slice(0, 40).forEach((p, i) => {
+      const bullet = el('span','bullet','');
+      const a = document.createElement('a');
+      a.href = `/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description)}&date=${encodeURIComponent(p.pubDate||'')}`;
+      a.textContent = p.title;
+      span.appendChild(bullet);
+      span.appendChild(a);
+    });
+    return span;
+  };
+  track.appendChild(makeRun());
+  track.appendChild(makeRun());
+  wrap.appendChild(track);
+}
+
+async function loadCategories(){
+  try{
+    const res = await fetch('/data/feeds.json');
+    const cfg = await res.json();
+    const feeds = Array.isArray(cfg) ? cfg : (cfg.sources||[]);
+    const cats = [...new Set(feeds.map(f=>f.category||'news'))];
+    const wrap = document.getElementById('categories');
+    if(!wrap) return;
+    cats.forEach(c => {
+      const chip = el('a','badge', c.charAt(0).toUpperCase()+c.slice(1));
+      chip.href = '/pages/category.html?name=' + encodeURIComponent(c);
+      wrap.appendChild(chip);
+    });
+  }catch(e){ /* ignore */ }
+}
+
 async function mountHome(){
   const top = document.getElementById('top-scroll');
   const notices = document.getElementById('notices');
@@ -117,14 +167,19 @@ async function mountHome(){
 
   const items = await getRSS();
 
+  // Ticker build (auto-scroll)
+  buildTicker(items);
+
   // Top horizontal scroller (latest 10)
   items.slice(0,10).forEach(p => top.appendChild(cardForPost(p)));
+  if(!top.children.length) showEmpty('top-scroll','No West Bengal posts found yet.');
 
   // Notifications (items that contain "Admit", "Call Letter", "Result")
   const notif = items.filter(p => /admit|call letter|result/i.test(p.title + ' ' + p.description)).slice(0,8);
   notif.forEach(p => notices.appendChild(cardForPost(p)));
+  if(!notif.length) showEmpty('notices','No notifications right now.');
 
-  // Trending (most repeated host)
+  // Trending (by host popularity)
   const byHost = {};
   for(const it of items){
     try{
@@ -133,8 +188,13 @@ async function mountHome(){
     }catch{}
   }
   const popularHosts = Object.entries(byHost).sort((a,b)=>b[1]-a[1]).map(e=>e[0]).slice(0,3);
-  const trend = items.filter(p=> popularHosts.includes(new URL(p.link).host.replace('www.',''))).slice(0,12);
+  const trend = items.filter(p=> {
+    try{ return popularHosts.includes(new URL(p.link).host.replace('www.','')); }catch{ return false; }
+  }).slice(0,12);
   trend.forEach(p=> trending.appendChild(cardForPost(p)));
+  if(!trend.length) showEmpty('trending','No trending sources yet.');
+
+  await loadCategories();
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
