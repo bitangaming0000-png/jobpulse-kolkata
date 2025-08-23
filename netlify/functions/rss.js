@@ -2,7 +2,8 @@
 const { XMLParser } = require('fast-xml-parser');
 const { readFile } = require('fs/promises');
 const path = require('path');
-const fetch = global.fetch; // Netlify runtime has fetch
+const fs = require('fs');
+const fetch = global.fetch;
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -19,7 +20,6 @@ function rewriteText(text) {
 
 function normalizeFeed(json, sourceUrl) {
   const items = [];
-  // RSS 2.0
   if (json?.rss?.channel) {
     const ch = json.rss.channel;
     const arr = Array.isArray(ch.item) ? ch.item : (ch.item ? [ch.item] : []);
@@ -33,7 +33,6 @@ function normalizeFeed(json, sourceUrl) {
       });
     }
   }
-  // Atom
   if (json?.feed?.entry) {
     const arr = Array.isArray(json.feed.entry) ? json.feed.entry : [json.feed.entry];
     for (const it of arr) {
@@ -58,10 +57,18 @@ function includesAny(haystack, needles) {
 }
 
 async function readFeedsConfig() {
-  const root = process.env.LAMBDA_TASK_ROOT || process.cwd(); // e.g. /var/task
-  const feedsPath = path.join(root, 'data', 'feeds.json');
-  const raw = await readFile(feedsPath, 'utf8');
-  return JSON.parse(raw);
+  const candidates = [
+    path.join(process.env.LAMBDA_TASK_ROOT || process.cwd(), 'data', 'feeds.json'),
+    path.join(__dirname, '..', '..', 'data', 'feeds.json'),
+    path.resolve(process.cwd(), 'data', 'feeds.json')
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      const raw = await readFile(p, 'utf8');
+      return JSON.parse(raw);
+    }
+  }
+  throw new Error('feeds.json not found. Ensure [functions].included_files=["data/feeds.json"] and the file is committed.');
 }
 
 module.exports.handler = async () => {
@@ -96,7 +103,6 @@ module.exports.handler = async () => {
 
     const results = (await Promise.all(fetches)).flat();
 
-    // de-dupe + sort
     const seen = new Set();
     const deduped = [];
     for (const it of results) {
@@ -111,11 +117,7 @@ module.exports.handler = async () => {
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=300'
-      },
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=300' },
       body: JSON.stringify({ items: deduped })
     };
   } catch (err) {
