@@ -5,6 +5,27 @@ const CACHE_KEY = 'jp-cache-items';
 function saveCache(items){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), items})) }catch{} }
 function readCache(){ try{ const j = JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return (j&&j.items)||[] }catch{ return [] } }
 
+// --- tiny helpers just for thumbs ---
+function hashTitle(s){
+  let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return 'h'+Math.abs(h);
+}
+async function getAIThumb(prompt){
+  const key = 'jp-thumb:'+hashTitle(prompt);
+  try{
+    const cached = localStorage.getItem(key);
+    if(cached) return cached;
+  }catch{}
+  try{
+    const r = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(prompt));
+    const j = await r.json();
+    if(j && j.dataUrl){
+      try{ localStorage.setItem(key, j.dataUrl); }catch{}
+      return j.dataUrl;
+    }
+  }catch{}
+  return null;
+}
+
 function showEmpty(id, msg){
   const elx = document.getElementById(id);
   if(elx && !elx.children.length){
@@ -42,7 +63,7 @@ async function mountShell(){
     }
   } catch(e){}
 
-  // Theme toggle (theme-boot set initial)
+  // Theme toggle
   const root = document.documentElement;
   document.getElementById('themeToggle').addEventListener('click',()=>{
     const t = (root.getAttribute('data-theme')==='dark')?'light':'dark';
@@ -64,11 +85,11 @@ async function mountShell(){
   const dt = document.getElementById('dateTime');
   const tick = ()=> dt.textContent = '🕒 ' + formatDateTimeIST(); tick(); setInterval(tick, 30000);
 
-  // Visitor Count
+  // Visitor Count (now via Netlify function)
   const vc = document.querySelector('#visitorCount span');
   try {
-    const r = await fetch(`https://api.countapi.xyz/hit/jp-kolkata/site-visits`);
-    const j = await r.json(); vc.textContent = j.value?.toLocaleString('en-IN') ?? '—';
+    const r = await fetch('/.netlify/functions/visitors');
+    const j = await r.json(); vc.textContent = (j.value ?? 0).toLocaleString('en-IN');
   } catch(e) { vc.textContent = '—'; }
 }
 
@@ -90,13 +111,18 @@ async function getRSS(){
 function cardForPost(p){
   const c = el('article','card');
   const date = p.pubDate ? new Date(p.pubDate) : null;
+  // include a visual thumb container for AI image
   c.innerHTML = `
+    <div class="thumb-wrap"><img class="thumb" alt="" loading="lazy" /></div>
     <div class="meta"><span class="badge">${date? new Intl.DateTimeFormat('en-IN',{dateStyle:'medium'}).format(date):'New'}</span>
     <span class="badge">WB Only</span></div>
     <h3><a href="/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description)}&date=${encodeURIComponent(p.pubDate||'')}" target="_self">${p.title}</a></h3>
     <p>${truncate(p.description, 160)}</p>
     <a class="badge" href="${safeURL(p.link)}" target="_blank" rel="noopener">Source ↗</a>
   `;
+  // store prompt on element for lazy generation later
+  const prompt = `Wide banner, dark theme, West Bengal jobs news: ${p.title}. Minimal, newsy, high-contrast, subtle Kolkata silhouette`;
+  c.querySelector('.thumb').dataset.prompt = prompt;
   return c;
 }
 
@@ -106,7 +132,7 @@ function isWestBengalItem(item) {
   return WB_FILTER.test(fields);
 }
 
-// Compact live ticker
+// Compact live ticker (slower)
 function buildTicker(items){
   const wrap = document.getElementById('notify-ticker');
   if(!wrap) return;
@@ -131,6 +157,17 @@ function buildTicker(items){
   wrap.innerHTML=''; wrap.appendChild(track);
 }
 
+// Lazy-generate AI thumbs for the first N cards inside a container
+async function loadAIThumbs(container, limit=6){
+  const imgs = Array.from(container.querySelectorAll('img.thumb')).slice(0, limit);
+  for(const img of imgs){
+    if(img.dataset.loaded) continue;
+    const prompt = img.dataset.prompt || 'abstract news banner';
+    const dataUrl = await getAIThumb(prompt);
+    if(dataUrl){ img.src = dataUrl; img.alt = prompt; img.dataset.loaded = '1'; }
+  }
+}
+
 async function loadCategories(){
   try{
     const res = await fetch('/data/feeds.json'); const cfg = await res.json();
@@ -148,6 +185,7 @@ async function mountHome(){
   const items=await getRSS();
 
   buildTicker(items);
+
   items.slice(0,10).forEach(p=> top.appendChild(cardForPost(p)));
   if(!top.children.length) showEmpty('top-scroll','No West Bengal posts found yet.');
 
@@ -162,6 +200,11 @@ async function mountHome(){
   if(!trend.length) showEmpty('trending','No trending sources yet.');
 
   await loadCategories();
+
+  // kick off AI thumbs (limited to control cost)
+  loadAIThumbs(top, 6);
+  loadAIThumbs(notices, 4);
+  loadAIThumbs(trending, 6);
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
