@@ -17,3 +17,8 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Run the archive function every hour (IST friendly enough for now)
+[[scheduled]]
+  path = "/.netlify/functions/archive"
+  cron = "0 * * * *"
