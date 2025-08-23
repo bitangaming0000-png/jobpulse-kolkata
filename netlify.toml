@@ -4,13 +4,14 @@
 
 [functions]
   directory = "netlify/functions"
+  included_files = ["data/feeds.json"]
 
 [[redirects]]
   from = "/api/rss"
   to = "/.netlify/functions/rss"
   status = 200
 
-# Security headers
+# Optional security headers
 [[headers]]
   for = "/*"
   [headers.values]
@@ -18,7 +19,7 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Run the archive function every hour (IST friendly enough for now)
+# Scheduled archive (hourly)
 [[scheduled]]
   path = "/.netlify/functions/archive"
   cron = "0 * * * *"
