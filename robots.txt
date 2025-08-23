@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://jobpulse-kolkata.netlify.app/sitemap.xml
