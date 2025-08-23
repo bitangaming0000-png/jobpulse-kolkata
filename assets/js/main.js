@@ -90,16 +90,31 @@ async function mountShell(){
 }
 
 async function getRSS(){
-  const url = '/api/rss';
+  // Try live RSS → if empty, try archive latest → else use local cache
   try{
-    const r = await fetch(url);
+    const r = await fetch('/api/rss');
     if(!r.ok) throw new Error('RSS API failed');
     const j = await r.json();
     const items = j.items || [];
-    if(items.length) saveCache(items);
-    return items.length ? items : (readCache());
-  }catch(e){ console.error(e); return readCache(); }
+    if(items.length){ try{ localStorage.setItem('jp-cache-items', JSON.stringify({ts: Date.now(), items})) }catch{} }
+    if(items.length) return items;
+  }catch(e){ console.error(e); }
+
+  try{
+    const a = await fetch('/.netlify/functions/archive?latest=100');
+    if(a.ok){
+      const j = await a.json();
+      const items = j.items || j.latest || [];
+      if(items.length) return items;
+    }
+  }catch(e){ console.error('Archive fallback failed', e); }
+
+  try{
+    const cached = JSON.parse(localStorage.getItem('jp-cache-items')||'null');
+    return (cached && cached.items) ? cached.items : [];
+  }catch{ return []; }
 }
+
 
 function cardForPost(p){
   const c = el('article','card');
