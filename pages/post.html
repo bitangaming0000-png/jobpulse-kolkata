@@ -1,36 +1,54 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title id="titleTag">Job Details — JobPulse Kolkata</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-  </head>
-  <body>
-    <div class="container">
-      <section class="section">
-        <ins class="ad-slot" data-variant="display"></ins>
-        <h1 id="postTitle">Loading…</h1>
-        <p class="notice" id="postMeta"></p>
-        <p id="postDesc"></p>
-        <p><a id="postLink" class="badge" target="_blank" rel="noopener">Read on source ↗</a></p>
-      </section>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Post — JobPulse Kolkata</title>
+  <script src="/assets/js/theme-boot.js"></script>
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    .hero-img{width:100%;border-radius:12px;border:1px solid var(--border);margin:8px 0 14px}
+    .ai-block h2{margin-top:14px}
+    .img-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="ptitle">Loading…</h1>
+    <p><a id="src" class="badge" href="#" target="_blank" rel="noopener">Source ↗</a></p>
+    <img id="hero" class="hero-img" alt="AI banner" style="display:none" />
+    <div id="content" class="ai-block card"></div>
+    <div id="moreimg" class="img-grid"></div>
+  </div>
 
-      <ins class="ad-slot"></ins>
-    </div>
+  <script type="module">
+    import { getQuery } from '/assets/js/utils.js';
+    const title=decodeURIComponent(getQuery('title')||'');
+    const link=decodeURIComponent(getQuery('link')||'');
+    document.getElementById('ptitle').textContent=title||'Post';
+    document.getElementById('src').href=link;
+    async function render(){
+      try{
+        const r=await fetch('/.netlify/functions/ai-post?link='+encodeURIComponent(link));
+        const j=await r.json();
+        document.getElementById('content').innerHTML=j.html||'<p>No AI content.</p>';
+        if(Array.isArray(j.images)&&j.images.length){
+          const hero=document.getElementById('hero');
+          const first=await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(j.images[0]));
+          const fjson=await first.json();
+          if(fjson.dataUrl){hero.src=fjson.dataUrl;hero.style.display='block';}
+          const grid=document.getElementById('moreimg');
+          for(const p of j.images.slice(1)){
+            const rr=await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(p));
+            const jj=await rr.json();
+            if(jj.dataUrl){const img=new Image();img.src=jj.dataUrl;img.alt=p;img.className='hero-img';grid.appendChild(img);}
+          }
+        }
+      }catch(e){document.getElementById('content').innerHTML='<p class="notice">Could not generate AI article.</p>';}
+    }
+    render();
+  </script>
 
-    <script type="module">
-      import { getQuery } from '/assets/js/utils.js';
-      const title = decodeURIComponent(getQuery('title')||'').replace(/\+/g,' ');
-      const link = decodeURIComponent(getQuery('link')||'');
-      const desc = decodeURIComponent(getQuery('desc')||'');
-      const date = decodeURIComponent(getQuery('date')||'');
-      document.getElementById('postTitle').textContent = title || 'Job Details';
-      document.getElementById('titleTag').textContent = (title? title + ' — ' : '') + 'JobPulse Kolkata';
-      document.getElementById('postDesc').textContent = desc;
-      const a = document.getElementById('postLink'); a.href = link; a.textContent = 'Read full details on source ↗';
-      document.getElementById('postMeta').textContent = (date? new Date(date).toLocaleString('en-IN') : 'New') + ' · West Bengal';
-    </script>
-    <script type="module" src="/assets/js/main.js"></script>
-  </body>
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
 </html>
