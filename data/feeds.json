@@ -1,0 +1,82 @@
+{
+  "sources": [
+    {
+      "name": "Indian Express - Kolkata",
+      "url": "https://indianexpress.com/section/cities/kolkata/feed/",
+      "type": "rss",
+      "category": "news"
+    },
+    {
+      "name": "Indian Express - Jobs",
+      "url": "https://indianexpress.com/section/jobs/feed/",
+      "type": "rss",
+      "category": "jobs"
+    },
+    {
+      "name": "Hindustan Times - RSS",
+      "url": "https://www.hindustantimes.com/rss",
+      "type": "rss",
+      "category": "news"
+    },
+    {
+      "name": "ABP Ananda (Bengali) - RSS",
+      "url": "https://bengali.abplive.com/rss",
+      "type": "rss",
+      "category": "news"
+    },
+    {
+      "name": "Times of India - RSS Index",
+      "url": "https://timesofindia.indiatimes.com/rss.cms",
+      "type": "rss",
+      "category": "news"
+    },
+    {
+      "name": "PIB - All Releases",
+      "url": "https://www.pib.gov.in/ViewRss.aspx",
+      "type": "rss",
+      "category": "govt"
+    },
+    {
+      "name": "PIB - Regional East",
+      "url": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
+      "type": "rss",
+      "category": "govt"
+    },
+    {
+      "name": "KGP Chronicle (IIT Kharagpur)",
+      "url": "https://kgpchronicle.iitkgp.ac.in/feed/",
+      "type": "rss",
+      "category": "education"
+    }
+  ],
+  "filter_keywords_any": [
+    "West Bengal",
+    "WB",
+    "Kolkata",
+    "Howrah",
+    "Hooghly",
+    "Hugli",
+    "Nadia",
+    "North 24 Parganas",
+    "South 24 Parganas",
+    "Darjeeling",
+    "Jalpaiguri",
+    "Alipurduar",
+    "Cooch Behar",
+    "Malda",
+    "Murshidabad",
+    "Bankura",
+    "Birbhum",
+    "Purulia",
+    "Paschim Medinipur",
+    "Purba Medinipur",
+    "Jhargram",
+    "Asansol",
+    "Durgapur",
+    "Siliguri",
+    "Kharagpur",
+    "Haldia",
+    "Bardhaman",
+    "Burdwan"
+  ]
+}
