@@ -138,3 +138,8 @@ h2{font-size:18px;margin:0 0 10px 6px;color:var(--muted)}
 @media (prefers-reduced-motion: reduce){.ticker-track{animation:none}}
 
 @media (min-width: 900px){.card{min-width:330px}}
+
+/* Card thumbnail */
+.thumb-wrap{width:100%;height:140px;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:8px;background:#0e1628}
+:root[data-theme="light"] .thumb-wrap{background:#eef2ff}
+.thumb{width:100%;height:100%;object-fit:cover;display:block}
