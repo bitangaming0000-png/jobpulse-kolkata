@@ -1,5 +1,5 @@
 // netlify/functions/archive.js
-// Archives WB job/news posts. Safe for Netlify upload (no top-level await).
+// Archives WB job/news posts. Safe path resolution + no top-level await.
 
 import { XMLParser } from 'fast-xml-parser';
 import { readFile } from 'fs/promises';
@@ -55,10 +55,16 @@ function includesAny(haystack, needles) {
   return needles.some(n => h.includes(n.toLowerCase()));
 }
 
-async function fetchWBItems() {
-  const feedsPath = new URL('../../data/feeds.json', import.meta.url);
+async function readFeedsConfig() {
+  // Build absolute path that works in Netlify Functions
+  const root = process.env.LAMBDA_TASK_ROOT || process.cwd(); // e.g. /var/task
+  const feedsPath = `${root}/data/feeds.json`;
   const rawText = await readFile(feedsPath, 'utf8');
-  const cfg = JSON.parse(rawText);
+  return JSON.parse(rawText);
+}
+
+async function fetchWBItems() {
+  const cfg = await readFeedsConfig();
   const FEEDS = Array.isArray(cfg) ? cfg : (cfg.sources || []);
   const KEYWORDS = (Array.isArray(cfg) ? [] : (cfg.filter_keywords_any || []))
     .concat(['West Bengal','WB','Kolkata','Howrah','Hooghly','Hugli','Nadia','North 24 Parganas','South 24 Parganas','Darjeeling','Jalpaiguri','Alipurduar','Cooch Behar','Malda','Murshidabad','Bankura','Birbhum','Purulia','Paschim Medinipur','Purba Medinipur','Jhargram','Asansol','Durgapur','Siliguri','Kharagpur','Haldia','Bardhaman','Burdwan']);
@@ -83,72 +89,4 @@ async function fetchWBItems() {
   const seen = new Set();
   const deduped = [];
   for (const it of results) {
-    const key = (it.link || '') + '|' + (it.title || '');
-    if (!seen.has(key)) { seen.add(key); deduped.push(it); }
-  }
-  deduped.sort((a,b) => {
-    const da = Date.parse(a.pubDate) || 0;
-    const db = Date.parse(b.pubDate) || 0;
-    return db - da || a.title.localeCompare(b.title);
-  });
-  return deduped;
-}
-
-function ymd(d = new Date()) {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year:'numeric', month:'2-digit', day:'2-digit' }).format(d);
-}
-
-export const handler = async (event) => {
-  // Try to load Netlify Blobs inside the handler (no top-level await)
-  let blobsOk = false;
-  let getStoreFn = null;
-  try {
-    const mod = await import('@netlify/blobs');
-    getStoreFn = mod.getStore;
-    blobsOk = typeof getStoreFn === 'function';
-  } catch {
-    blobsOk = false;
-  }
-
-  // If Blobs isn’t available, just return live items (keeps UI working)
-  if (!blobsOk) {
-    const items = await fetchWBItems();
-    return { statusCode: 200, headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*'}, body: JSON.stringify({ archived: false, items, note: 'Blobs unavailable; returned live items.' }) };
-  }
-
-  try {
-    const store = getStoreFn('jobpulse-archive');
-    const params = new URLSearchParams(event.rawQuery || '');
-
-    if (params.has('list')) {
-      const listing = await store.list();
-      const keys = (listing?.objects || listing || []).map(o => (typeof o === 'string' ? o : o.key)).sort().reverse();
-      return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ dates: keys }) };
-    }
-
-    if (params.has('date')) {
-      const key = params.get('date') + '.json';
-      const json = await store.get(key, { type: 'json' });
-      return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ date: params.get('date'), items: json || [] }) };
-    }
-
-    // Archive today's items
-    const items = await fetchWBItems();
-    const key = ymd() + '.json';
-    const existing = await store.get(key, { type: 'json' }) || [];
-    const merged = [...existing];
-    const seen = new Set(existing.map(e => (e.link||'') + '|' + (e.title||'')));
-    for (const it of items) {
-      const k = (it.link||'') + '|' + (it.title||'');
-      if (!seen.has(k)) { seen.add(k); merged.push(it); }
-    }
-    await store.set(key, JSON.stringify(merged), { metadata: { contentType: 'application/json' } });
-
-    const n = Number(params.get('latest') || 50);
-    return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ archived: key, latest: merged.slice(0, n) }) };
-  } catch (err) {
-    // If anything goes wrong with Blobs, return live items instead of failing the deploy
-    const items = await fetchWBItems();
-    return { statusCode: 200, headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' }, body: JSON.stringify({ archived: false, items, note: 'Blobs error; returned live items.' }) };
-  }
-};
+    const key = (it.link ||
