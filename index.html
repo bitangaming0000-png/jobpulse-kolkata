@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JobPulse Kolkata — West Bengal Jobs, Exams, Updates</title>
+    <meta name="description" content="Curated West Bengal job updates from trusted sources. Clean, dark, fast.">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <!-- Google AdSense (replace with your own client ID when ready) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  </head>
+  <body class="home">
+    <div class="container">
+      <ins class="ad-slot" data-variant="display"></ins>
+      <section class="section">
+        <h2>Top News</h2>
+        <div id="top-scroll" data-empty-target="top-scroll" class="scroller-x"></div>
+      </section>
+
+      <ins class="ad-slot"></ins>
+
+      <section class="section">
+        <h2>Notifications</h2>
+        <div id="notices" data-empty-target="notices" class="grid"></div>
+      </section>
+
+      <ins class="ad-slot" data-variant="multiplex"></ins>
+
+      <section class="section">
+        <h2>Trending</h2>
+        <div id="trending" data-empty-target="trending" class="scroller-x"></div>
+      </section>
+
+      <ins class="ad-slot" data-variant="display"></ins>
+      <ins class="ad-slot" data-variant="multiplex"></ins>
+    </div>
+
+    <script type="module" src="/assets/js/main.js">
+    function showEmptyMsg(id, msg){
+      const el = document.querySelector('#'+id);
+      if(el && !el.children.length){
+        const p = document.createElement('p');
+        p.className = 'notice'; p.textContent = msg;
+        el.parentElement.appendChild(p);
+      }
+    }
+
+  </script>
+  </body>
+</html>
