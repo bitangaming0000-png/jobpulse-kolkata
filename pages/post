@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title id="titleTag">Job Details — JobPulse Kolkata</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+  </head>
+  <body>
+    <div class="container">
+      <section class="section">
+        <ins class="ad-slot" data-variant="display"></ins>
+        <h1 id="postTitle">Loading…</h1>
+        <p class="notice" id="postMeta"></p>
+        <p id="postDesc"></p>
+        <p><a id="postLink" class="badge" target="_blank" rel="noopener">Read on source ↗</a></p>
+      </section>
+
+      <ins class="ad-slot"></ins>
+    </div>
+
+    <script type="module">
+      import { getQuery } from '/assets/js/utils.js';
+      const title = decodeURIComponent(getQuery('title')||'').replace(/\+/g,' ');
+      const link = decodeURIComponent(getQuery('link')||'');
+      const desc = decodeURIComponent(getQuery('desc')||'');
+      const date = decodeURIComponent(getQuery('date')||'');
+      document.getElementById('postTitle').textContent = title || 'Job Details';
+      document.getElementById('titleTag').textContent = (title? title + ' — ' : '') + 'JobPulse Kolkata';
+      document.getElementById('postDesc').textContent = desc;
+      const a = document.getElementById('postLink'); a.href = link; a.textContent = 'Read full details on source ↗';
+      document.getElementById('postMeta').textContent = (date? new Date(date).toLocaleString('en-IN') : 'New') + ' · West Bengal';
+    </script>
+    <script type="module" src="/assets/js/main.js"></script>
+  </body>
+</html>
