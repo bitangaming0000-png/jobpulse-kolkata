@@ -1,20 +1,14 @@
 // assets/js/main.js
 import { formatDateTimeIST, el, truncate, safeURL } from './utils.js';
 
-// ---- Cached posts (persist across reloads) ----
 const CACHE_KEY = 'jp-cache-items';
-function saveCache(items){
-  try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), items})) }catch{}
-}
-function readCache(){
-  try{ const j = JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return (j&&j.items)||[] }catch{ return [] }
-}
+function saveCache(items){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), items})) }catch{} }
+function readCache(){ try{ const j = JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return (j&&j.items)||[] }catch{ return [] } }
 
 function showEmpty(id, msg){
   const elx = document.getElementById(id);
   if(elx && !elx.children.length){
-    const p = document.createElement('p');
-    p.className = 'notice'; p.textContent = msg;
+    const p = document.createElement('p'); p.className = 'notice'; p.textContent = msg;
     elx.parentElement.appendChild(p);
   }
 }
@@ -28,18 +22,15 @@ async function mountShell(){
   document.body.insertAdjacentHTML('beforeend', footer);
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // ---- AdSense head include (once per page) ----
+  // AdSense head include
   try {
     const adsHead = await fetch('/components/ads-head.html').then(r=>r.text());
-    const frag = document.createElement('template');
-    frag.innerHTML = adsHead.trim();
+    const frag = document.createElement('template'); frag.innerHTML = adsHead.trim();
     const hasAdScript = !!document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
-    if(!hasAdScript){
-      document.head.appendChild(frag.content.cloneNode(true));
-    }
+    if(!hasAdScript){ document.head.appendChild(frag.content.cloneNode(true)); }
   } catch(e){}
 
-  // ---- Replace ad placeholders ----
+  // Inject ad units
   try {
     for(const ph of document.querySelectorAll('.ad-slot')){
       const variant = ph.dataset.variant || 'display';
@@ -51,15 +42,11 @@ async function mountShell(){
     }
   } catch(e){}
 
-  // Theme toggle (works with theme-boot)
-  const themeKey = 'jp-theme';
+  // Theme toggle (theme-boot set initial)
   const root = document.documentElement;
-  function applyTheme(t){ root.setAttribute('data-theme', t); }
-  // DO NOT set default here; theme-boot.js already did it
   document.getElementById('themeToggle').addEventListener('click',()=>{
     const t = (root.getAttribute('data-theme')==='dark')?'light':'dark';
-    localStorage.setItem(themeKey, t);
-    applyTheme(t);
+    localStorage.setItem('jp-theme', t); root.setAttribute('data-theme', t);
   });
 
   // Hamburger nav (hover + click + outside/esc)
@@ -75,46 +62,30 @@ async function mountShell(){
 
   // Date & Time
   const dt = document.getElementById('dateTime');
-  const tick = ()=> dt.textContent = '🕒 ' + formatDateTimeIST();
-  tick(); setInterval(tick, 30_000);
+  const tick = ()=> dt.textContent = '🕒 ' + formatDateTimeIST(); tick(); setInterval(tick, 30000);
 
   // Visitor Count
   const vc = document.querySelector('#visitorCount span');
   try {
-    const ns = 'jobpulse-kolkata';
-    const key = 'site-visits';
-    const r = await fetch(`https://api.countapi.xyz/hit/${ns}/${key}`);
-    const j = await r.json();
-    vc.textContent = j.value.toLocaleString('en-IN');
+    const r = await fetch(`https://api.countapi.xyz/hit/jp-kolkata/site-visits`);
+    const j = await r.json(); vc.textContent = j.value?.toLocaleString('en-IN') ?? '—';
   } catch(e) { vc.textContent = '—'; }
 }
 
 async function getRSS(){
-  // Try live RSS → if empty, try archive latest → else use local cache
+  // live → archive → cache
   try{
-    const r = await fetch('/api/rss');
-    if(!r.ok) throw new Error('RSS API failed');
-    const j = await r.json();
-    const items = j.items || [];
-    if(items.length){ try{ localStorage.setItem('jp-cache-items', JSON.stringify({ts: Date.now(), items})) }catch{} }
+    const r = await fetch('/api/rss'); if(!r.ok) throw new Error('RSS API failed');
+    const j = await r.json(); const items = j.items || [];
+    if(items.length) saveCache(items);
     if(items.length) return items;
   }catch(e){ console.error(e); }
-
   try{
     const a = await fetch('/.netlify/functions/archive?latest=100');
-    if(a.ok){
-      const j = await a.json();
-      const items = j.items || j.latest || [];
-      if(items.length) return items;
-    }
+    if(a.ok){ const j = await a.json(); const items = j.items || j.latest || []; if(items.length) return items; }
   }catch(e){ console.error('Archive fallback failed', e); }
-
-  try{
-    const cached = JSON.parse(localStorage.getItem('jp-cache-items')||'null');
-    return (cached && cached.items) ? cached.items : [];
-  }catch{ return []; }
+  return readCache();
 }
-
 
 function cardForPost(p){
   const c = el('article','card');
@@ -129,32 +100,25 @@ function cardForPost(p){
   return c;
 }
 
-// --- West Bengal-only filter ---
 const WB_FILTER = new RegExp("\\b(West Bengal|WB|Kolkata|Howrah|Hooghly|Nadia|Siliguri|Durgapur|Kharagpur|Haldia|Medinipur|Bardhaman|Burdwan)\\b","i");
 function isWestBengalItem(item) {
   const fields = [item.title, item.description, item.link].filter(Boolean).join(" ");
   return WB_FILTER.test(fields);
 }
 
-// Build ticker
 function buildTicker(items){
   const wrap = document.getElementById('notify-ticker');
   if(!wrap) return;
   const filtered = items.filter(isWestBengalItem);
-  if(!filtered.length){
-    wrap.outerHTML = '<div class="notice">No new West Bengal updates yet.</div>'; return;
-  }
-  const track = document.createElement('div');
-  track.className = 'ticker-track';
+  if(!filtered.length){ wrap.outerHTML = '<div class="notice">No new West Bengal updates yet.</div>'; return; }
+  const track = document.createElement('div'); track.className = 'ticker-track';
   const makeRun = () => {
-    const span = document.createElement('span');
-    span.className = 'ticker';
+    const span = document.createElement('span'); span.className = 'ticker';
     filtered.slice(0,40).forEach(p=>{
       const bullet = el('span','bullet','');
       const a=document.createElement('a');
       a.href=`/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description)}&date=${encodeURIComponent(p.pubDate||'')}`;
-      a.textContent=p.title;
-      span.appendChild(bullet); span.appendChild(a);
+      a.textContent=p.title; span.appendChild(bullet); span.appendChild(a);
     });
     return span;
   };
@@ -164,16 +128,11 @@ function buildTicker(items){
 
 async function loadCategories(){
   try{
-    const res = await fetch('/data/feeds.json');
-    const cfg = await res.json();
+    const res = await fetch('/data/feeds.json'); const cfg = await res.json();
     const feeds = Array.isArray(cfg)?cfg:(cfg.sources||[]);
     const cats=[...new Set(feeds.map(f=>f.category||'news'))];
     const wrap=document.getElementById('categories'); if(!wrap) return;
-    cats.forEach(c=>{
-      const chip=el('a','badge',c.charAt(0).toUpperCase()+c.slice(1));
-      chip.href='/pages/category.html?name='+encodeURIComponent(c);
-      wrap.appendChild(chip);
-    });
+    cats.forEach(c=>{ const chip=el('a','badge',c.charAt(0).toUpperCase()+c.slice(1)); chip.href='/pages/category.html?name='+encodeURIComponent(c); wrap.appendChild(chip); });
   }catch{}
 }
 
