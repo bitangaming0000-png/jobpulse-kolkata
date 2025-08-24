@@ -10,16 +10,3 @@
   from = "/api/rss"
   to = "/.netlify/functions/rss"
   status = 200
-
-# Optional security headers
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-
-# Scheduled archive (hourly)
-[[scheduled]]
-  path = "/.netlify/functions/archive"
-  cron = "0 * * * *"
