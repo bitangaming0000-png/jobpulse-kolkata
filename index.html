@@ -7,41 +7,55 @@
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body class="home">
-  <!-- header + live ticker injected by main.js -->
+  <!-- Header + LIVE ticker are injected by main.js (header.html) -->
+
   <div class="container">
     <h1>Latest West Bengal Job Updates</h1>
 
-    <!-- compact top news horizontal scroll -->
+    <!-- Top Stories -->
     <section class="section">
-      <h2>Top News</h2>
-      <div id="top-scroll" class="scroller-x"></div>
+      <h2>Top Stories</h2>
+      <div id="top-stories" class="grid"></div>
     </section>
 
-    <!-- notifications auto-scroll is handled by ticker in header -->
+    <!-- Ad -->
+    <div class="ad-slot" data-variant="display"></div>
 
-    <!-- trending -->
+    <!-- Live (recent updates) -->
     <section class="section">
-      <h2>Trending</h2>
-      <div id="trending" class="grid"></div>
+      <h2>Live Now</h2>
+      <div id="live" class="scroller-x"></div>
     </section>
 
-    <!-- notifications section -->
+    <!-- Ad -->
+    <div class="ad-slot" data-variant="inarticle"></div>
+
+    <!-- You May Like -->
+    <section class="section">
+      <h2>You May Like</h2>
+      <div id="you-may-like" class="grid"></div>
+    </section>
+
+    <!-- Ad -->
+    <div class="ad-slot" data-variant="multiplex"></div>
+
+    <!-- Existing sections (still there) -->
     <section class="section">
       <h2>Notifications (Admit Card / Results)</h2>
       <div id="notices" class="grid"></div>
     </section>
 
-    <!-- categories -->
+    <div class="ad-slot" data-variant="display"></div>
+
     <section class="section">
       <h2>Browse by Category</h2>
       <div id="categories" class="scroller-x"></div>
     </section>
 
-    <!-- display ad -->
-    <div class="ad-slot" data-variant="display"></div>
+    <div class="ad-slot" data-variant="multiplex"></div>
   </div>
 
-  <!-- scripts -->
+  <!-- Consent + Main JS -->
   <script src="/assets/js/cookie-consent.js"></script>
   <script src="/assets/js/main.js"></script>
 </body>
