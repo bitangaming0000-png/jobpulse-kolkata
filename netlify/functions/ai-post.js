@@ -1,4 +1,4 @@
-// netlify/functions/ai-post.js (CommonJS, no external libs)
+// netlify/functions/ai-post.js (CommonJS, robust URL handling + text mode)
 const fetchFn = global.fetch;
 
 function json(status, obj) {
@@ -9,46 +9,56 @@ function json(status, obj) {
   };
 }
 
-// naive HTML → text (good enough to feed the model)
+// naive HTML → text for model input
 function htmlToText(html='') {
   try {
-    // remove scripts/styles
     html = html.replace(/<script[\s\S]*?<\/script>/gi, ' ')
-               .replace(/<style[\s\S]*?<\/style>/gi, ' ');
-    // remove tags
-    html = html.replace(/<\/?[^>]+>/g, ' ');
-    // entities
-    html = html.replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
-    // collapse spaces
-    html = html.replace(/\s+/g, ' ').trim();
+               .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+               .replace(/<\/?[^>]+>/g, ' ')
+               .replace(/&nbsp;/g,' ')
+               .replace(/&amp;/g,'&')
+               .replace(/&quot;/g,'"')
+               .replace(/&#39;/g,"'")
+               .replace(/&lt;/g,'<')
+               .replace(/&gt;/g,'>')
+               .replace(/\s+/g, ' ').trim();
     return html;
-  } catch {
-    return '';
-  }
+  } catch { return ''; }
+}
+
+function normalizeUrl(raw) {
+  if (!raw) return null;
+  let s = decodeURIComponent(String(raw).trim());
+  // reject placeholder strings
+  if (/^<.*?>$/.test(s) || s.toLowerCase().includes('any-news-url')) return null;
+  // add scheme if missing
+  if (!/^https?:\/\//i.test(s)) s = 'https://' + s;
+  try { new URL(s); return s; } catch { return null; }
 }
 
 async function fetchPageText(url) {
-  const res = await fetchFn(url, { headers:{ 'User-Agent':'Mozilla/5.0 (AI-Post-Fetch)' } });
-  if (!res.ok) throw new Error('Fetch failed '+res.status);
+  const res = await fetchFn(url, {
+    headers:{ 'User-Agent':'Mozilla/5.0 (JobPulse-AI/1.0; +https://netlify.app)' }
+  });
+  if (!res.ok) throw new Error('Fetch failed ' + res.status);
   const html = await res.text();
-  const text = htmlToText(html);
-  return { title: '', text };
+  return htmlToText(html);
 }
 
 async function llmWriteLong(text, srcUrl) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return {
-      html: `<p class="notice">OPENAI_API_KEY is missing. Add it in Netlify → Site settings → Environment variables.</p><p>${text.slice(0,1500)}</p>`,
+      html: `<p class="notice">OPENAI_API_KEY is missing. Add it in Netlify → Site settings → Environment variables, then redeploy.</p><p>${text.slice(0,1500)}</p>`,
       images: []
     };
   }
 
-  const sys = `You are an editor for a West Bengal jobs website. Write an original, well-structured 2,000–3,000 word article for job seekers, based on the provided source text. Use H2/H3 headings, bullets, tables when helpful. Cover: overview, key dates, vacancy & eligibility, selection process, how to apply (steps), documents required, fees, salary, important links (as plain text), FAQs. Avoid copying exact sentences. End with "Always verify on the official website." If details are missing, say "Check official notice".`;
-  const user = `SOURCE URL: ${srcUrl}
+  const sys = `You are an editor for a West Bengal jobs website. Write an original, structured 2,000–3,000 word article for job seekers based on the provided source text. Use H2/H3, bullets, and tables when useful. Cover: overview, key dates, vacancy & eligibility, selection process, how to apply (steps), documents, fees, salary, important links (plain text), FAQs. Avoid copying exact sentences. End with "Always verify on the official website." If details are missing, say "Check official notice".`;
+  const user = `SOURCE URL: ${srcUrl || 'N/A'}
 SOURCE TEXT (trimmed to 12k chars):
 ${text.slice(0, 12000)}
-Task: Write the article in HTML fragments (no <html> tag).`;
+Task: Return ONLY HTML fragments (no <html> tag).`;
 
   const r = await fetchFn('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -63,31 +73,43 @@ Task: Write the article in HTML fragments (no <html> tag).`;
   const j = await r.json();
   const content = (j.choices?.[0]?.message?.content || '').trim();
 
-  // simple prompts
-  const images = [
-    'Wide banner, dark theme, Kolkata skyline, West Bengal recruitment news, minimalist',
-    'Illustration of online job application, WB govt motif, clean vector',
-    'Infographic style eligibility & dates, subtle icons, readable'
-  ];
-  return { html: content, images };
+  return {
+    html: content,
+    images: [
+      'Wide banner, dark theme, Kolkata skyline, West Bengal recruitment news, minimalist',
+      'Illustration of online job application, WB govt motif, clean vector',
+      'Infographic: eligibility checklist, key dates, readable, subtle icons'
+    ]
+  };
 }
 
 module.exports.handler = async (event) => {
   try {
     const qs = new URLSearchParams(event.rawQuery || '');
 
-    // selftest
+    // quick self-test: /.netlify/functions/ai-post?selftest=1
     if (qs.get('selftest') === '1') {
-      return json(200, {
-        ok: true,
-        openai_key_present: !!process.env.OPENAI_API_KEY
+      return json(200, { ok: true, openai_key_present: !!process.env.OPENAI_API_KEY });
+    }
+
+    // text mode for testing without a URL
+    const directText = qs.get('text');
+    if (directText && directText.trim().length > 30) {
+      const out = await llmWriteLong(directText.trim(), null);
+      return json(200, out);
+    }
+
+    // URL mode
+    const rawLink = qs.get('link');
+    const link = normalizeUrl(rawLink);
+    if (!link) {
+      return json(400, {
+        error: 'Invalid or missing link parameter. Use a full URL, e.g.: ?link=https://example.com/article',
+        tip: 'If you only have raw text, use ?text=... instead.'
       });
     }
 
-    const link = qs.get('link');
-    if (!link) return json(400, { error: 'Missing link param' });
-
-    const { text } = await fetchPageText(link);
+    const text = await fetchPageText(link);
     if (!text) return json(200, { title:'', html:'<p>No readable content from source.</p>', images: [] });
 
     const out = await llmWriteLong(text, link);
