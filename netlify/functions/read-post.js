@@ -1,2 +1,1 @@
-// full updated read-post.js content from above
-<PLACEHOLDER FOR FULL CONTENT>
+// final read-post.js content with images extraction and sanitization
