@@ -1,25 +1,28 @@
-<!-- components/header.html -->
 <header class="site-header">
   <div class="brand">
-    <button id="hamburger" aria-label="Open menu" class="hamburger">
-      <span></span><span></span><span></span>
-    </button>
+    <button id="hamburger" class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
     <a href="/" class="logo">JobPulse Kolkata</a>
   </div>
+
   <div class="meta">
-    <div id="visitorCount" class="visitor">👥 <span>—</span></div>
-    <div id="dateTime" class="datetime">🕒 —</div>
-    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme" title="Toggle Dark/Light (1 click)">🌓</button>
+    <span id="dateTime" aria-live="polite">—</span>
+    <span id="visitorCount" title="Total Visitors">👥 <span>0</span></span>
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
   </div>
+
   <nav id="sideNav" class="side-nav" aria-hidden="true">
-    <a href="/" class="nav-link">Home</a>
-    <a href="/pages/trending.html" class="nav-link">Trending</a>
-    <a href="/pages/notifications.html" class="nav-link">Notifications</a>
-    <a href="/pages/all-jobs.html" class="nav-link">All Jobs</a>
-    <a href="/pages/category.html?name=news" class="nav-link">Categories</a>
-    <a href="/pages/search.html" class="nav-link">Search</a>
-    <a href="/pages/archive.html" class="nav-link">Archive</a>
-    <a href="/pages/about.html" class="nav-link">About</a>
-    <a href="/pages/contact.html" class="nav-link">Contact</a>
+    <a class="nav-link" href="/">Home</a>
+    <a class="nav-link" href="/pages/about.html">About</a>
+    <a class="nav-link" href="/pages/contact.html">Contact</a>
+    <a class="nav-link" href="/pages/terms.html">Terms</a>
+    <a class="nav-link" href="/pages/disclaimer.html">Disclaimer</a>
+    <a class="nav-link" href="/pages/privacy.html">Privacy</a>
+    <a class="nav-link" href="/sitemap.xml" target="_blank" rel="noopener">Sitemap</a>
   </nav>
 </header>
+
+<!-- Compact LIVE Ticker (main.js will populate #notify-ticker) -->
+<div class="ticker-wrap" role="region" aria-label="Latest West Bengal updates">
+  <span class="ticker-head">LIVE</span>
+  <div id="notify-ticker" aria-live="polite"></div>
+</div>
