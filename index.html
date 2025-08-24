@@ -1,55 +1,48 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JobPulse Kolkata — West Bengal Jobs, Exams, Updates</title>
-    <meta name="description" content="Curated West Bengal job updates from trusted sources. Clean, dark, fast.">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>JobPulse Kolkata — West Bengal Jobs</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="home">
+  <!-- header + live ticker injected by main.js -->
+  <div class="container">
+    <h1>Latest West Bengal Job Updates</h1>
 
-    <!-- Load theme early -->
-    <script src="/assets/js/theme-boot.js"></script>
+    <!-- compact top news horizontal scroll -->
+    <section class="section">
+      <h2>Top News</h2>
+      <div id="top-scroll" class="scroller-x"></div>
+    </section>
 
-    <link rel="stylesheet" href="/assets/css/style.css">
-  </head>
-  <body class="home">
-    <div class="container">
-      <h1>JobPulse Kolkata</h1>
+    <!-- notifications auto-scroll is handled by ticker in header -->
 
-      <div class="ticker-wrap">
-        <span class="ticker-head">Live</span>
-        <div id="notify-ticker" class="ticker"></div>
-      </div>
+    <!-- trending -->
+    <section class="section">
+      <h2>Trending</h2>
+      <div id="trending" class="grid"></div>
+    </section>
 
-      <ins class="ad-slot" data-variant="display"></ins>
+    <!-- notifications section -->
+    <section class="section">
+      <h2>Notifications (Admit Card / Results)</h2>
+      <div id="notices" class="grid"></div>
+    </section>
 
-      <section class="section">
-        <h2>Top News</h2>
-        <div id="top-scroll" class="scroller-x"></div>
-      </section>
+    <!-- categories -->
+    <section class="section">
+      <h2>Browse by Category</h2>
+      <div id="categories" class="scroller-x"></div>
+    </section>
 
-      <ins class="ad-slot" data-variant="inarticle"></ins>
-      <ins class="ad-slot" data-variant="display"></ins>
-      <ins class="ad-slot" data-variant="multiplex"></ins>
+    <!-- display ad -->
+    <div class="ad-slot" data-variant="display"></div>
+  </div>
 
-      <section class="section">
-        <h2>Notifications</h2>
-        <div id="notices" class="grid"></div>
-      </section>
-
-      <section class="section">
-        <h2>Trending</h2>
-        <div id="trending" class="scroller-x"></div>
-      </section>
-
-      <section class="section">
-        <h2>Categories</h2>
-        <div id="categories" class="scroller-x"></div>
-      </section>
-
-      <ins class="ad-slot" data-variant="display"></ins>
-      <ins class="ad-slot" data-variant="multiplex"></ins>
-    </div>
-
-    <script type="module" src="/assets/js/main.js"></script>
-  </body>
+  <!-- scripts -->
+  <script src="/assets/js/cookie-consent.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
 </html>
