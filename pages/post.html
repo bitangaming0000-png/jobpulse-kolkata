@@ -7,19 +7,23 @@
   <script src="/assets/js/theme-boot.js"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
   <style>
-    .hero-img{width:100%;border-radius:12px;border:1px solid var(--border);margin:8px 0 14px;display:none}
-    .img-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
-    .img-grid img{width:100%;border-radius:12px;border:1px solid var(--border)}
-    .ai-block h2{margin-top:14px}
+    .article-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
+    .article-wrap img{max-width:100%;height:auto;border-radius:8px}
+    .source-btn{display:inline-block;margin:10px 0;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);text-decoration:none}
+    pre.excerpt{white-space:pre-wrap}
   </style>
 </head>
 <body>
   <div class="container">
     <h1 id="ptitle">Loading…</h1>
     <p><a id="src" class="badge" href="#" target="_blank" rel="noopener">Source ↗</a></p>
-    <img id="hero" class="hero-img" alt="Banner" />
-    <div id="content" class="ai-block card">Generating…</div>
-    <div id="moreimg" class="img-grid"></div>
+
+    <div id="article" class="article-wrap">Fetching article…</div>
+    <div id="fallback" style="display:none">
+      <h2>Article (Long Excerpt)</h2>
+      <pre id="excerpt" class="excerpt"></pre>
+      <p><a id="readsource" class="source-btn" target="_blank" rel="noopener">Read full on source ↗</a></p>
+    </div>
   </div>
 
   <script type="module">
@@ -29,41 +33,35 @@
     const link  = decodeURIComponent(getQuery('link')||'');
     const desc  = decodeURIComponent(getQuery('desc')||'');
 
-    document.getElementById('ptitle').textContent = title || 'Post';
-    const srcA = document.getElementById('src');
-    if (link) srcA.href = link; else srcA.textContent = 'No source link';
+    const ptitle = document.getElementById('ptitle');
+    const srcA   = document.getElementById('src');
+    const article = document.getElementById('article');
+    const fb = document.getElementById('fallback');
+    const excerptEl = document.getElementById('excerpt');
+    const readBtn = document.getElementById('readsource');
 
-    const content = document.getElementById('content');
-    const hero = document.getElementById('hero');
-    const grid = document.getElementById('moreimg');
+    ptitle.textContent = title || 'Post';
+    if (link) srcA.href = link; else srcA.textContent = 'No source link';
 
     async function render(){
       try{
-        // Ask function to build long article & give us page images; pass title for better context
-        let r = await fetch('/.netlify/functions/ai-post?link='+encodeURIComponent(link)+'&title='+encodeURIComponent(title));
-        let j = await r.json();
+        const r = await fetch('/.netlify/functions/read-post?link='+encodeURIComponent(link));
+        const j = await r.json();
 
-        // If function errored, try a text-only fallback from title+desc
-        if (!j || !j.html) {
-          const seed = `Title: ${title}\n\nSummary: ${desc}\n\nWrite a long, structured article for West Bengal job seekers.`;
-          const rr = await fetch('/.netlify/functions/ai-post?text='+encodeURIComponent(seed)+'&title='+encodeURIComponent(title));
-          j = await rr.json();
+        if (j.allowed && j.html) {
+          // Show full sanitized HTML (original language preserved)
+          article.innerHTML = j.html;
+          fb.style.display = 'none';
+        } else {
+          // Long excerpt (no rewriting) + link to source
+          article.style.display = 'none';
+          fb.style.display = 'block';
+          const body = (j.excerpt && j.excerpt.trim().length) ? j.excerpt : (desc || 'No content available.');
+          excerptEl.textContent = body;
+          readBtn.href = j.link || link || '#';
         }
-
-        content.innerHTML = j.html || '<p class="notice">No content generated.</p>';
-
-        // Use ONLY article images (no AI images)
-        const imgs = Array.isArray(j.images) ? j.images : [];
-        if (imgs.length){
-          hero.src = imgs[0]; hero.style.display = 'block';
-          imgs.slice(1).forEach(u=>{
-            const img = new Image();
-            img.src = u; img.alt = title || 'Article image';
-            grid.appendChild(img);
-          });
-        }
-      }catch(e){
-        content.innerHTML = '<p class="notice">Error generating article.</p><pre>'+ (e.message||'') +'</pre>';
+      } catch (e) {
+        article.innerHTML = '<p class="notice">Could not fetch the article.</p>';
       }
     }
     render();
