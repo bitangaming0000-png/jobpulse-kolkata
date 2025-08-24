@@ -7,44 +7,78 @@
   <script src="/assets/js/theme-boot.js"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
   <style>
-    .hero-img{width:100%;border-radius:12px;border:1px solid var(--border);margin:8px 0 14px}
+    .hero-img{width:100%;border-radius:12px;border:1px solid var(--border);margin:8px 0 14px;display:none}
     .ai-block h2{margin-top:14px}
     .img-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+    .muted{color:var(--muted)}
+    .loading{opacity:.8}
   </style>
 </head>
 <body>
   <div class="container">
-    <h1 id="ptitle">Loading…</h1>
+    <h1 id="ptitle" class="loading">Loading…</h1>
     <p><a id="src" class="badge" href="#" target="_blank" rel="noopener">Source ↗</a></p>
-    <img id="hero" class="hero-img" alt="AI banner" style="display:none" />
-    <div id="content" class="ai-block card"></div>
+    <img id="hero" class="hero-img" alt="AI banner" />
+    <div id="content" class="ai-block card">Generating AI article…</div>
     <div id="moreimg" class="img-grid"></div>
   </div>
 
   <script type="module">
     import { getQuery } from '/assets/js/utils.js';
-    const title=decodeURIComponent(getQuery('title')||'');
-    const link=decodeURIComponent(getQuery('link')||'');
-    document.getElementById('ptitle').textContent=title||'Post';
-    document.getElementById('src').href=link;
+
+    const title = decodeURIComponent(getQuery('title')||'');
+    const link  = decodeURIComponent(getQuery('link')||'');
+    const desc  = decodeURIComponent(getQuery('desc')||'');
+
+    const ptitle = document.getElementById('ptitle');
+    const srcA   = document.getElementById('src');
+    const content= document.getElementById('content');
+    const hero   = document.getElementById('hero');
+    const grid   = document.getElementById('moreimg');
+
+    ptitle.textContent = title || 'Post';
+    ptitle.classList.remove('loading');
+    if (link) { srcA.href = link; } else { srcA.textContent = 'No source link'; srcA.removeAttribute('href'); }
+
+    async function tryTextModeFallback(){
+      // If direct URL fetch fails on the server, use a local text fallback
+      const fallback = `Title: ${title}\n\nSummary: ${desc}\n\nWrite a long original article for West Bengal job seekers based on this summary.`;
+      const r = await fetch('/.netlify/functions/ai-post?text='+encodeURIComponent(fallback));
+      const j = await r.json();
+      return j;
+    }
+
     async function render(){
       try{
-        const r=await fetch('/.netlify/functions/ai-post?link='+encodeURIComponent(link));
-        const j=await r.json();
-        document.getElementById('content').innerHTML=j.html||'<p>No AI content.</p>';
-        if(Array.isArray(j.images)&&j.images.length){
-          const hero=document.getElementById('hero');
-          const first=await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(j.images[0]));
-          const fjson=await first.json();
-          if(fjson.dataUrl){hero.src=fjson.dataUrl;hero.style.display='block';}
-          const grid=document.getElementById('moreimg');
-          for(const p of j.images.slice(1)){
-            const rr=await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(p));
-            const jj=await rr.json();
-            if(jj.dataUrl){const img=new Image();img.src=jj.dataUrl;img.alt=p;img.className='hero-img';grid.appendChild(img);}
+        // First attempt: normal URL mode
+        let r = await fetch('/.netlify/functions/ai-post?link='+encodeURIComponent(link));
+        let j = await r.json();
+
+        // If html not provided (or function returned a placeholder), retry with text mode
+        if (!j || !j.html || /Invalid or missing link/.test(j.html) || /Could not fetch the source URL/.test(j.html)) {
+          j = await tryTextModeFallback();
+        }
+
+        content.innerHTML = j.html || '<p class="notice">AI did not return content.</p>';
+
+        // Try images (hero + rest)
+        if (Array.isArray(j.images) && j.images.length){
+          const first = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(j.images[0]));
+          const fj = await first.json();
+          if (fj.dataUrl) { hero.src = fj.dataUrl; hero.style.display='block'; }
+
+          for (const p of j.images.slice(1)){
+            const rr = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(p));
+            const jj = await rr.json();
+            if (jj.dataUrl){
+              const img = new Image(); img.src = jj.dataUrl; img.alt = p; img.className='hero-img';
+              grid.appendChild(img);
+            }
           }
         }
-      }catch(e){document.getElementById('content').innerHTML='<p class="notice">Could not generate AI article.</p>';}
+      }catch(e){
+        content.innerHTML = '<p class="notice">Could not generate AI article.</p><pre class="muted">'+(e.message||'')+'</pre>';
+      }
     }
     render();
   </script>
