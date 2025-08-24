@@ -1,6 +1,6 @@
 {
   "name": "jobpulse-kolkata",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "type": "commonjs",
   "scripts": {
@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "fast-xml-parser": "^4.5.0",
-    "@netlify/blobs": "^5.0.0"
+    "@netlify/blobs": "^5.0.0",
+    "sanitize-html": "^2.11.0"
   }
 }
