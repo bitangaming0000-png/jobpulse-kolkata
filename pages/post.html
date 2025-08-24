@@ -11,15 +11,14 @@
     .ai-block h2{margin-top:14px}
     .img-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
     .muted{color:var(--muted)}
-    .loading{opacity:.8}
   </style>
 </head>
 <body>
   <div class="container">
-    <h1 id="ptitle" class="loading">Loading…</h1>
+    <h1 id="ptitle">Loading…</h1>
     <p><a id="src" class="badge" href="#" target="_blank" rel="noopener">Source ↗</a></p>
     <img id="hero" class="hero-img" alt="AI banner" />
-    <div id="content" class="ai-block card">Generating AI article…</div>
+    <div id="content" class="ai-block card">Generating…</div>
     <div id="moreimg" class="img-grid"></div>
   </div>
 
@@ -30,54 +29,62 @@
     const link  = decodeURIComponent(getQuery('link')||'');
     const desc  = decodeURIComponent(getQuery('desc')||'');
 
-    const ptitle = document.getElementById('ptitle');
-    const srcA   = document.getElementById('src');
-    const content= document.getElementById('content');
-    const hero   = document.getElementById('hero');
-    const grid   = document.getElementById('moreimg');
+    document.getElementById('ptitle').textContent = title || 'Post';
+    if (link) document.getElementById('src').href = link; else document.getElementById('src').textContent = 'No source link';
 
-    ptitle.textContent = title || 'Post';
-    ptitle.classList.remove('loading');
-    if (link) { srcA.href = link; } else { srcA.textContent = 'No source link'; srcA.removeAttribute('href'); }
+    const content = document.getElementById('content');
+    const hero = document.getElementById('hero');
+    const grid = document.getElementById('moreimg');
 
-    async function tryTextModeFallback(){
-      // If direct URL fetch fails on the server, use a local text fallback
-      const fallback = `Title: ${title}\n\nSummary: ${desc}\n\nWrite a long original article for West Bengal job seekers based on this summary.`;
-      const r = await fetch('/.netlify/functions/ai-post?text='+encodeURIComponent(fallback));
+    async function tryTextFallback(){
+      const seed = `Title: ${title}\n\nSummary: ${desc}\n\nWrite a long, structured article for West Bengal job seekers.`;
+      const r = await fetch('/.netlify/functions/ai-post?text='+encodeURIComponent(seed));
       const j = await r.json();
       return j;
     }
 
+    function maybeDisableAI(flag){
+      if (flag) try{ localStorage.setItem('jp-ai-disabled', flag); }catch{}
+    }
+
     async function render(){
       try{
-        // First attempt: normal URL mode
         let r = await fetch('/.netlify/functions/ai-post?link='+encodeURIComponent(link));
         let j = await r.json();
 
-        // If html not provided (or function returned a placeholder), retry with text mode
-        if (!j || !j.html || /Invalid or missing link/.test(j.html) || /Could not fetch the source URL/.test(j.html)) {
-          j = await tryTextModeFallback();
+        if (j.ai_disabled) maybeDisableAI(j.ai_disabled);
+
+        if (!j || !j.html || j.ai_disabled) {
+          // try local text fallback if we haven’t yet
+          const f = await tryTextFallback();
+          if (f.ai_disabled) maybeDisableAI(f.ai_disabled);
+          j = f;
         }
 
-        content.innerHTML = j.html || '<p class="notice">AI did not return content.</p>';
+        content.innerHTML = j.html || '<p class="notice">No content.</p>';
 
-        // Try images (hero + rest)
-        if (Array.isArray(j.images) && j.images.length){
+        // Images only if AI not disabled
+        const disabled = (localStorage.getItem('jp-ai-disabled')||'').length>0;
+        if (!disabled && Array.isArray(j.images) && j.images.length){
           const first = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(j.images[0]));
           const fj = await first.json();
-          if (fj.dataUrl) { hero.src = fj.dataUrl; hero.style.display='block'; }
+          if (fj.ai_disabled) maybeDisableAI(fj.ai_disabled);
+          if (fj.dataUrl){ hero.src = fj.dataUrl; hero.style.display='block'; }
 
-          for (const p of j.images.slice(1)){
-            const rr = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(p));
-            const jj = await rr.json();
-            if (jj.dataUrl){
-              const img = new Image(); img.src = jj.dataUrl; img.alt = p; img.className='hero-img';
-              grid.appendChild(img);
+          if (!fj.ai_disabled){
+            for (const p of j.images.slice(1)){
+              const rr = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(p));
+              const jj = await rr.json();
+              if (jj.ai_disabled) { maybeDisableAI(jj.ai_disabled); break; }
+              if (jj.dataUrl){
+                const img = new Image(); img.src = jj.dataUrl; img.alt = p; img.className='hero-img';
+                grid.appendChild(img);
+              }
             }
           }
         }
       }catch(e){
-        content.innerHTML = '<p class="notice">Could not generate AI article.</p><pre class="muted">'+(e.message||'')+'</pre>';
+        content.innerHTML = '<p class="notice">Could not generate article.</p><pre class="muted">'+(e.message||'')+'</pre>';
       }
     }
     render();
