@@ -13,7 +13,6 @@
     }
     .article-wrap img{max-width:100%;height:auto;border-radius:8px;margin:8px 0;border:1px solid var(--border)}
     .ad-spacer{margin:10px 0}
-    pre.excerpt{white-space:pre-wrap}
     .source-btn{display:inline-block;margin:10px 0;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);text-decoration:none}
   </style>
 </head>
@@ -22,13 +21,18 @@
     <h1 id="ptitle" style="text-align:center">Loading…</h1>
     <p style="text-align:center"><a id="src" class="badge" href="#" target="_blank" rel="noopener">Source ↗</a></p>
 
+    <!-- Full article target -->
     <div id="article" class="article-wrap">Fetching article…</div>
 
+    <!-- Fallback (long excerpt) -->
     <div id="fallback" class="article-wrap" style="display:none">
       <h2>Article (Long Excerpt)</h2>
       <div id="excerpt"></div>
       <p style="text-align:center"><a id="readsource" class="source-btn" target="_blank" rel="noopener">Read full on source ↗</a></p>
     </div>
+
+    <!-- 🔻 Bottom ad slot (new) -->
+    <div id="bottomAd" class="ad-slot ad-spacer" data-variant="multiplex" style="max-width:820px;margin:14px auto;"></div>
   </div>
 
   <script type="module">
@@ -72,10 +76,10 @@
       const queue = (images||[]).filter(u=>u && !existing.has(u));
 
       let imgIdx = 0;
-      let insertAfter = (node, el) => node.parentNode.insertBefore(el, node.nextSibling);
+      const insertAfter = (node, el) => node.parentNode.insertBefore(el, node.nextSibling);
 
       paras.forEach((p, idx)=>{
-        // Every 2 paragraphs: insert an ad
+        // Every 2 paragraphs: insert an in-article ad
         if(idx>0 && idx % 2 === 0){
           const ad = document.createElement('div');
           ad.className='ad-slot ad-spacer';
@@ -98,7 +102,8 @@
       const chunks = String(text||'').split(/\n\s*\n|(?<=\.)\s{2,}/g);
       container.innerHTML='';
       chunks.forEach(t=>{
-        const p=document.createElement('p'); p.textContent=t.trim(); if(p.textContent) container.appendChild(p);
+        const s = t.trim(); if(!s) return;
+        const p=document.createElement('p'); p.textContent=s; container.appendChild(p);
       });
     }
 
@@ -108,28 +113,28 @@
         const j = await r.json();
 
         if (j.allowed && j.html) {
-          // Full sanitized HTML (original language). Centered by CSS.
+          // Full sanitized HTML (original). Centered by CSS.
           article.innerHTML = j.html;
-          // Interleave images + ads
           interleaveMediaAndAds(article, j.images || []);
-          // Hydrate ads placed dynamically
-          await hydrateAds(article);
-          fb.style.display='none';
+          await hydrateAds(article); // in-article units
         } else {
-          // Long excerpt mode + images from source + ads interleaved
+          // Long excerpt mode + images + ads
           article.style.display='none';
           fb.style.display='block';
           const body = (j.excerpt && j.excerpt.trim().length) ? j.excerpt : (desc || 'No content available.');
           renderExcerptAsParagraphs(body, excerptEl);
-
-          // Insert images/ads into excerpt version too
           interleaveMediaAndAds(fb, j.images || []);
           await hydrateAds(fb);
-
           readBtn.href = j.link || link || '#';
         }
+
+        // 🔻 Hydrate bottom ad too
+        await hydrateAds(document);
+
       } catch (e) {
         article.innerHTML = '<p class="notice">Could not fetch the article.</p>';
+        // still hydrate bottom ad
+        await hydrateAds(document);
       }
     }
     render();
