@@ -27,12 +27,36 @@ async function loadAllowlist(){
 }
 
 function extractBody(html=''){
-  // very simple extraction of <title> and <body> content
   const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
   const title = titleMatch ? titleMatch[1].trim() : '';
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
   const body = bodyMatch ? bodyMatch[1] : html;
   return { title, body };
+}
+
+function makeAbs(base, src) {
+  try { return new URL(src, base).href; } catch { return null; }
+}
+function uniq(arr) {
+  const s=new Set(); const out=[];
+  for(const x of arr){ const k=(x||'').trim(); if(!k||s.has(k)) continue; s.add(k); out.push(k); }
+  return out;
+}
+function extractImages(html, pageUrl, limit=12){
+  const imgs = [];
+  // og:image, twitter:image
+  for(const m of html.matchAll(/<meta[^>]+property=["'](?:og:image|twitter:image)["'][^>]*content=["']([^"']+)["'][^>]*>/gi)){
+    const u = makeAbs(pageUrl, m[1]); if(u) imgs.push(u);
+  }
+  for(const m of html.matchAll(/<meta[^>]+content=["']([^"']+)["'][^>]*property=["'](?:og:image|twitter:image)["'][^>]*>/gi)){
+    const u = makeAbs(pageUrl, m[1]); if(u) imgs.push(u);
+  }
+  // <img src="">
+  for(const m of html.matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi)){
+    const u = makeAbs(pageUrl, m[1]);
+    if(u && !/\.(svg|gif)$/i.test(u)) imgs.push(u);
+  }
+  return uniq(imgs).slice(0, limit);
 }
 
 function sanitize(html){
@@ -46,16 +70,12 @@ function sanitize(html){
     allowedSchemes: ['http','https','data','mailto','tel'],
     transformTags: {
       'a': (tagName, attribs) => {
-        if (attribs.href && !/^https?:/i.test(attribs.href) && !/^#/.test(attribs.href)) {
-          // strip potentially dangerous protocols
-          delete attribs.href;
-        }
+        if (attribs.href && !/^https?:/i.test(attribs.href) && !/^#/.test(attribs.href)) delete attribs.href;
         attribs.rel = 'noopener';
         attribs.target = '_blank';
         return { tagName, attribs };
       }
     },
-    // keep unicode chars as-is; no further encoding
     textFilter: (text) => text
   });
 }
@@ -91,20 +111,20 @@ module.exports.handler = async (event) => {
     const allowed = allow.includes(host);
 
     const res = await fetchFn(link, { headers: { 'User-Agent':'Mozilla/5.0 (JobPulse Reader)' } });
-    if(!res.ok) return json(200, { allowed:false, title:'', html:'', excerpt:`Source fetch failed (${res.status}).`, link });
+    if(!res.ok) return json(200, { allowed:false, title:'', html:'', excerpt:`Source fetch failed (${res.status}).`, images:[], link });
 
     const page = await res.text();
     const { title, body } = extractBody(page);
+    const images = extractImages(page, link, 12);
 
     if (allowed) {
       const clean = sanitize(body);
-      return json(200, { allowed:true, title, html: clean, link });
+      return json(200, { allowed:true, title, html: clean, images, link });
     }
 
-    // Not allowed: return long excerpt in original language (no rewriting)
     const text = htmlToText(body);
-    const excerpt = text.slice(0, 12000); // long excerpt, ~12k chars
-    return json(200, { allowed:false, title, html:'', excerpt, link });
+    const excerpt = text.slice(0, 12000);
+    return json(200, { allowed:false, title, html:'', excerpt, images, link });
 
   } catch (e) {
     return json(500, { error: e.message });
