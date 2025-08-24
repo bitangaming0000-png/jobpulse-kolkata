@@ -5,25 +5,6 @@ const CACHE_KEY = 'jp-cache-items';
 function saveCache(items){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), items})) }catch{} }
 function readCache(){ try{ const j = JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return (j&&j.items)||[] }catch{ return [] } }
 
-// --- helpers for AI thumbs ---
-function hashTitle(s){
-  let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return 'h'+Math.abs(h);
-}
-
-async function getAIThumb(prompt){
-  // stop if AI disabled earlier
-  try{ if(localStorage.getItem('jp-ai-disabled')) return null; }catch{}
-  const key = 'jp-thumb:'+hashTitle(prompt);
-  try{ const cached = localStorage.getItem(key); if(cached) return cached; }catch{}
-  try{
-    const r = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(prompt));
-    const j = await r.json();
-    if (j.ai_disabled){ try{ localStorage.setItem('jp-ai-disabled', j.ai_disabled);}catch{}; return null; }
-    if (j && j.dataUrl){ try{ localStorage.setItem(key, j.dataUrl);}catch{}; return j.dataUrl; }
-  }catch{}
-  return null;
-}
-
 function showEmpty(id, msg){
   const elx = document.getElementById(id);
   if(elx && !elx.children.length){
@@ -109,15 +90,12 @@ function cardForPost(p){
   const c = el('article','card');
   const date = p.pubDate ? new Date(p.pubDate) : null;
   c.innerHTML = `
-    <div class="thumb-wrap"><img class="thumb" alt="" loading="lazy" /></div>
     <div class="meta"><span class="badge">${date? new Intl.DateTimeFormat('en-IN',{dateStyle:'medium'}).format(date):'New'}</span>
     <span class="badge">WB Only</span></div>
     <h3><a href="/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description)}&date=${encodeURIComponent(p.pubDate||'')}" target="_self">${p.title}</a></h3>
     <p>${truncate(p.description, 160)}</p>
     <a class="badge" href="${safeURL(p.link)}" target="_blank" rel="noopener">Source ↗</a>
   `;
-  const prompt = `Wide banner, dark theme, West Bengal jobs news: ${p.title}. Minimal, newsy, high-contrast, Kolkata silhouette`;
-  c.querySelector('.thumb').dataset.prompt = prompt;
   return c;
 }
 
@@ -127,7 +105,7 @@ function isWestBengalItem(item) {
   return WB_FILTER.test(fields);
 }
 
-// Compact live ticker (slower)
+// Compact live ticker (slow)
 function buildTicker(items){
   const wrap = document.getElementById('notify-ticker');
   if(!wrap) return;
@@ -150,17 +128,6 @@ function buildTicker(items){
   };
   track.appendChild(makeRun()); track.appendChild(makeRun());
   wrap.innerHTML=''; wrap.appendChild(track);
-}
-
-// Lazy AI thumbs (limit per section to control cost)
-async function loadAIThumbs(container, limit=6){
-  const imgs = Array.from(container.querySelectorAll('img.thumb')).slice(0, limit);
-  for(const img of imgs){
-    if(img.dataset.loaded) continue;
-    const prompt = img.dataset.prompt || 'abstract news banner';
-    const dataUrl = await getAIThumb(prompt);
-    if(dataUrl){ img.src = dataUrl; img.alt = prompt; img.dataset.loaded = '1'; }
-  }
 }
 
 async function loadCategories(){
@@ -195,10 +162,6 @@ async function mountHome(){
   if(!trend.length) showEmpty('trending','No trending sources yet.');
 
   await loadCategories();
-
-  loadAIThumbs(top, 6);
-  loadAIThumbs(notices, 4);
-  loadAIThumbs(trending, 6);
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
