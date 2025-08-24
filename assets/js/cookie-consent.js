@@ -1,52 +1,24 @@
-// assets/js/cookie-consent.js
 (function(){
-  const LS_KEY = 'jp-consent'; // 'accepted' | 'rejected'
-  function setConsent(val){
-    try{ localStorage.setItem(LS_KEY, val); }catch{}
-    window.dispatchEvent(new CustomEvent('jp:consent-changed', { detail:{ value: val }}));
-  }
-  function getConsent(){
-    try{ return localStorage.getItem(LS_KEY) || ''; }catch{ return ''; }
-  }
-  window.jpConsent = getConsent;
+  const LS_KEY='jp-consent';
+  function setConsent(v){ try{localStorage.setItem(LS_KEY,v);}catch{} window.dispatchEvent(new CustomEvent('jp:consent-changed',{detail:{value:v}}));}
+  function getConsent(){ try{return localStorage.getItem(LS_KEY)||'';}catch{return '';} }
+  window.jpConsent=getConsent;
+  function $(id){return document.getElementById(id)}
+  function showBanner(b){const e=$('jp-cookie-banner'); if(e) e.style.display=b?'block':'none'}
+  function showModal(b){const e=$('jp-cookie-modal'); if(e) e.style.display=b?'block':'none'}
 
-  function $(id){ return document.getElementById(id); }
-  function showBanner(show){ const b=$('jp-cookie-banner'); if(b) b.style.display = show ? 'block' : 'none'; }
-  function showModal(show){ const m=$('jp-cookie-modal'); if(m) m.style.display = show ? 'block' : 'none'; }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    (async () => {
-      // inject banner markup
-      if(!$('jp-cookie-banner')){
-        try {
-          const html = await fetch('/components/cookie-banner.html').then(r=>r.text());
-          const tmp = document.createElement('template'); tmp.innerHTML = html.trim();
-          document.body.appendChild(tmp.content.cloneNode(true));
-        } catch(e){}
-      }
-
-      // show banner if no stored choice
-      const existing = getConsent();
-      showBanner(!existing);
-
-      // wire buttons (after injection)
-      setTimeout(() => {
-        const btnAccept = $('jp-cookie-accept');
-        const btnReject = $('jp-cookie-reject');
-        const btnSettings = $('jp-cookie-settings');
-        const btnSave = $('jp-cookie-save');
-        const btnCancel = $('jp-cookie-cancel');
-        const adsChk = $('jp-ads-consent');
-
-        if(btnAccept) btnAccept.onclick = () => { setConsent('accepted'); showBanner(false); };
-        if(btnReject) btnReject.onclick = () => { setConsent('rejected'); showBanner(false); };
-        if(btnSettings) btnSettings.onclick = () => { if(adsChk) adsChk.checked = (getConsent() !== 'rejected'); showModal(true); };
-        if(btnCancel) btnCancel.onclick = () => showModal(false);
-        if(btnSave) btnSave.onclick = () => {
-          const val = adsChk && adsChk.checked ? 'accepted' : 'rejected';
-          setConsent(val); showModal(false); showBanner(false);
-        };
-      }, 0);
-    })();
+  document.addEventListener('DOMContentLoaded',async()=>{
+    if(!$('jp-cookie-banner')){
+      try{const html=await fetch('/components/cookie-banner.html').then(r=>r.text()); const t=document.createElement('template'); t.innerHTML=html.trim(); document.body.appendChild(t.content.cloneNode(true));}catch{}
+    }
+    showBanner(!getConsent());
+    setTimeout(()=>{
+      const a=$('jp-cookie-accept'), r=$('jp-cookie-reject'), s=$('jp-cookie-settings'), sv=$('jp-cookie-save'), c=$('jp-cookie-cancel'), chk=$('jp-ads-consent');
+      if(a) a.onclick=()=>{setConsent('accepted'); showBanner(false);}
+      if(r) r.onclick=()=>{setConsent('rejected'); showBanner(false);}
+      if(s) s.onclick=()=>{ if(chk) chk.checked = (getConsent()!=='rejected'); showModal(true); }
+      if(c) c.onclick=()=>showModal(false);
+      if(sv) sv.onclick=()=>{ const v=(chk && chk.checked)?'accepted':'rejected'; setConsent(v); showModal(false); showBanner(false); }
+    },0);
   });
 })();
