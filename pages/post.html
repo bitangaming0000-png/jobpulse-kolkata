@@ -7,22 +7,27 @@
   <script src="/assets/js/theme-boot.js"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
   <style>
-    .article-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
-    .article-wrap img{max-width:100%;height:auto;border-radius:8px}
-    .source-btn{display:inline-block;margin:10px 0;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);text-decoration:none}
+    .article-wrap{
+      background:var(--card);border:1px solid var(--border);border-radius:12px;
+      padding:16px; max-width:820px; margin:0 auto; line-height:1.65;
+    }
+    .article-wrap img{max-width:100%;height:auto;border-radius:8px;margin:8px 0;border:1px solid var(--border)}
+    .ad-spacer{margin:10px 0}
     pre.excerpt{white-space:pre-wrap}
+    .source-btn{display:inline-block;margin:10px 0;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);text-decoration:none}
   </style>
 </head>
 <body>
   <div class="container">
-    <h1 id="ptitle">Loading…</h1>
-    <p><a id="src" class="badge" href="#" target="_blank" rel="noopener">Source ↗</a></p>
+    <h1 id="ptitle" style="text-align:center">Loading…</h1>
+    <p style="text-align:center"><a id="src" class="badge" href="#" target="_blank" rel="noopener">Source ↗</a></p>
 
     <div id="article" class="article-wrap">Fetching article…</div>
-    <div id="fallback" style="display:none">
+
+    <div id="fallback" class="article-wrap" style="display:none">
       <h2>Article (Long Excerpt)</h2>
-      <pre id="excerpt" class="excerpt"></pre>
-      <p><a id="readsource" class="source-btn" target="_blank" rel="noopener">Read full on source ↗</a></p>
+      <div id="excerpt"></div>
+      <p style="text-align:center"><a id="readsource" class="source-btn" target="_blank" rel="noopener">Read full on source ↗</a></p>
     </div>
   </div>
 
@@ -43,21 +48,84 @@
     ptitle.textContent = title || 'Post';
     if (link) srcA.href = link; else srcA.textContent = 'No source link';
 
+    // hydrate any .ad-slot placeholders into full AdSense units (same logic as on home)
+    async function hydrateAds(scope=document){
+      try{
+        for(const ph of scope.querySelectorAll('.ad-slot')){
+          const variant = ph.dataset.variant || 'inarticle';
+          let file = '/components/ads-unit-inarticle.html';
+          if(variant==='display') file='/components/ads-unit-display.html';
+          if(variant==='multiplex') file='/components/ads-unit-multiplex.html';
+          const unit = await fetch(file).then(r=>r.text());
+          ph.outerHTML = unit;
+        }
+      }catch(e){}
+    }
+
+    // Place images between paragraphs and ads every few paragraphs
+    function interleaveMediaAndAds(container, images){
+      const paras = Array.from(container.querySelectorAll('p'));
+      if(!paras.length) return;
+
+      // Track images already present to avoid duplicates
+      const existing = new Set(Array.from(container.querySelectorAll('img')).map(i=>i.src));
+      const queue = (images||[]).filter(u=>u && !existing.has(u));
+
+      let imgIdx = 0;
+      let insertAfter = (node, el) => node.parentNode.insertBefore(el, node.nextSibling);
+
+      paras.forEach((p, idx)=>{
+        // Every 2 paragraphs: insert an ad
+        if(idx>0 && idx % 2 === 0){
+          const ad = document.createElement('div');
+          ad.className='ad-slot ad-spacer';
+          ad.dataset.variant='inarticle';
+          insertAfter(p, ad);
+        }
+        // Every 3 paragraphs: insert a source image if available
+        if(idx>0 && idx % 3 === 0 && imgIdx < queue.length){
+          const fig = document.createElement('figure');
+          const img = new Image();
+          img.loading='lazy'; img.alt=title||'Article image'; img.src=queue[imgIdx++];
+          fig.appendChild(img);
+          insertAfter(p, fig);
+        }
+      });
+    }
+
+    function renderExcerptAsParagraphs(text, container){
+      // Split long excerpt into paragraphs by double newlines or sentence breaks
+      const chunks = String(text||'').split(/\n\s*\n|(?<=\.)\s{2,}/g);
+      container.innerHTML='';
+      chunks.forEach(t=>{
+        const p=document.createElement('p'); p.textContent=t.trim(); if(p.textContent) container.appendChild(p);
+      });
+    }
+
     async function render(){
       try{
         const r = await fetch('/.netlify/functions/read-post?link='+encodeURIComponent(link));
         const j = await r.json();
 
         if (j.allowed && j.html) {
-          // Show full sanitized HTML (original language preserved)
+          // Full sanitized HTML (original language). Centered by CSS.
           article.innerHTML = j.html;
-          fb.style.display = 'none';
+          // Interleave images + ads
+          interleaveMediaAndAds(article, j.images || []);
+          // Hydrate ads placed dynamically
+          await hydrateAds(article);
+          fb.style.display='none';
         } else {
-          // Long excerpt (no rewriting) + link to source
-          article.style.display = 'none';
-          fb.style.display = 'block';
+          // Long excerpt mode + images from source + ads interleaved
+          article.style.display='none';
+          fb.style.display='block';
           const body = (j.excerpt && j.excerpt.trim().length) ? j.excerpt : (desc || 'No content available.');
-          excerptEl.textContent = body;
+          renderExcerptAsParagraphs(body, excerptEl);
+
+          // Insert images/ads into excerpt version too
+          interleaveMediaAndAds(fb, j.images || []);
+          await hydrateAds(fb);
+
           readBtn.href = j.link || link || '#';
         }
       } catch (e) {
