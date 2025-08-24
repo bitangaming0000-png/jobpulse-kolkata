@@ -1,4 +1,4 @@
-// assets/js/main.js (final build, self-contained, no imports)
+// assets/js/main.js (FINAL — consent-aware, self-contained, no imports)
 (function(){
   // --- utils ---
   function pad(n){return n<10?'0'+n:''+n}
@@ -50,11 +50,30 @@
       const y=document.getElementById('year'); if(y) y.textContent = new Date().getFullYear();
     }catch(e){ console.error('shell mount failed', e); }
 
-    // AdSense head include
+    // AdSense head include (consent-aware)
     try {
-      const adsHead = await fetch('/components/ads-head.html').then(r=>r.text());
-      const hasAdScript = !!document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
-      if(!hasAdScript){ const tmp=document.createElement('template'); tmp.innerHTML = adsHead.trim(); document.head.appendChild(tmp.content.cloneNode(true)); }
+      const consent = (window.jpConsent && window.jpConsent()) || '';
+      if (consent === 'accepted' || consent === '') {
+        const has = !!document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
+        if(!has){
+          const adsHead = await fetch('/components/ads-head.html').then(r=>r.text());
+          const tmp=document.createElement('template'); tmp.innerHTML = adsHead.trim();
+          document.head.appendChild(tmp.content.cloneNode(true));
+        }
+      } else {
+        console.info('AdSense blocked until user accepts cookies.');
+      }
+      // if user accepts later, load ads script
+      window.addEventListener('jp:consent-changed', async (ev) => {
+        if (ev.detail?.value === 'accepted') {
+          const has = !!document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
+          if(!has){
+            const adsHead = await fetch('/components/ads-head.html').then(r=>r.text());
+            const tmp=document.createElement('template'); tmp.innerHTML = adsHead.trim();
+            document.head.appendChild(tmp.content.cloneNode(true));
+          }
+        }
+      });
     } catch(e){}
 
     // Inject ad units
@@ -217,4 +236,3 @@
     if(document.body.classList.contains('home')){ try{await mountHome();}catch(e){console.error(e);} }
   });
 })();
-
