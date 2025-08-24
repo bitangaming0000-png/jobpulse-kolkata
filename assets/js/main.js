@@ -1,4 +1,4 @@
-// assets/js/main.js (FINAL — consent-aware, self-contained, no imports)
+// assets/js/main.js (FINAL — consent-aware, sections: Top Stories, Live, You May Like)
 (function(){
   // --- utils ---
   function pad(n){return n<10?'0'+n:''+n}
@@ -13,6 +13,8 @@
   function el(tag, cls, txt){ const n=document.createElement(tag); if(cls) n.className=cls; if(txt!=null) n.textContent=txt; return n; }
   function truncate(s, n){ s=String(s||''); return s.length>n? s.slice(0,n-1)+'…' : s; }
   function safeURL(u){ try{ const x=new URL(u); return x.href; } catch(e){ return '#'; } }
+  function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+  function uniqBy(arr, keyFn){ const seen=new Set(); const out=[]; for(const x of arr){ const k=keyFn(x); if(seen.has(k)) continue; seen.add(k); out.push(x); } return out; }
 
   const CACHE_KEY = 'jp-cache-items';
   function saveCache(items){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), items})) }catch{} }
@@ -63,7 +65,7 @@
       } else {
         console.info('AdSense blocked until user accepts cookies.');
       }
-      // if user accepts later, load ads script
+      // load if user accepts later
       window.addEventListener('jp:consent-changed', async (ev) => {
         if (ev.detail?.value === 'accepted') {
           const has = !!document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
@@ -203,32 +205,60 @@
     }catch{}
   }
 
-  async function mountHome(){
-    const top=document.getElementById('top-scroll');
-    const notices=document.getElementById('notices');
-    const trending=document.getElementById('trending');
-    const items=await getRSS();
+  function sortByDateDesc(list){
+    return list.slice().sort((a,b)=>{
+      const ta = Date.parse(a.pubDate||'')||0;
+      const tb = Date.parse(b.pubDate||'')||0;
+      return tb - ta;
+    });
+  }
 
+  async function mountHome(){
+    const topStoriesEl = document.getElementById('top-stories');
+    const liveEl = document.getElementById('live');
+    const likeEl = document.getElementById('you-may-like');
+    const notices=document.getElementById('notices');
+
+    const items=await getRSS();
     buildTicker(items);
 
-    (items.slice(0,10)).forEach(p=> top && top.appendChild(cardForPost(p)));
-    if(top && !top.children.length) showEmpty('top-scroll','No West Bengal posts found yet.');
+    // WB-only
+    const wbItems = items.filter(isWestBengalItem);
 
-    const notif=(items||[]).filter(p=>/admit|call letter|result/i.test((p.title||'')+(p.description||''))).slice(0,8);
+    // TOP STORIES: most recent WB posts
+    const topStories = sortByDateDesc(wbItems).slice(0, 12);
+    topStories.forEach(p=> topStoriesEl && topStoriesEl.appendChild(cardForPost(p)));
+    if(topStoriesEl && !topStoriesEl.children.length) showEmpty('top-stories','No stories yet.');
+
+    // LIVE: posts within last 48 hours (horizontal)
+    const now = Date.now();
+    const liveItems = sortByDateDesc(wbItems).filter(p=>{
+      const t = Date.parse(p.pubDate||'')||0;
+      return t && (now - t) <= 48*3600*1000;
+    }).slice(0, 18);
+    liveItems.forEach(p=> liveEl && liveEl.appendChild(cardForPost(p)));
+    if(liveEl && !liveEl.children.length) showEmpty('live','No live updates in last 48 hours.');
+
+    // YOU MAY LIKE: random from WB excluding already shown
+    const shownSet = new Set([...topStories, ...liveItems].map(x=>x.link));
+    const rest = wbItems.filter(x=>!shownSet.has(x.link));
+    const likeItems = shuffle(rest).slice(0, 12);
+    likeItems.forEach(p=> likeEl && likeEl.appendChild(cardForPost(p)));
+    if(likeEl && !likeEl.children.length) showEmpty('you-may-like','More items coming soon.');
+
+    // NOTICES: admit/results
+    const notif=wbItems.filter(p=>/admit|call letter|result/i.test((p.title||'')+(p.description||''))).slice(0,12);
     notif.forEach(p=> notices && notices.appendChild(cardForPost(p)));
     if(notices && !notif.length) showEmpty('notices','No notifications right now.');
 
-    const byHost={}; for(const it of (items||[])){ try{const h=new URL(it.link).host.replace('www.',''); byHost[h]=(byHost[h]||0)+1;}catch{} }
-    const popularHosts=Object.entries(byHost).sort((a,b)=>b[1]-a[1]).map(e=>e[0]).slice(0,3);
-    const trend=(items||[]).filter(p=>{try{return popularHosts.includes(new URL(p.link).host.replace('www.',''))}catch{return false}}).slice(0,12);
-    trend.forEach(p=> trending && trending.appendChild(cardForPost(p)));
-    if(trending && !trend.length) showEmpty('trending','No trending sources yet.');
-
+    // Categories
     await loadCategories();
 
-    loadSourceThumbs(top, 8);
-    loadSourceThumbs(notices, 6);
-    loadSourceThumbs(trending, 8);
+    // Thumbs
+    loadSourceThumbs(topStoriesEl, 8);
+    loadSourceThumbs(liveEl, 8);
+    loadSourceThumbs(likeEl, 8);
+    loadSourceThumbs(notices, 8);
   }
 
   document.addEventListener('DOMContentLoaded', async ()=>{
