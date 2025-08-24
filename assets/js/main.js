@@ -5,23 +5,21 @@ const CACHE_KEY = 'jp-cache-items';
 function saveCache(items){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), items})) }catch{} }
 function readCache(){ try{ const j = JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return (j&&j.items)||[] }catch{ return [] } }
 
-// --- tiny helpers just for thumbs ---
+// --- helpers for AI thumbs ---
 function hashTitle(s){
   let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return 'h'+Math.abs(h);
 }
+
 async function getAIThumb(prompt){
+  // stop if AI disabled earlier
+  try{ if(localStorage.getItem('jp-ai-disabled')) return null; }catch{}
   const key = 'jp-thumb:'+hashTitle(prompt);
-  try{
-    const cached = localStorage.getItem(key);
-    if(cached) return cached;
-  }catch{}
+  try{ const cached = localStorage.getItem(key); if(cached) return cached; }catch{}
   try{
     const r = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(prompt));
     const j = await r.json();
-    if(j && j.dataUrl){
-      try{ localStorage.setItem(key, j.dataUrl); }catch{}
-      return j.dataUrl;
-    }
+    if (j.ai_disabled){ try{ localStorage.setItem('jp-ai-disabled', j.ai_disabled);}catch{}; return null; }
+    if (j && j.dataUrl){ try{ localStorage.setItem(key, j.dataUrl);}catch{}; return j.dataUrl; }
   }catch{}
   return null;
 }
@@ -70,7 +68,7 @@ async function mountShell(){
     localStorage.setItem('jp-theme', t); root.setAttribute('data-theme', t);
   });
 
-  // Hamburger nav (hover + click + outside/esc)
+  // Hamburger nav
   const nav = document.getElementById('sideNav');
   const hamburger = document.getElementById('hamburger');
   function openNav(){ nav.classList.add('open'); nav.setAttribute('aria-hidden','false'); }
@@ -85,7 +83,7 @@ async function mountShell(){
   const dt = document.getElementById('dateTime');
   const tick = ()=> dt.textContent = '🕒 ' + formatDateTimeIST(); tick(); setInterval(tick, 30000);
 
-  // Visitor Count (now via Netlify function)
+  // Visitor Count (via Netlify function visitors.js)
   const vc = document.querySelector('#visitorCount span');
   try {
     const r = await fetch('/.netlify/functions/visitors');
@@ -94,7 +92,6 @@ async function mountShell(){
 }
 
 async function getRSS(){
-  // live → archive → cache
   try{
     const r = await fetch('/api/rss'); if(!r.ok) throw new Error('RSS API failed');
     const j = await r.json(); const items = j.items || [];
@@ -111,7 +108,6 @@ async function getRSS(){
 function cardForPost(p){
   const c = el('article','card');
   const date = p.pubDate ? new Date(p.pubDate) : null;
-  // include a visual thumb container for AI image
   c.innerHTML = `
     <div class="thumb-wrap"><img class="thumb" alt="" loading="lazy" /></div>
     <div class="meta"><span class="badge">${date? new Intl.DateTimeFormat('en-IN',{dateStyle:'medium'}).format(date):'New'}</span>
@@ -120,8 +116,7 @@ function cardForPost(p){
     <p>${truncate(p.description, 160)}</p>
     <a class="badge" href="${safeURL(p.link)}" target="_blank" rel="noopener">Source ↗</a>
   `;
-  // store prompt on element for lazy generation later
-  const prompt = `Wide banner, dark theme, West Bengal jobs news: ${p.title}. Minimal, newsy, high-contrast, subtle Kolkata silhouette`;
+  const prompt = `Wide banner, dark theme, West Bengal jobs news: ${p.title}. Minimal, newsy, high-contrast, Kolkata silhouette`;
   c.querySelector('.thumb').dataset.prompt = prompt;
   return c;
 }
@@ -157,7 +152,7 @@ function buildTicker(items){
   wrap.innerHTML=''; wrap.appendChild(track);
 }
 
-// Lazy-generate AI thumbs for the first N cards inside a container
+// Lazy AI thumbs (limit per section to control cost)
 async function loadAIThumbs(container, limit=6){
   const imgs = Array.from(container.querySelectorAll('img.thumb')).slice(0, limit);
   for(const img of imgs){
@@ -201,7 +196,6 @@ async function mountHome(){
 
   await loadCategories();
 
-  // kick off AI thumbs (limited to control cost)
   loadAIThumbs(top, 6);
   loadAIThumbs(notices, 4);
   loadAIThumbs(trending, 6);
