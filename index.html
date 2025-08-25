@@ -26,7 +26,7 @@
         <div id="notify-ticker" class="ticker"></div>
       </div>
 
-      <!-- Today widgets (kept) -->
+      <!-- Today widgets -->
       <section class="section today-wrap">
         <div class="widgets">
           <div id="quoteBox" class="widget card">
@@ -39,105 +39,4 @@
           </div>
 
           <div id="weatherBox" class="widget card">
-            <div class="w-head">Kolkata Weather</div>
-            <div class="w-body">
-              <div class="w-temp"><span id="wt">—</span>°C</div>
-              <div class="w-small" id="wd">Loading…</div>
-              <div class="w-range" id="wr">— / — °C</div>
-              <div class="w-small" id="clock">🕒 <span>—:—</span> IST</div>
-            </div>
-            <div class="w-foot muted">Auto-updated every 30 mins.</div>
-          </div>
-
-          <div id="historyBox" class="widget card">
-            <div class="w-head">This Day in History</div>
-            <div class="w-body">
-              <div class="skeleton" style="height:16px;width:80%;margin:6px 0"></div>
-              <div class="skeleton" style="height:16px;width:60%;margin:6px 0"></div>
-            </div>
-            <div class="w-foot muted">Powered by Wikipedia</div>
-          </div>
-
-          <div id="airBox" class="widget card">
-            <div class="w-head">Kolkata Air Quality</div>
-            <div class="w-body">
-              <div class="w-temp"><span id="aqiVal">—</span> AQI</div>
-              <div class="w-small" id="aqiDesc">Loading…</div>
-              <div class="w-range" id="aqiNote">PM2.5: — μg/m³</div>
-            </div>
-            <div class="w-foot muted">Open-Meteo Air Quality</div>
-          </div>
-
-          <div id="calendarBox" class="widget card">
-            <div class="w-head">Exam Calendar (Next 60 days)</div>
-            <div class="w-body">
-              <ul id="calList" class="cal-list">
-                <li class="muted">Parsing dates from new posts…</li>
-              </ul>
-            </div>
-            <div class="w-foot muted">Auto-extracted from posts</div>
-          </div>
-        </div>
-      </section>
-
-      <ins class="ad-slot" data-variant="display"></ins>
-
-      <!-- Category Tabs -->
-      <section class="section">
-        <div class="tabs" id="jobTabs">
-          <button class="tab active" data-filter="all">All</button>
-          <button class="tab" data-filter="govt">Government</button>
-          <button class="tab" data-filter="private">Private</button>
-          <button class="tab" data-filter="bank">Banking</button>
-          <button class="tab" data-filter="rail">Railway</button>
-          <button class="tab" data-filter="it">IT</button>
-          <a class="tab right" href="/pages/saved.html">⭐ Saved Jobs</a>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2>Top News</h2>
-        <div id="top-scroll" class="scroller-x"></div>
-      </section>
-
-      <ins class="ad-slot" data-variant="inarticle"></ins>
-      <ins class="ad-slot" data-variant="display"></ins>
-      <ins class="ad-slot" data-variant="multiplex"></ins>
-
-      <section class="section">
-        <h2>Notifications</h2>
-        <div id="notices" class="grid"></div>
-      </section>
-
-      <section class="section">
-        <h2>Trending</h2>
-        <div id="trending" class="scroller-x"></div>
-      </section>
-
-      <!-- Keyword Cloud -->
-      <section class="section">
-        <h2>Trending Keywords</h2>
-        <div id="keywordCloud" class="cloud"></div>
-      </section>
-
-      <section class="section">
-        <h2>Categories</h2>
-        <div id="categories" class="scroller-x"></div>
-      </section>
-
-      <ins class="ad-slot" data-variant="display"></ins>
-      <ins class="ad-slot" data-variant="multiplex"></ins>
-    </div>
-
-    <!-- Toast host -->
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-    <script type="module" src="/assets/js/main.js"></script>
-    <script>
-      // register PWA service worker (non-blocking)
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(()=>{});
-      }
-    </script>
-  </body>
-</html>
+            <div class="w-head">
