@@ -5,12 +5,13 @@ const CACHE_KEY = 'jp-cache-items';
 function saveCache(items){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), items})) }catch{} }
 function readCache(){ try{ const j = JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return (j&&j.items)||[] }catch{ return [] } }
 
-// ---------- Auto theme (IST): morning=light, night=dark unless user chose ----------
+// ---------- Auto theme (IST) ----------
 (function autoThemeBoot(){
   try{
     const pref = localStorage.getItem('jp-theme');
     if(!pref){
-      const now = new Date(); const hrs = Number(new Intl.DateTimeFormat('en-IN',{hour:'2-digit',hour12:false,timeZone:'Asia/Kolkata'}).format(now));
+      const now = new Date();
+      const hrs = Number(new Intl.DateTimeFormat('en-IN',{hour:'2-digit',hour12:false,timeZone:'Asia/Kolkata'}).format(now));
       const mode = (hrs>=6 && hrs<18)?'light':'dark';
       document.documentElement.setAttribute('data-theme', mode);
     }
@@ -36,6 +37,14 @@ function showEmpty(id, msg){
     const p = document.createElement('p'); p.className = 'notice'; p.textContent = msg;
     elx.parentElement.appendChild(p);
   }
+}
+
+// --- Toast ---
+function showToast(html, ms=4000){
+  const host = document.getElementById('toast'); if(!host) return;
+  host.innerHTML = html;
+  host.classList.add('show');
+  setTimeout(()=> host.classList.remove('show'), ms);
 }
 
 // ---------------- Shell ----------------
@@ -132,12 +141,13 @@ function isSaved(link){ return getSaved().some(x=>x.link===link); }
 function toggleSave(post){
   const all = getSaved();
   const idx = all.findIndex(x=>x.link===post.link);
-  if(idx>=0){ all.splice(idx,1); } else { all.push(post); }
+  if(idx>=0){ all.splice(idx,1); showToast('Removed from ⭐ Saved'); }
+  else { all.push(post); showToast('Added to ⭐ Saved'); }
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(all)); }catch{}
 }
 function makeSaveButton(post){
   const btn = document.createElement('button');
-  btn.className = 'tab'; // reuse pill style
+  btn.className = 'tab';
   btn.type='button';
   btn.textContent = isSaved(post.link) ? '⭐ Saved' : '☆ Save';
   btn.addEventListener('click', (e)=>{
@@ -164,6 +174,8 @@ function cardForPost(p){
       <a class="badge" href="${safeURL(p.link)}" target="_blank" rel="noopener">Source ↗</a>
     </div>
   `;
+  c.dataset.title = (p.title||'').toLowerCase();
+  c.dataset.desc  = (p.description||'').toLowerCase();
 
   // Save button
   const actions = c.querySelector('.card-actions');
@@ -196,36 +208,32 @@ function matchCategory(item, cat){
   return rule ? rule.test(text) : true;
 }
 
+function renderSections(items){
+  const top=document.getElementById('top-scroll');
+  const trending=document.getElementById('trending');
+  const notices=document.getElementById('notices');
+  for(const cont of [top,trending,notices]) if(cont) cont.innerHTML='';
+
+  items.slice(0,10).forEach(p=> top.appendChild(cardForPost(p)));
+  const notif=items.filter(p=>/admit|call letter|result/i.test((p.title||'')+(p.description||''))).slice(0,8);
+  notif.forEach(p=> notices.appendChild(cardForPost(p)));
+  const byHost={}; for(const it of items){ try{const h=new URL(it.link).host.replace('www.',''); byHost[h]=(byHost[h]||0)+1;}catch{} }
+  const popularHosts=Object.entries(byHost).sort((a,b)=>b[1]-a[1]).map(e=>e[0]).slice(0,3);
+  const trend=items.filter(p=>{try{return popularHosts.includes(new URL(p.link).host.replace('www.',''))}catch{return false}}).slice(0,12);
+  trend.forEach(p=> trending.appendChild(cardForPost(p)));
+
+  loadAIThumbs(top,6); loadAIThumbs(notices,4); loadAIThumbs(trending,6);
+}
+
 function mountTabs(allItems){
   const tabs = document.getElementById('jobTabs'); if(!tabs) return;
-  const top=document.getElementById('top-scroll'); const trending=document.getElementById('trending'); const notices=document.getElementById('notices');
-
-  function render(cat){
-    // clear containers
-    for(const cont of [top,trending,notices]) if(cont) cont.innerHTML='';
-    const items = allItems.filter(it=> isWestBengalItem(it) && matchCategory(it, cat));
-    // rebuild
-    items.slice(0,10).forEach(p=> top.appendChild(cardForPost(p)));
-    const notif=items.filter(p=>/admit|call letter|result/i.test((p.title||'')+(p.description||''))).slice(0,8);
-    notif.forEach(p=> notices.appendChild(cardForPost(p)));
-    const byHost={}; for(const it of items){ try{const h=new URL(it.link).host.replace('www.',''); byHost[h]=(byHost[h]||0)+1;}catch{} }
-    const popularHosts=Object.entries(byHost).sort((a,b)=>b[1]-a[1]).map(e=>e[0]).slice(0,3);
-    const trend=items.filter(p=>{try{return popularHosts.includes(new URL(p.link).host.replace('www.',''))}catch{return false}}).slice(0,12);
-    trend.forEach(p=> trending.appendChild(cardForPost(p)));
-
-    // thumbnails
-    loadAIThumbs(top,6); loadAIThumbs(notices,4); loadAIThumbs(trending,6);
-  }
-
   tabs.addEventListener('click', (e)=>{
     const btn = e.target.closest('.tab'); if(!btn || !btn.dataset.filter) return;
     for(const b of tabs.querySelectorAll('.tab')) b.classList.remove('active');
     btn.classList.add('active');
-    render(btn.dataset.filter);
+    const filtered = allItems.filter(it=> isWestBengalItem(it) && matchCategory(it, btn.dataset.filter));
+    renderSections(filtered);
   });
-
-  // initial
-  render('all');
 }
 
 // -------------- Keyword Cloud --------------
@@ -237,15 +245,12 @@ function buildKeywordCloud(items){
 
   cloud.innerHTML='';
   if(!weights.length){ cloud.innerHTML='<span class="muted">No trending keywords yet.</span>'; return; }
-
   for(const {k,w} of weights){
     const a = document.createElement('button'); a.type='button'; a.className='kw'; a.textContent=k;
     a.style.fontSize = (12 + Math.min(10, w*2)) + 'px';
     a.addEventListener('click', ()=>{
-      // fake-click the matching tab if present, else filter "all" and scroll to top list
-      const rulesMap = {wbpsc:'govt', bank:'bank', railway:'rail', it:'it'};
-      const t = document.querySelector(`.tab[data-filter="${rulesMap[k]||'all'}"]`); if(t) t.click();
       const top = document.getElementById('top-scroll'); if(top) top.scrollIntoView({behavior:'smooth'});
+      const q = document.getElementById('siteSearch'); if(q){ q.value = k; applySearch(k); }
     });
     cloud.appendChild(a);
   }
@@ -287,7 +292,7 @@ async function loadAIThumbs(container, limit=6){
   }
 }
 
-// ---------- Widgets (Quote, Weather+Clock, History, Air) ----------
+// ---------- Widgets ----------
 async function mountQuote(){
   const box = document.getElementById('quoteBox'); if(!box) return;
   try{
@@ -368,7 +373,6 @@ function buildCalendar(items){
     ul.innerHTML = `<li class="muted">No exam dates found in the next 60 days.</li>`;
     return;
   }
-
   for(const ev of events.slice(0,10)){
     const li = document.createElement('li');
     const when = new Intl.DateTimeFormat('en-IN', { dateStyle:'medium' }).format(ev.dt);
@@ -388,13 +392,56 @@ async function loadCategories(){
   }catch{}
 }
 
-// ---------- Home mount ----------
-async function mountHome(){
+// ---------- SEARCH ----------
+let ALL_ITEMS = [];
+function applySearch(q){
+  q = (q||'').trim().toLowerCase();
   const top=document.getElementById('top-scroll');
   const notices=document.getElementById('notices');
   const trending=document.getElementById('trending');
+  if(!q){
+    // reset to tabs filter (All)
+    renderSections(ALL_ITEMS.filter(isWestBengalItem));
+    return;
+  }
+  const words = q.split(/\s+/).filter(Boolean);
+  const scored = ALL_ITEMS.filter(isWestBengalItem).map(p=>{
+    const hay = ((p.title||'')+' '+(p.description||'')).toLowerCase();
+    let score = 0;
+    for(const w of words){ if(hay.includes(w)) score += 2; }
+    if(hay.startsWith(words[0]||'')) score += 2;
+    return {p,score};
+  }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).map(x=>x.p);
 
-  const items=await getRSS();
+  for(const cont of [top,trending,notices]) if(cont) cont.innerHTML='';
+  scored.slice(0,12).forEach(p=> top.appendChild(cardForPost(p)));
+  loadAIThumbs(top, 8);
+  showToast(`Found ${scored.length} results for “${q}”`, 2500);
+}
+
+// ---------- Auto refresh (5 min) to detect NEW posts ----------
+function watchForNew(){
+  setInterval(async ()=>{
+    try{
+      const latest = await getRSS();
+      const old = readCache();
+      const oldLinks = new Set((old||[]).map(i=>i.link));
+      const fresh = (latest||[]).filter(i=> !oldLinks.has(i.link) && isWestBengalItem(i));
+      if(fresh.length){
+        saveCache(latest);
+        const a = document.createElement('a');
+        a.href = `/pages/post.html?title=${encodeURIComponent(fresh[0].title)}&link=${encodeURIComponent(fresh[0].link)}&desc=${encodeURIComponent(fresh[0].description||'')}&date=${encodeURIComponent(fresh[0].pubDate||'')}`;
+        a.textContent = fresh[0].title;
+        showToast(`🔔 New WB job posted: ${a.outerHTML}`, 6000);
+      }
+    }catch{}
+  }, 5*60*1000);
+}
+
+// ---------- Home mount ----------
+async function mountHome(){
+  const items = await getRSS();
+  ALL_ITEMS = items;
 
   // Widgets
   mountQuote(); mountWeather(); mountHistory(); mountAir();
@@ -404,8 +451,26 @@ async function mountHome(){
   await loadCategories();
   buildCalendar(items);
 
-  // Initial render & tabs handling
+  // initial render (All)
+  renderSections(items.filter(isWestBengalItem));
   mountTabs(items);
+
+  // thumbs for first load
+  const top=document.getElementById('top-scroll'); const notices=document.getElementById('notices'); const trending=document.getElementById('trending');
+  loadAIThumbs(top,6); loadAIThumbs(notices,4); loadAIThumbs(trending,6);
+
+  // Search events
+  const q = document.getElementById('siteSearch');
+  const clr = document.getElementById('searchClear');
+  if(q){
+    q.addEventListener('input', (e)=> applySearch(e.target.value));
+  }
+  if(clr){
+    clr.addEventListener('click', ()=> { if(q){ q.value=''; } applySearch(''); });
+  }
+
+  // watch for new posts
+  watchForNew();
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
