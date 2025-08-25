@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>JobPulse Kolkata — West Bengal Jobs, Exams, Updates</title>
     <meta name="description" content="Curated West Bengal job updates from trusted sources. Clean, dark, fast.">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0d0f14">
+    <link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192">
     <script src="/assets/js/theme-boot.js"></script>
     <link rel="stylesheet" href="/assets/css/style.css">
   </head>
@@ -12,12 +15,18 @@
     <div class="container">
       <h1>JobPulse Kolkata</h1>
 
+      <!-- Search -->
+      <div class="search-wrap">
+        <input id="siteSearch" class="search-input" placeholder="Search jobs, exams, WBPSC, SSC, Bank, Railway…" />
+        <button id="searchClear" class="search-clear" title="Clear">✕</button>
+      </div>
+
       <div class="ticker-wrap" title="Hover to pause">
         <span class="ticker-head">Live</span>
         <div id="notify-ticker" class="ticker"></div>
       </div>
 
-      <!-- Today widgets (kept from earlier) -->
+      <!-- Today widgets (kept) -->
       <section class="section today-wrap">
         <div class="widgets">
           <div id="quoteBox" class="widget card">
@@ -120,6 +129,15 @@
       <ins class="ad-slot" data-variant="multiplex"></ins>
     </div>
 
+    <!-- Toast host -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
     <script type="module" src="/assets/js/main.js"></script>
+    <script>
+      // register PWA service worker (non-blocking)
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(()=>{});
+      }
+    </script>
   </body>
 </html>
