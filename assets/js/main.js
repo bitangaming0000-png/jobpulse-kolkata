@@ -5,7 +5,7 @@ const CACHE_KEY = 'jp-cache-items';
 function saveCache(items){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), items})) }catch{} }
 function readCache(){ try{ const j = JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return (j&&j.items)||[] }catch{ return [] } }
 
-// --- tiny helpers just for thumbs ---
+// --- tiny helpers just for thumbs (free Unsplash via our function) ---
 function hashTitle(s){
   let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return 'h'+Math.abs(h);
 }
@@ -16,7 +16,6 @@ async function getAIThumb(prompt){
     if(cached) return cached;
   }catch{}
   try{
-    // Free Unsplash proxy (our function)
     const r = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(prompt));
     const j = await r.json();
     if(j && j.dataUrl){
@@ -42,7 +41,7 @@ async function mountShell(){
   ]);
   document.body.insertAdjacentHTML('afterbegin', header);
   document.body.insertAdjacentHTML('beforeend', footer);
-  document.getElementById('year').textContent = new Date().getFullYear();
+  const y = document.getElementById('year'); if(y) y.textContent = new Date().getFullYear();
 
   // AdSense head include
   try {
@@ -66,36 +65,42 @@ async function mountShell(){
 
   // Theme toggle
   const root = document.documentElement;
-  document.getElementById('themeToggle').addEventListener('click',()=>{
-    const t = (root.getAttribute('data-theme')==='dark')?'light':'dark';
-    localStorage.setItem('jp-theme', t); root.setAttribute('data-theme', t);
-  });
+  const tbtn = document.getElementById('themeToggle');
+  if(tbtn){
+    tbtn.addEventListener('click',()=>{
+      const t = (root.getAttribute('data-theme')==='dark')?'light':'dark';
+      localStorage.setItem('jp-theme', t); root.setAttribute('data-theme', t);
+    });
+  }
 
   // Hamburger nav (hover + click + outside/esc)
   const nav = document.getElementById('sideNav');
   const hamburger = document.getElementById('hamburger');
-  function openNav(){ nav.classList.add('open'); nav.setAttribute('aria-hidden','false'); }
-  function closeNav(){ nav.classList.remove('open'); nav.setAttribute('aria-hidden','true'); }
-  hamburger.addEventListener('mouseenter', openNav);
-  nav.addEventListener('mouseleave', closeNav);
-  hamburger.addEventListener('click', ()=> { nav.classList.contains('open') ? closeNav() : openNav(); });
-  document.addEventListener('click', (e)=>{ if(!nav.contains(e.target) && !hamburger.contains(e.target)) closeNav(); });
-  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeNav(); });
+  function openNav(){ if(nav){ nav.classList.add('open'); nav.setAttribute('aria-hidden','false'); } }
+  function closeNav(){ if(nav){ nav.classList.remove('open'); nav.setAttribute('aria-hidden','true'); } }
+  if(hamburger && nav){
+    hamburger.addEventListener('mouseenter', openNav);
+    nav.addEventListener('mouseleave', closeNav);
+    hamburger.addEventListener('click', ()=> { nav.classList.contains('open') ? closeNav() : openNav(); });
+    document.addEventListener('click', (e)=>{ if(!nav.contains(e.target) && !hamburger.contains(e.target)) closeNav(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeNav(); });
+  }
 
-  // Date & Time
+  // Date & Time in header
   const dt = document.getElementById('dateTime');
-  const tick = ()=> dt.textContent = '🕒 ' + formatDateTimeIST(); tick(); setInterval(tick, 30000);
+  const tick = ()=> { if(dt) dt.textContent = '🕒 ' + formatDateTimeIST(); };
+  tick(); setInterval(tick, 30000);
 
-  // Visitor Count (our function, then fallback)
+  // Visitor Count (our function, then CountAPI fallback)
   const vc = document.querySelector('#visitorCount span');
   try {
     const r = await fetch('/.netlify/functions/visitors');
-    const j = await r.json(); vc.textContent = (j.value ?? 0).toLocaleString('en-IN');
+    const j = await r.json(); if(vc) vc.textContent = (j.value ?? 0).toLocaleString('en-IN');
   } catch(e) {
     try{
       const r2 = await fetch('https://api.countapi.xyz/hit/jp-kolkata/site-visits');
-      const j2 = await r2.json(); vc.textContent = (j2.value ?? 0).toLocaleString('en-IN');
-    } catch { vc.textContent = '—'; }
+      const j2 = await r2.json(); if(vc) vc.textContent = (j2.value ?? 0).toLocaleString('en-IN');
+    } catch { if(vc) vc.textContent = '—'; }
   }
 }
 
@@ -136,7 +141,7 @@ function isWestBengalItem(item) {
   return WB_FILTER.test(fields);
 }
 
-// Compact live ticker (slower + pause on hover via CSS)
+// Compact live ticker (speed controlled in CSS; pause on hover via CSS)
 function buildTicker(items){
   const wrap = document.getElementById('notify-ticker');
   if(!wrap) return;
@@ -161,7 +166,7 @@ function buildTicker(items){
   wrap.innerHTML=''; wrap.appendChild(track);
 }
 
-// Lazy-generate AI thumbs (via free Unsplash proxy) for first N cards
+// Lazy-generate thumbs (via free Unsplash proxy) for first N cards in a container
 async function loadAIThumbs(container, limit=6){
   const imgs = Array.from(container.querySelectorAll('img.thumb')).slice(0, limit);
   for(const img of imgs){
@@ -172,7 +177,8 @@ async function loadAIThumbs(container, limit=6){
   }
 }
 
-// Widgets: Quote of the day (free)
+// ---------- WIDGETS ----------
+// Quote of the day (free)
 async function mountQuote(){
   const box = document.getElementById('quoteBox'); if(!box) return;
   try{
@@ -186,7 +192,7 @@ async function mountQuote(){
   }
 }
 
-// Widgets: Weather (Kolkata; free Open-Meteo)
+// Weather (Kolkata; free Open-Meteo) + live clock
 function wCodeToText(code){
   const map = {
     0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
@@ -202,7 +208,6 @@ function wCodeToText(code){
 async function mountWeather(){
   const box = document.getElementById('weatherBox'); if(!box) return;
   try{
-    // Kolkata coordinates
     const lat = 22.5726, lon = 88.3639;
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FKolkata`;
     const r = await fetch(url);
@@ -211,15 +216,145 @@ async function mountWeather(){
     const code = j.current?.weather_code ?? 0;
     const tmax = Math.round(j.daily?.temperature_2m_max?.[0] ?? NaN);
     const tmin = Math.round(j.daily?.temperature_2m_min?.[0] ?? NaN);
+    const wt = box.querySelector('#wt'), wd = box.querySelector('#wd'), wr = box.querySelector('#wr');
 
-    box.querySelector('#wt').textContent = isFinite(t) ? t : '—';
-    box.querySelector('#wd').textContent = wCodeToText(code);
-    box.querySelector('#wr').textContent = `${isFinite(tmin)?tmin:'—'} / ${isFinite(tmax)?tmax:'—'} °C`;
+    if(wt) wt.textContent = isFinite(t) ? t : '—';
+    if(wd) wd.textContent = wCodeToText(code);
+    if(wr) wr.textContent = `${isFinite(tmin)?tmin:'—'} / ${isFinite(tmax)?tmax:'—'} °C`;
   }catch{
-    box.querySelector('#wd').textContent = 'Weather unavailable';
+    const wd = document.querySelector('#weatherBox #wd');
+    if(wd) wd.textContent = 'Weather unavailable';
+  }
+
+  // Live clock (IST)
+  const clock = document.querySelector('#weatherBox #clock span');
+  if(clock){
+    const tick = ()=> clock.textContent = new Intl.DateTimeFormat('en-IN',{ timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit' }).format(new Date());
+    tick(); setInterval(tick, 30000);
   }
 }
 
+// This Day in History (Wikimedia REST)
+async function mountHistory(){
+  const box = document.getElementById('historyBox'); if(!box) return;
+  try{
+    const now = new Date();
+    const month = now.getMonth()+1;
+    const day = now.getDate();
+    const url = `https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${month}/${day}`;
+    const r = await fetch(url);
+    const j = await r.json();
+    const events = Array.isArray(j?.events) ? j.events : [];
+    if(!events.length) throw new Error('No events');
+
+    const picks = events.slice(0,2).map(e=>{
+      const year = e.year;
+      const text = (e.text || '').replace(/\s+/g,' ').trim();
+      return `<p><strong>${year}:</strong> ${text}</p>`;
+    }).join('');
+
+    box.querySelector('.w-body').innerHTML = picks || '<p>No data today.</p>';
+  }catch{
+    box.querySelector('.w-body').innerHTML = '<p>History unavailable.</p>';
+  }
+}
+
+// Air Quality (Open-Meteo Air Quality)
+function aqiCategory(us){
+  if(us==null || isNaN(us)) return {label:'Unknown', tip:'—'};
+  if(us<=50)  return {label:'Good', tip:'Air quality is satisfactory.'};
+  if(us<=100) return {label:'Moderate', tip:'Acceptable; sensitive groups be cautious.'};
+  if(us<=150) return {label:'Unhealthy for Sensitive', tip:'Sensitive groups reduce exertion.'};
+  if(us<=200) return {label:'Unhealthy', tip:'Everyone may feel effects.'};
+  if(us<=300) return {label:'Very Unhealthy', tip:'Health warnings likely.'};
+  return {label:'Hazardous', tip:'Serious health effects.'};
+}
+async function mountAir(){
+  const box = document.getElementById('airBox'); if(!box) return;
+  try{
+    const lat = 22.5726, lon = 88.3639;
+    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=us_aqi,pm2_5&timezone=Asia%2FKolkata`;
+    const r = await fetch(url);
+    const j = await r.json();
+    const us = j.hourly?.us_aqi || [];
+    const pm = j.hourly?.pm2_5 || [];
+    const idx = Math.max(0, us.length-1);
+    const aqi = us[idx];
+    const pm25 = pm[idx];
+
+    const cat = aqiCategory(aqi);
+    const aqiVal = box.querySelector('#aqiVal');
+    const aqiDesc = box.querySelector('#aqiDesc');
+    const aqiNote = box.querySelector('#aqiNote');
+
+    if(aqiVal) aqiVal.textContent = (aqi ?? '—');
+    if(aqiDesc) aqiDesc.textContent = cat.label + (cat.tip ? ` — ${cat.tip}` : '');
+    if(aqiNote) aqiNote.textContent = `PM2.5: ${pm25!=null?Math.round(pm25):'—'} μg/m³`;
+  }catch{
+    const aqiDesc = document.querySelector('#airBox #aqiDesc');
+    if(aqiDesc) aqiDesc.textContent = 'AQ data unavailable';
+  }
+}
+
+// ---------- Exam Calendar (parse dates from post titles/descriptions) ----------
+const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','sept','oct','nov','dec'];
+function tryParseDate(str){
+  if(!str) return null;
+  const s = String(str);
+
+  // dd-mm-yyyy or dd/mm/yyyy
+  let m = s.match(/\b([0-3]?\d)[\/\-]([01]?\d)[\/\-](20\d{2})\b/);
+  if(m){
+    let [_,d,mo,yr] = m; const dt = new Date(Number(yr), Number(mo)-1, Number(d)); if(!isNaN(dt)) return dt;
+  }
+  // dd Mon yyyy
+  m = s.match(/\b([0-3]?\d)\s+([A-Za-z]{3,9})\.?,?\s+(20\d{2})\b/i);
+  if(m){
+    let [_,d,mon,yr] = m;
+    const idx = MONTHS.indexOf(mon.trim().slice(0,3).toLowerCase());
+    if(idx>=0){ const dt = new Date(Number(yr), idx, Number(d)); if(!isNaN(dt)) return dt; }
+  }
+  // Mon dd, yyyy
+  m = s.match(/\b([A-Za-z]{3,9})\.?\s+([0-3]?\d),\s*(20\d{2})\b/i);
+  if(m){
+    let [_,mon,d,yr] = m;
+    const idx = MONTHS.indexOf(mon.trim().slice(0,3).toLowerCase());
+    if(idx>=0){ const dt = new Date(Number(yr), idx, Number(d)); if(!isNaN(dt)) return dt; }
+  }
+  return null;
+}
+function buildCalendar(items){
+  const ul = document.getElementById('calList'); if(!ul) return;
+  ul.innerHTML = '';
+  const now = new Date();
+  const in60 = new Date(now.getTime()+60*24*3600*1000);
+
+  const events = [];
+  for(const it of items){
+    if(!isWestBengalItem(it)) continue;
+    const text = [it.title, it.description].filter(Boolean).join(' — ');
+    const dt = tryParseDate(text);
+    if(!dt) continue;
+    if(dt >= now && dt <= in60){
+      events.push({ dt, title: it.title, link: it.link });
+    }
+  }
+  events.sort((a,b)=> a.dt - b.dt);
+
+  if(!events.length){
+    ul.innerHTML = `<li class="muted">No exam dates found in the next 60 days.</li>`;
+    return;
+  }
+
+  for(const ev of events.slice(0,10)){
+    const li = document.createElement('li');
+    const when = new Intl.DateTimeFormat('en-IN', { dateStyle:'medium' }).format(ev.dt);
+    li.innerHTML = `<strong>${when}:</strong> <a href="/pages/post.html?title=${encodeURIComponent(ev.title)}&link=${encodeURIComponent(ev.link)}" target="_self">${ev.title}</a>`;
+    ul.appendChild(li);
+  }
+}
+
+// ---------- categories ----------
 async function loadCategories(){
   try{
     const res = await fetch('/data/feeds.json'); const cfg = await res.json();
@@ -230,6 +365,7 @@ async function loadCategories(){
   }catch{}
 }
 
+// ---------- Home mount ----------
 async function mountHome(){
   const top=document.getElementById('top-scroll');
   const notices=document.getElementById('notices');
@@ -239,13 +375,15 @@ async function mountHome(){
   // Widgets
   mountQuote();
   mountWeather();
+  mountHistory();
+  mountAir();
 
   buildTicker(items);
 
   items.slice(0,10).forEach(p=> top.appendChild(cardForPost(p)));
   if(!top.children.length) showEmpty('top-scroll','No West Bengal posts found yet.');
 
-  const notif=items.filter(p=>/admit|call letter|result/i.test(p.title+p.description)).slice(0,8);
+  const notif=items.filter(p=>/admit|call letter|result/i.test((p.title||'')+(p.description||''))).slice(0,8);
   notif.forEach(p=> notices.appendChild(cardForPost(p)));
   if(!notif.length) showEmpty('notices','No notifications right now.');
 
@@ -261,9 +399,13 @@ async function mountHome(){
   loadAIThumbs(top, 6);
   loadAIThumbs(notices, 4);
   loadAIThumbs(trending, 6);
+
+  // Build exam calendar from items
+  buildCalendar(items);
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
   await mountShell();
   if(document.body.classList.contains('home')){ try{await mountHome();}catch(e){console.error(e);} }
 });
+```0
