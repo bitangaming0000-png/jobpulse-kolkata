@@ -47,6 +47,25 @@ function showToast(html, ms=4000){
   setTimeout(()=> host.classList.remove('show'), ms);
 }
 
+// --- Auto horizontal scroller (Top News / Trending) ---
+function startAutoScrollX(containerId, step=1, interval=35){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  let timer;
+  function tick(){
+    if(el.scrollWidth <= el.clientWidth) return; // nothing to scroll
+    el.scrollLeft += step;
+    if(el.scrollLeft + el.clientWidth >= el.scrollWidth - 2){
+      el.scrollLeft = 0; // loop
+    }
+  }
+  const start = ()=> { stop(); timer = setInterval(tick, interval); };
+  const stop  = ()=> { if(timer){ clearInterval(timer); timer = null; } };
+  el.addEventListener('mouseenter', stop);
+  el.addEventListener('mouseleave', start);
+  start();
+}
+
 // ---------------- Shell ----------------
 async function mountShell(){
   const [header, footer] = await Promise.all([
@@ -222,7 +241,12 @@ function renderSections(items){
   const trend=items.filter(p=>{try{return popularHosts.includes(new URL(p.link).host.replace('www.',''))}catch{return false}}).slice(0,12);
   trend.forEach(p=> trending.appendChild(cardForPost(p)));
 
+  // thumbs for first cards
   loadAIThumbs(top,6); loadAIThumbs(notices,4); loadAIThumbs(trending,6);
+
+  // start auto-scroll for Top News and Trending
+  startAutoScrollX('top-scroll', 1, 35);
+  startAutoScrollX('trending',   1, 35);
 }
 
 function mountTabs(allItems){
@@ -400,7 +424,6 @@ function applySearch(q){
   const notices=document.getElementById('notices');
   const trending=document.getElementById('trending');
   if(!q){
-    // reset to tabs filter (All)
     renderSections(ALL_ITEMS.filter(isWestBengalItem));
     return;
   }
@@ -417,6 +440,9 @@ function applySearch(q){
   scored.slice(0,12).forEach(p=> top.appendChild(cardForPost(p)));
   loadAIThumbs(top, 8);
   showToast(`Found ${scored.length} results for “${q}”`, 2500);
+
+  // keep auto-scroll running on Top News list
+  startAutoScrollX('top-scroll', 1, 35);
 }
 
 // ---------- Auto refresh (5 min) to detect NEW posts ----------
@@ -462,15 +488,15 @@ async function mountHome(){
   // Search events
   const q = document.getElementById('siteSearch');
   const clr = document.getElementById('searchClear');
-  if(q){
-    q.addEventListener('input', (e)=> applySearch(e.target.value));
-  }
-  if(clr){
-    clr.addEventListener('click', ()=> { if(q){ q.value=''; } applySearch(''); });
-  }
+  if(q){ q.addEventListener('input', (e)=> applySearch(e.target.value)); }
+  if(clr){ clr.addEventListener('click', ()=> { if(q){ q.value=''; } applySearch(''); }); }
 
   // watch for new posts
   watchForNew();
+
+  // ensure auto-scroll running
+  startAutoScrollX('top-scroll', 1, 35);
+  startAutoScrollX('trending',   1, 35);
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
