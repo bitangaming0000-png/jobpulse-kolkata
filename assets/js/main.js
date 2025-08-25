@@ -5,23 +5,27 @@ const CACHE_KEY = 'jp-cache-items';
 function saveCache(items){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), items})) }catch{} }
 function readCache(){ try{ const j = JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return (j&&j.items)||[] }catch{ return [] } }
 
+// ---------- Auto theme (IST): morning=light, night=dark unless user chose ----------
+(function autoThemeBoot(){
+  try{
+    const pref = localStorage.getItem('jp-theme');
+    if(!pref){
+      const now = new Date(); const hrs = Number(new Intl.DateTimeFormat('en-IN',{hour:'2-digit',hour12:false,timeZone:'Asia/Kolkata'}).format(now));
+      const mode = (hrs>=6 && hrs<18)?'light':'dark';
+      document.documentElement.setAttribute('data-theme', mode);
+    }
+  }catch{}
+})();
+
 // --- Helpers for thumbnails (Unsplash via function) ---
-function hashTitle(s){
-  let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return 'h'+Math.abs(h);
-}
+function hashTitle(s){ let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return 'h'+Math.abs(h); }
 async function getAIThumb(prompt){
   const key = 'jp-thumb:'+hashTitle(prompt);
-  try{
-    const cached = localStorage.getItem(key);
-    if(cached) return cached;
-  }catch{}
+  try{ const cached = localStorage.getItem(key); if(cached) return cached; }catch{}
   try{
     const r = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(prompt));
     const j = await r.json();
-    if(j && j.dataUrl){
-      try{ localStorage.setItem(key, j.dataUrl); }catch{}
-      return j.dataUrl;
-    }
+    if(j && j.dataUrl){ try{ localStorage.setItem(key, j.dataUrl); }catch{} return j.dataUrl; }
   }catch{}
   return null;
 }
@@ -44,7 +48,7 @@ async function mountShell(){
   document.body.insertAdjacentHTML('beforeend', footer);
   const y = document.getElementById('year'); if(y) y.textContent = new Date().getFullYear();
 
-  // AdSense script
+  // AdSense head include
   try {
     const adsHead = await fetch('/components/ads-head.html').then(r=>r.text());
     const frag = document.createElement('template'); frag.innerHTML = adsHead.trim();
@@ -53,7 +57,7 @@ async function mountShell(){
     }
   } catch{}
 
-  // Replace ad placeholders
+  // Inject ad units
   try {
     for(const ph of document.querySelectorAll('.ad-slot')){
       const variant = ph.dataset.variant || 'display';
@@ -75,7 +79,7 @@ async function mountShell(){
     });
   }
 
-  // Hamburger menu
+  // Hamburger nav
   const nav = document.getElementById('sideNav');
   const hamburger = document.getElementById('hamburger');
   function openNav(){ if(nav){ nav.classList.add('open'); nav.setAttribute('aria-hidden','false'); } }
@@ -88,12 +92,12 @@ async function mountShell(){
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeNav(); });
   }
 
-  // Date & time (header)
+  // Date & time in header
   const dt = document.getElementById('dateTime');
   const tick = ()=> { if(dt) dt.textContent = '🕒 ' + formatDateTimeIST(); };
   tick(); setInterval(tick, 30000);
 
-  // Visitor count
+  // Visitor Count
   const vc = document.querySelector('#visitorCount span');
   try {
     const r = await fetch('/.netlify/functions/visitors');
@@ -121,18 +125,51 @@ async function getRSS(){
   return readCache();
 }
 
+// ---------------- Bookmark (Save) ----------------
+const SAVE_KEY = 'jp-saved';
+function getSaved(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||'[]'); }catch{ return [] } }
+function isSaved(link){ return getSaved().some(x=>x.link===link); }
+function toggleSave(post){
+  const all = getSaved();
+  const idx = all.findIndex(x=>x.link===post.link);
+  if(idx>=0){ all.splice(idx,1); } else { all.push(post); }
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(all)); }catch{}
+}
+function makeSaveButton(post){
+  const btn = document.createElement('button');
+  btn.className = 'tab'; // reuse pill style
+  btn.type='button';
+  btn.textContent = isSaved(post.link) ? '⭐ Saved' : '☆ Save';
+  btn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    toggleSave(post);
+    btn.textContent = isSaved(post.link) ? '⭐ Saved' : '☆ Save';
+  });
+  return btn;
+}
+
 // ---------------- Cards ----------------
 function cardForPost(p){
   const c = el('article','card');
   const date = p.pubDate ? new Date(p.pubDate) : null;
+  const post = { title:p.title, link:p.link, description:p.description||'', pubDate:p.pubDate||'' };
+
   c.innerHTML = `
     <div class="thumb-wrap"><img class="thumb" alt="" loading="lazy" /></div>
     <div class="meta"><span class="badge">${date? new Intl.DateTimeFormat('en-IN',{dateStyle:'medium'}).format(date):'New'}</span>
     <span class="badge">WB Only</span></div>
     <h3><a href="/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description)}&date=${encodeURIComponent(p.pubDate||'')}" target="_self">${p.title}</a></h3>
     <p>${truncate(p.description, 160)}</p>
-    <a class="badge" href="${safeURL(p.link)}" target="_blank" rel="noopener">Source ↗</a>
+    <div class="card-actions">
+      <a class="badge" href="${safeURL(p.link)}" target="_blank" rel="noopener">Source ↗</a>
+    </div>
   `;
+
+  // Save button
+  const actions = c.querySelector('.card-actions');
+  actions.appendChild(makeSaveButton(post));
+
+  // Thumb prompt
   const prompt = `West Bengal jobs news: ${p.title}`;
   c.querySelector('.thumb').dataset.prompt = prompt;
   return c;
@@ -142,6 +179,76 @@ const WB_FILTER = /\b(West Bengal|WB|Kolkata|Howrah|Hooghly|Nadia|Siliguri|Durga
 function isWestBengalItem(item) {
   const fields = [item.title, item.description, item.link].filter(Boolean).join(" ");
   return WB_FILTER.test(fields);
+}
+
+// -------------- Category filter logic --------------
+const CATEGORY_RULES = {
+  govt: /\b(commission|wbpsc|government|govt|notice|recruitment|ssc|upsc|wb health|wb police|panchayat)\b/i,
+  private: /\b(private|walk[-\s]?in|hiring|vacancy in|startup|agency|company|it company)\b/i,
+  bank: /\b(bank|sbi|rbi|ibps|psb|banking)\b/i,
+  rail: /\b(railway|rrb|metro rail)\b/i,
+  it: /\b(developer|engineer|software|it|tech|programmer|data|ai|ml|react|node|python|java)\b/i
+};
+function matchCategory(item, cat){
+  if(cat==='all') return true;
+  const text = [item.title, item.description].filter(Boolean).join(' ');
+  const rule = CATEGORY_RULES[cat];
+  return rule ? rule.test(text) : true;
+}
+
+function mountTabs(allItems){
+  const tabs = document.getElementById('jobTabs'); if(!tabs) return;
+  const top=document.getElementById('top-scroll'); const trending=document.getElementById('trending'); const notices=document.getElementById('notices');
+
+  function render(cat){
+    // clear containers
+    for(const cont of [top,trending,notices]) if(cont) cont.innerHTML='';
+    const items = allItems.filter(it=> isWestBengalItem(it) && matchCategory(it, cat));
+    // rebuild
+    items.slice(0,10).forEach(p=> top.appendChild(cardForPost(p)));
+    const notif=items.filter(p=>/admit|call letter|result/i.test((p.title||'')+(p.description||''))).slice(0,8);
+    notif.forEach(p=> notices.appendChild(cardForPost(p)));
+    const byHost={}; for(const it of items){ try{const h=new URL(it.link).host.replace('www.',''); byHost[h]=(byHost[h]||0)+1;}catch{} }
+    const popularHosts=Object.entries(byHost).sort((a,b)=>b[1]-a[1]).map(e=>e[0]).slice(0,3);
+    const trend=items.filter(p=>{try{return popularHosts.includes(new URL(p.link).host.replace('www.',''))}catch{return false}}).slice(0,12);
+    trend.forEach(p=> trending.appendChild(cardForPost(p)));
+
+    // thumbnails
+    loadAIThumbs(top,6); loadAIThumbs(notices,4); loadAIThumbs(trending,6);
+  }
+
+  tabs.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.tab'); if(!btn || !btn.dataset.filter) return;
+    for(const b of tabs.querySelectorAll('.tab')) b.classList.remove('active');
+    btn.classList.add('active');
+    render(btn.dataset.filter);
+  });
+
+  // initial
+  render('all');
+}
+
+// -------------- Keyword Cloud --------------
+function buildKeywordCloud(items){
+  const cloud = document.getElementById('keywordCloud'); if(!cloud) return;
+  const text = items.map(i=>i.title||'').join(' ').toLowerCase();
+  const keys = ['wbpsc','ssc','railway','bank','teacher','police','health','engineer','data','it','admit','result','exam','recruitment','walk-in','apprentice'];
+  const weights = keys.map(k=>({k, w:(text.match(new RegExp(`\\b${k}\\b`,'g'))||[]).length})).filter(x=>x.w>0).sort((a,b)=>b.w-a.w).slice(0,16);
+
+  cloud.innerHTML='';
+  if(!weights.length){ cloud.innerHTML='<span class="muted">No trending keywords yet.</span>'; return; }
+
+  for(const {k,w} of weights){
+    const a = document.createElement('button'); a.type='button'; a.className='kw'; a.textContent=k;
+    a.style.fontSize = (12 + Math.min(10, w*2)) + 'px';
+    a.addEventListener('click', ()=>{
+      // fake-click the matching tab if present, else filter "all" and scroll to top list
+      const rulesMap = {wbpsc:'govt', bank:'bank', railway:'rail', it:'it'};
+      const t = document.querySelector(`.tab[data-filter="${rulesMap[k]||'all'}"]`); if(t) t.click();
+      const top = document.getElementById('top-scroll'); if(top) top.scrollIntoView({behavior:'smooth'});
+    });
+    cloud.appendChild(a);
+  }
 }
 
 // ---------------- Ticker ----------------
@@ -169,7 +276,18 @@ function buildTicker(items){
   wrap.innerHTML=''; wrap.appendChild(track);
 }
 
-// ---------------- Widgets ----------------
+// -------------- Thumbnails --------------
+async function loadAIThumbs(container, limit=6){
+  const imgs = Array.from(container.querySelectorAll('img.thumb')).slice(0, limit);
+  for(const img of imgs){
+    if(img.dataset.loaded) continue;
+    const prompt = img.dataset.prompt || 'job,kolkata';
+    const dataUrl = await getAIThumb(prompt);
+    if(dataUrl){ img.src = dataUrl; img.alt = prompt; img.dataset.loaded = '1'; }
+  }
+}
+
+// ---------- Widgets (Quote, Weather+Clock, History, Air) ----------
 async function mountQuote(){
   const box = document.getElementById('quoteBox'); if(!box) return;
   try{
@@ -180,7 +298,6 @@ async function mountQuote(){
     box.querySelector('.w-body').innerHTML = `<p><strong>Stay motivated today.</strong></p>`;
   }
 }
-
 function wCodeToText(c){
   const map={0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',61:'Light rain',63:'Rain',65:'Heavy rain',95:'Thunderstorm'};
   return map[c]||'Weather';
@@ -195,11 +312,9 @@ async function mountWeather(){
     box.querySelector('#wd').textContent = wCodeToText(j.current?.weather_code);
     box.querySelector('#wr').textContent = `${Math.round(j.daily?.temperature_2m_min?.[0])} / ${Math.round(j.daily?.temperature_2m_max?.[0])} °C`;
   }catch{}
-  // Clock
   const clk = document.querySelector('#weatherBox #clock span');
   if(clk){ const tick=()=> clk.textContent=new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit'}).format(new Date()); tick(); setInterval(tick,30000); }
 }
-
 async function mountHistory(){
   const box = document.getElementById('historyBox'); if(!box) return;
   try{
@@ -209,7 +324,6 @@ async function mountHistory(){
     box.querySelector('.w-body').innerHTML = e.map(x=>`<p><strong>${x.year}:</strong> ${x.text}</p>`).join('');
   }catch{ box.querySelector('.w-body').textContent='History unavailable'; }
 }
-
 async function mountAir(){
   const box = document.getElementById('airBox'); if(!box) return;
   try{
@@ -219,57 +333,79 @@ async function mountAir(){
   }catch{ box.querySelector('#aqiDesc').textContent='AQ unavailable'; }
 }
 
-// Exam Calendar
+// ---------- Exam Calendar ----------
+const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','sept','oct','nov','dec'];
 function tryParseDate(str){
-  const m1=str.match(/\b(\d{1,2})[\/\-](\d{1,2})[\/\-](20\d{2})\b/);
-  if(m1) return new Date(m1[3],m1[2]-1,m1[1]);
+  if(!str) return null;
+  const s = String(str);
+  let m = s.match(/\b([0-3]?\d)[\/\-]([01]?\d)[\/\-](20\d{2})\b/);
+  if(m){ const [_,d,mo,yr] = m; const dt = new Date(+yr, +mo-1, +d); if(!isNaN(dt)) return dt; }
+  m = s.match(/\b([0-3]?\d)\s+([A-Za-z]{3,9})\.?,?\s+(20\d{2})\b/i);
+  if(m){ const [_,d,mon,yr] = m; const idx = MONTHS.indexOf(mon.trim().slice(0,3).toLowerCase()); if(idx>=0){ const dt = new Date(+yr, idx, +d); if(!isNaN(dt)) return dt; } }
+  m = s.match(/\b([A-Za-z]{3,9})\.?\s+([0-3]?\d),\s*(20\d{2})\b/i);
+  if(m){ const [_,mon,d,yr] = m; const idx = MONTHS.indexOf(mon.trim().slice(0,3).toLowerCase()); if(idx>=0){ const dt = new Date(+yr, idx, +d); if(!isNaN(dt)) return dt; } }
   return null;
 }
 function buildCalendar(items){
-  const ul=document.getElementById('calList'); if(!ul) return;
-  ul.innerHTML='';
-  const now=new Date(),future=new Date(now.getTime()+60*86400000);
-  const evs=[];
-  items.forEach(it=>{
-    if(!isWestBengalItem(it)) return;
-    const dt=tryParseDate((it.title||'')+(it.description||'')); if(dt && dt>=now && dt<=future){evs.push({dt,title:it.title,link:it.link})}
-  });
-  evs.sort((a,b)=>a.dt-b.dt);
-  if(!evs.length){ ul.innerHTML='<li class="muted">No exam dates found.</li>'; return; }
-  evs.slice(0,10).forEach(e=>{
-    const li=document.createElement('li'); li.innerHTML=`<strong>${e.dt.toDateString()}:</strong> <a href="/pages/post.html?title=${encodeURIComponent(e.title)}&link=${encodeURIComponent(e.link)}">${e.title}</a>`; ul.appendChild(li);
-  });
+  const ul = document.getElementById('calList'); if(!ul) return;
+  ul.innerHTML = '';
+  const now = new Date();
+  const in60 = new Date(now.getTime()+60*24*3600*1000);
+
+  const events = [];
+  for(const it of items){
+    if(!isWestBengalItem(it)) continue;
+    const text = [it.title, it.description].filter(Boolean).join(' — ');
+    const dt = tryParseDate(text);
+    if(!dt) continue;
+    if(dt >= now && dt <= in60){
+      events.push({ dt, title: it.title, link: it.link });
+    }
+  }
+  events.sort((a,b)=> a.dt - b.dt);
+
+  if(!events.length){
+    ul.innerHTML = `<li class="muted">No exam dates found in the next 60 days.</li>`;
+    return;
+  }
+
+  for(const ev of events.slice(0,10)){
+    const li = document.createElement('li');
+    const when = new Intl.DateTimeFormat('en-IN', { dateStyle:'medium' }).format(ev.dt);
+    li.innerHTML = `<strong>${when}:</strong> <a href="/pages/post.html?title=${encodeURIComponent(ev.title)}&link=${encodeURIComponent(ev.link)}" target="_self">${ev.title}</a>`;
+    ul.appendChild(li);
+  }
 }
 
-// ---------------- Home ----------------
+// ---------- categories ----------
 async function loadCategories(){
   try{
     const res = await fetch('/data/feeds.json'); const cfg = await res.json();
     const feeds = Array.isArray(cfg)?cfg:(cfg.sources||[]);
     const cats=[...new Set(feeds.map(f=>f.category||'news'))];
     const wrap=document.getElementById('categories'); if(!wrap) return;
-    cats.forEach(c=>{ const chip=el('a','badge',c[0].toUpperCase()+c.slice(1)); chip.href='/pages/category.html?name='+encodeURIComponent(c); wrap.appendChild(chip); });
+    cats.forEach(c=>{ const chip=el('a','badge',c.charAt(0).toUpperCase()+c.slice(1)); chip.href='/pages/category.html?name='+encodeURIComponent(c); wrap.appendChild(chip); });
   }catch{}
 }
 
+// ---------- Home mount ----------
 async function mountHome(){
   const top=document.getElementById('top-scroll');
   const notices=document.getElementById('notices');
   const trending=document.getElementById('trending');
+
   const items=await getRSS();
 
+  // Widgets
   mountQuote(); mountWeather(); mountHistory(); mountAir();
 
   buildTicker(items);
-
-  items.slice(0,10).forEach(p=> top.appendChild(cardForPost(p)));
-  const notif=items.filter(p=>/admit|result/i.test(p.title||'')).slice(0,8);
-  notif.forEach(p=> notices.appendChild(cardForPost(p)));
-
+  buildKeywordCloud(items);
   await loadCategories();
   buildCalendar(items);
 
-  loadAIThumbs(top,6); loadAIThumbs(notices,4); loadAIThumbs(trending,6);
+  // Initial render & tabs handling
+  mountTabs(items);
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
