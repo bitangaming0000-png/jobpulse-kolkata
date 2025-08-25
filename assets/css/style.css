@@ -128,7 +128,7 @@ h2{font-size:18px;margin:0 0 10px 6px;color:var(--muted)}
 .ticker .bullet{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin:0 6px}
 .ticker-track{
   display:inline-block;will-change:transform;
-  animation:ticker-scroll 65s linear infinite; /* slowed */
+  animation:ticker-scroll 65s linear infinite;
 }
 .ticker-wrap:hover .ticker-track{ animation-play-state: paused; }
 @keyframes ticker-scroll{
@@ -156,5 +156,26 @@ h2{font-size:18px;margin:0 0 10px 6px;color:var(--muted)}
 .thumb-wrap{width:100%;height:140px;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:8px;background:#0e1628}
 :root[data-theme="light"] .thumb-wrap{background:#eef2ff}
 .thumb{width:100%;height:100%;object-fit:cover;display:block}
+
+/* --- Tabs --- */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tab{
+  background:var(--card); border:1px solid var(--border); color:var(--text);
+  padding:6px 10px; border-radius:999px; cursor:pointer; font-size:14px;
+  user-select:none;
+}
+.tab:hover{background:#0f1320}
+:root[data-theme="light"] .tab:hover{background:#eef2ff}
+.tab.active{outline:2px solid var(--accent)}
+.tab.right{margin-left:auto; text-decoration:none}
+
+/* --- Keyword Cloud --- */
+.cloud{display:flex;gap:8px;flex-wrap:wrap}
+.cloud .kw{
+  background:transparent; border:1px dashed var(--border);
+  padding:4px 10px; border-radius:999px; cursor:pointer;
+  color:var(--muted); font-size:13px;
+}
+.cloud .kw:hover{border-style:solid; color:var(--text)}
 
 @media (min-width: 900px){.card{min-width:330px}}
