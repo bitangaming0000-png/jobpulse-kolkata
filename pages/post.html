@@ -4,113 +4,189 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Post — JobPulse Kolkata</title>
+
+  <!-- Keep your theme + base styles -->
   <script src="/assets/js/theme-boot.js"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- Page-specific typography to make articles look great -->
   <style>
-    .hero-img{width:100%;border-radius:12px;border:1px solid var(--border);margin:8px 0 14px;display:none}
-    .ai-block{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
-    .ai-block h2{margin-top:14px}
-    .img-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:8px}
-    .skeleton{border:1px solid var(--border);border-radius:12px;background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.08), rgba(255,255,255,0.03));background-size:200% 100%;animation:shimmer 1.2s infinite linear}
+    /* Layout */
+    .wrap { max-width: 900px; margin: 0 auto; padding: 0 12px; }
+
+    /* Hero image */
+    .hero-img{
+      width:100%; max-height:460px; object-fit:cover;
+      border-radius:14px; border:1px solid var(--border); margin:10px 0 18px; display:none;
+    }
+
+    /* Readable article typography */
+    .article {
+      background: var(--card); border:1px solid var(--border); border-radius:16px;
+      padding: 18px 16px; font-size: 17px; line-height: 1.75;
+      text-align: justify;
+    }
+    .article h2 { font-size: 22px; margin: 16px 0 8px; line-height: 1.35; font-weight: 800; }
+    .article h3 { font-size: 18px; margin: 12px 0 6px; line-height: 1.35; font-weight: 700; }
+    .article p  { margin: 8px 0; }
+    .article strong, .article b { font-weight: 800; }
+    .article ul, .article ol { padding-left: 1.4rem; margin: 8px 0; }
+    .article li { margin: 4px 0; }
+    .article table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 16px; }
+    .article th, .article td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+    .article blockquote {
+      margin: 10px 0; padding: 8px 12px; border-left: 4px solid var(--accent);
+      background: rgba(94,234,212,0.06);
+    }
+
+    /* Tiny info row */
+    .meta-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; color:var(--muted); }
+    .meta-row .chip{ display:inline-block; border:1px solid var(--border); border-radius:999px; padding:4px 10px; }
+
+    /* Inline gallery */
+    .img-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-top:8px }
+    .img-grid img{ width:100%; border-radius:12px; border:1px solid var(--border) }
+
+    /* Skeleton while loading */
+    .skeleton{ border:1px solid var(--border); border-radius:12px;
+      background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      background-size:200% 100%; animation:shimmer 1.2s infinite linear;
+    }
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    .muted{color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 id="ptitle" class="skeleton" style="height:28px;width:60%"></h1>
-    <p><a id="src" class="badge" href="#" target="_blank" rel="noopener">Source ↗</a></p>
+  <div class="container wrap">
+    <h1 id="ptitle" style="margin-top:8px;margin-bottom:6px"></h1>
 
-    <img id="hero" class="hero-img" alt="AI banner" />
+    <div class="meta-row" style="margin-bottom:10px">
+      <a id="src" class="chip" href="#" target="_blank" rel="noopener">Source ↗</a>
+      <span class="chip">West Bengal jobs</span>
+      <span id="pdate" class="chip" style="display:none"></span>
+    </div>
 
-    <div id="content" class="ai-block">
+    <!-- Hero/banner -->
+    <img id="hero" class="hero-img" alt="Article banner" />
+
+    <!-- Article content -->
+    <div id="content" class="article">
       <div class="skeleton" style="height:16px;width:90%;margin:8px 0"></div>
       <div class="skeleton" style="height:16px;width:95%;margin:8px 0"></div>
       <div class="skeleton" style="height:16px;width:80%;margin:8px 0"></div>
-      <p class="muted" id="status">Generating an easy-to-read article…</p>
+      <p class="muted" id="status">Formatting a clean, easy-to-read article…</p>
     </div>
 
+    <!-- Inline images / gallery -->
     <div id="moreimg" class="img-grid"></div>
   </div>
 
+  <!-- Page script -->
   <script type="module">
     import { getQuery, truncate, safeURL } from '/assets/js/utils.js';
 
+    // --- read query params from card link
     const title = decodeURIComponent(getQuery('title')||'');
     const link  = decodeURIComponent(getQuery('link')||'');
     const desc  = decodeURIComponent(getQuery('desc')||'');
     const date  = decodeURIComponent(getQuery('date')||'');
 
-    const $title = document.getElementById('ptitle');
-    const $src   = document.getElementById('src');
-    const $hero  = document.getElementById('hero');
+    // --- DOM refs
+    const $title   = document.getElementById('ptitle');
+    const $src     = document.getElementById('src');
+    const $hero    = document.getElementById('hero');
     const $content = document.getElementById('content');
     const $status  = document.getElementById('status');
     const $grid    = document.getElementById('moreimg');
+    const $pdate   = document.getElementById('pdate');
 
-    // Set initial heading & source link
-    $title.classList.remove('skeleton');
+    // --- heading + source/date chips
     $title.textContent = title || 'Article';
     $src.href = safeURL(link);
+    if (date) { $pdate.textContent = new Date(date).toLocaleString('en-IN'); $pdate.style.display='inline-block'; }
 
-    // Helper: render fallback content if AI fails
+    // --- helpers
     function renderFallback() {
       $content.innerHTML = `
-        <h2>Quick Summary</h2>
-        <p>${desc ? truncate(desc, 600) : 'We could not auto-generate a long article for this post right now.'}</p>
-        <p class="muted">Tip: open the Source link above for original details.</p>
+        <h2><strong>Overview</strong></h2>
+        <p>${desc ? truncate(desc, 800) : 'We could not load the full article right now.'}</p>
+        <h3><strong>How to apply</strong></h3>
+        <p>Visit the official website and follow the instructions in the notification.</p>
+        <h3><strong>Important links</strong></h3>
+        <p><a href="${safeURL(link)}" target="_blank" rel="noopener">Official notification / source</a></p>
       `;
     }
 
-    // Try to get AI article & images
-    async function renderAI() {
+    // Returns true if string looks like a full http(s) URL
+    const isUrl = (s)=>/^https?:\/\//i.test(s||'');
+
+    // ensure an image element shows (from direct URL or by calling ai-image function)
+    async function showImageInto(imgEl, source) {
       try {
-        const r = await fetch('/.netlify/functions/ai-post?link='+encodeURIComponent(link));
+        if (!source) return;
+        if (isUrl(source)) {
+          imgEl.src = source;
+          imgEl.style.display = 'block';
+          return;
+        }
+        // else treat as prompt → call our free Unsplash proxy
+        const r = await fetch('/.netlify/functions/ai-image?prompt=' + encodeURIComponent(source));
+        const j = await r.json();
+        if (j && j.dataUrl) {
+          imgEl.src = j.dataUrl;
+          imgEl.style.display = 'block';
+        }
+      } catch(_) {}
+    }
+
+    async function addInlineImage(source) {
+      const img = new Image();
+      img.alt = 'Related illustration';
+      $grid.appendChild(img);
+      await showImageInto(img, source);
+    }
+
+    // --- main: fetch article + images from our function
+    async function renderArticle() {
+      if (!link) { renderFallback(); return; }
+
+      try {
+        const r = await fetch('/.netlify/functions/ai-post?link=' + encodeURIComponent(link));
         const j = await r.json();
 
-        if (!r.ok) throw new Error(j.error || 'AI article error');
-        if (!j || !j.html) { renderFallback(); return; }
+        if (!r.ok || !j) throw new Error(j?.error || 'Post function failed');
 
-        // Inject article HTML
-        $content.innerHTML = j.html;
+        // 1) Article HTML (from free fallback or AI when configured)
+        if (j.html) {
+          $content.innerHTML = j.html;
+        } else {
+          renderFallback();
+        }
 
-        // Generate & show images (banner + 2 inline)
+        // 2) Images:
+        //    - With the free setup, ai-post returns **URLs** in j.images
+        //    - If they happen to be prompts, we call ai-image to fetch Unsplash
         if (Array.isArray(j.images) && j.images.length) {
-          try {
-            const first = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(j.images[0]));
-            const fjson = await first.json();
-            if (fjson && fjson.dataUrl) {
-              $hero.src = fjson.dataUrl;
-              $hero.style.display = 'block';
-            }
-          } catch(_) {}
-
-          for (const p of (j.images.slice(1,3))) {
-            try {
-              const rr = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent(p));
-              const jj = await rr.json();
-              if (jj && jj.dataUrl) {
-                const img = new Image(); img.src = jj.dataUrl; img.alt = p;
-                img.style.width='100%'; img.style.borderRadius='12px'; img.style.border='1px solid var(--border)';
-                $grid.appendChild(img);
-              }
-            } catch(_) {}
+          // Hero/banner
+          await showImageInto($hero, j.images[0]);
+          // Up to 2 inline
+          for (const src of j.images.slice(1,3)) {
+            await addInlineImage(src);
           }
+        } else {
+          // Always try to show at least one generic Unsplash banner
+          await showImageInto($hero, 'job,kolkata');
         }
       } catch (e) {
-        console.error('AI error:', e);
+        console.error('post page error:', e);
         renderFallback();
+        await showImageInto($hero, 'job,kolkata');
       }
     }
 
-    // If no link in query, just show fallback from desc
-    if (!link) {
-      renderFallback();
-    } else {
-      renderAI();
-    }
+    renderArticle();
   </script>
 
+  <!-- global app script (header, ticker etc.) -->
   <script type="module" src="/assets/js/main.js"></script>
 </body>
 </html>
