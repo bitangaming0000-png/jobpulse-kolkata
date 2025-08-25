@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>JobPulse Kolkata — West Bengal Jobs, Exams, Updates</title>
     <meta name="description" content="Curated West Bengal job updates from trusted sources. Clean, dark, fast.">
-
-    <!-- Load theme early -->
     <script src="/assets/js/theme-boot.js"></script>
-
     <link rel="stylesheet" href="/assets/css/style.css">
   </head>
   <body class="home">
@@ -20,7 +17,7 @@
         <div id="notify-ticker" class="ticker"></div>
       </div>
 
-      <!-- Today widgets -->
+      <!-- Today widgets (kept from earlier) -->
       <section class="section today-wrap">
         <div class="widgets">
           <div id="quoteBox" class="widget card">
@@ -76,6 +73,19 @@
 
       <ins class="ad-slot" data-variant="display"></ins>
 
+      <!-- Category Tabs -->
+      <section class="section">
+        <div class="tabs" id="jobTabs">
+          <button class="tab active" data-filter="all">All</button>
+          <button class="tab" data-filter="govt">Government</button>
+          <button class="tab" data-filter="private">Private</button>
+          <button class="tab" data-filter="bank">Banking</button>
+          <button class="tab" data-filter="rail">Railway</button>
+          <button class="tab" data-filter="it">IT</button>
+          <a class="tab right" href="/pages/saved.html">⭐ Saved Jobs</a>
+        </div>
+      </section>
+
       <section class="section">
         <h2>Top News</h2>
         <div id="top-scroll" class="scroller-x"></div>
@@ -93,6 +103,12 @@
       <section class="section">
         <h2>Trending</h2>
         <div id="trending" class="scroller-x"></div>
+      </section>
+
+      <!-- Keyword Cloud -->
+      <section class="section">
+        <h2>Trending Keywords</h2>
+        <div id="keywordCloud" class="cloud"></div>
       </section>
 
       <section class="section">
