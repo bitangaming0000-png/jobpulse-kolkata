@@ -2,7 +2,7 @@
   publish = "."
   functions = "netlify/functions"
 
-# Serve /sitemap.xml from the function (Google likes this path)
+# Serve /sitemap.xml from the function (Google prefers this path)
 [[redirects]]
   from = "/sitemap.xml"
   to = "/.netlify/functions/sitemap"
