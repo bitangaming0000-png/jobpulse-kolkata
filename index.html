@@ -38,8 +38,38 @@
               <div class="w-temp"><span id="wt">—</span>°C</div>
               <div class="w-small" id="wd">Loading…</div>
               <div class="w-range" id="wr">— / — °C</div>
+              <div class="w-small" id="clock">🕒 <span>—:—</span> IST</div>
             </div>
             <div class="w-foot muted">Auto-updated every 30 mins.</div>
+          </div>
+
+          <div id="historyBox" class="widget card">
+            <div class="w-head">This Day in History</div>
+            <div class="w-body">
+              <div class="skeleton" style="height:16px;width:80%;margin:6px 0"></div>
+              <div class="skeleton" style="height:16px;width:60%;margin:6px 0"></div>
+            </div>
+            <div class="w-foot muted">Powered by Wikipedia</div>
+          </div>
+
+          <div id="airBox" class="widget card">
+            <div class="w-head">Kolkata Air Quality</div>
+            <div class="w-body">
+              <div class="w-temp"><span id="aqiVal">—</span> AQI</div>
+              <div class="w-small" id="aqiDesc">Loading…</div>
+              <div class="w-range" id="aqiNote">PM2.5: — μg/m³</div>
+            </div>
+            <div class="w-foot muted">Open-Meteo Air Quality</div>
+          </div>
+
+          <div id="calendarBox" class="widget card">
+            <div class="w-head">Exam Calendar (Next 60 days)</div>
+            <div class="w-body">
+              <ul id="calList" class="cal-list">
+                <li class="muted">Parsing dates from new posts…</li>
+              </ul>
+            </div>
+            <div class="w-foot muted">Auto-extracted from posts</div>
           </div>
         </div>
       </section>
