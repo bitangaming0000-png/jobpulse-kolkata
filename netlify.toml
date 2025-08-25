@@ -1,12 +1,10 @@
 [build]
   publish = "."
-  command = "npm run build"
+  functions = "netlify/functions"
 
-[functions]
-  directory = "netlify/functions"
-  included_files = ["data/feeds.json", "data/allow_full_domains.json"]
-
+# Serve /sitemap.xml from the function (Google likes this path)
 [[redirects]]
-  from = "/api/rss"
-  to = "/.netlify/functions/rss"
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/sitemap"
   status = 200
+  force = true
