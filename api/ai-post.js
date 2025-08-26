@@ -1,50 +1,65 @@
-// netlify/functions/ai-post.js (free fallback)
-const fetchFn = global.fetch;
+// api/ai-post.js
+// Fetches the source page, extracts visible text, produces a structured HTML article.
+// No paid APIs. It's a heuristic, but works well for long-form content.
 
-function json(status, obj){
-  return {
-    statusCode: status,
-    headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin':'*' },
-    body: JSON.stringify(obj)
-  };
+function cleanHTML(html = '') {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\s+/g, ' ');
+}
+function stripTags(h = '') {
+  return h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function section(title, body) {
+  return `<h2>${title}</h2><p>${body}</p>`;
 }
 
-function htmlToText(html=''){
-  html = html.replace(/<script[\s\S]*?<\/script>/gi,' ')
-             .replace(/<style[\s\S]*?<\/style>/gi,' ')
-             .replace(/<\/?[^>]+>/g,' ')
-             .replace(/\s+/g,' ')
-             .trim();
-  return html;
-}
+module.exports = async (req, res) => {
+  try {
+    const link = (req.query.link || '').toString();
+    if (!link || !/^https?:\/\//i.test(link)) {
+      return res.status(400).json({ ok: false, error: 'Invalid or missing "link" param' });
+    }
 
-module.exports.handler = async (event)=>{
-  try{
-    const qs = new URLSearchParams(event.rawQuery||'');
-    const link = qs.get('link');
-    if(!link) return json(400,{error:'Missing link'});
+    const r = await fetch(link, { headers: { 'user-agent': 'jobpulse-article-bot' } });
+    const htmlRaw = await r.text();
+    const html = cleanHTML(htmlRaw);
 
-    const r = await fetchFn(link);
-    if(!r.ok) throw new Error('Fetch failed '+r.status);
-    const html = await r.text();
-    const text = htmlToText(html);
+    // naive extraction: take main/article/body text chunks
+    const mainMatch = html.match(/<(main|article|body)[^>]*>([\s\S]*?)<\/\1>/i);
+    const core = mainMatch ? mainMatch[2] : html;
+    const text = stripTags(core);
 
-    // Wrap in simple template
-    const article = `
-      <h2>Overview</h2>
-      <p>${text.slice(0,2000)}</p>
-      <h2>How to Apply</h2>
-      <p>Please check the official website for application process.</p>
-      <h2>Important Links</h2>
-      <p><a href="${link}" target="_blank">Official Notification</a></p>
-    `;
+    // Build sections
+    const words = text.split(/\s+/).filter(Boolean);
+    const trimmed = words.slice(0, 3000).join(' '); // cap
 
-    return json(200,{html:article,images:[
-      "https://source.unsplash.com/1024x576/?job,kolkata",
-      "https://source.unsplash.com/1024x576/?career,india",
-      "https://source.unsplash.com/1024x576/?office,documents"
-    ]});
-  }catch(e){
-    return json(500,{error:e.message});
+    // simple bullets
+    const lower = trimmed.toLowerCase();
+    const bullets = [];
+    const add = (s) => { if (s && !bullets.includes(s)) bullets.push(s); };
+    if (lower.includes('eligib')) add('Check age, education, and category relaxations in the official notification.');
+    if (lower.includes('apply')) add('Apply through the official portal; keep scanned documents ready.');
+    if (lower.includes('fee')) add('Application fee may apply; verify amount and payment method.');
+    if (lower.includes('exam')) add('Note the exam pattern, syllabus, and admit card release date.');
+    if (!bullets.length) bullets.push('Read the official notification carefully before applying.');
+
+    const htmlOut = `
+      <p><strong>Summary:</strong> ${trimmed.slice(0, 600)}...</p>
+      ${section('Overview', 'This post summarizes the official update in a readable format for West Bengal candidates.')}
+      ${section('Eligibility', 'Eligibility varies by department/post. Review the official PDF for exact details (age, education, experience).')}
+      <h2>Important Points</h2>
+      <ul>${bullets.map(b=>`<li>${b}</li>`).join('')}</ul>
+      ${section('Important Dates', 'Refer to the official website/notification for application start/end dates and exam schedule.')}
+      ${section('How to Apply', 'Visit the official link, register or log in, complete the form, upload documents, and submit. Save the acknowledgement.')}
+      <p><em>Source:</em> <a href="${link}" target="_blank" rel="noopener">${link}</a></p>
+    `.replace(/\n\s+/g,'\n');
+
+    res.setHeader('Cache-Control', 'public, max-age=1800');
+    return res.status(200).json({ ok: true, html: htmlOut });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
   }
 };
