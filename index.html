@@ -1,39 +1,83 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>JobPulse Kolkata — West Bengal Jobs, Exams, Updates</title>
-  <meta name="description" content="Curated West Bengal job updates from trusted sources. Clean, dark, fast.">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0d0f14">
-  <link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192">
+  <!-- Essentials -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>JobPulse Kolkata — West Bengal Jobs, Exams, Admit Cards & Results</title>
+  <meta name="description" content="JobPulse Kolkata curates West Bengal job updates from official sources and trusted portals. Fast, clean, dark mode ready." />
+  <link rel="canonical" href="https://jobpulse-kolkata.vercel.app/" />
+
+  <!-- PWA / Icons -->
+  <meta name="theme-color" content="#0d0f14" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="JobPulse Kolkata — West Bengal Jobs, Exams, Updates" />
+  <meta property="og:description" content="Curated WB jobs, admit cards, results & notifications. Clean UI. Dark/light mode." />
+  <meta property="og:url" content="https://jobpulse-kolkata.vercel.app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://jobpulse-kolkata.vercel.app/assets/icons/icon-512.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Theme boot BEFORE CSS so first paint matches -->
   <script src="/assets/js/theme-boot.js"></script>
-  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/assets/css/style.css" />
+
+  <!-- Optional: structured data (Organization) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"JobPulse Kolkata",
+    "url":"https://jobpulse-kolkata.vercel.app/",
+    "logo":"https://jobpulse-kolkata.vercel.app/assets/icons/icon-192.png",
+    "sameAs":[]
+  }
+  </script>
 </head>
+
 <body class="home">
+  <!-- Header & Footer are injected by /assets/js/main.js from /components/header.html + footer.html -->
+
+  <noscript>
+    <div style="background:#fee2e2;color:#7f1d1d;padding:12px;text-align:center">
+      JavaScript is required to load live jobs and sections. Please enable it.
+    </div>
+  </noscript>
+
   <div class="container">
     <h1>JobPulse Kolkata</h1>
 
+    <!-- Search -->
     <div class="search-wrap">
       <input id="siteSearch" class="search-input" placeholder="Search jobs, exams, WBPSC, SSC, Bank, Railway…">
       <button id="searchClear" class="search-clear" title="Clear">✕</button>
     </div>
 
-    <!-- Live ticker -->
+    <!-- Live ticker (auto-scroll; hover to pause) -->
     <div class="ticker-wrap" title="Hover to pause">
       <span class="ticker-head">Live</span>
       <div id="notify-ticker" class="ticker"></div>
     </div>
 
-    <!-- Widgets row -->
+    <!-- Widgets row (quote, weather, history, air, calendar) – populated by main.js if present -->
     <section class="section today-wrap">
       <div class="widgets">
         <div id="quoteBox" class="widget card">
           <div class="w-head">Quote of the day</div>
-          <div class="w-body"><div class="skeleton" style="height:16px;width:85%;margin:6px 0"></div></div>
+          <div class="w-body">
+            <div class="skeleton" style="height:16px;width:85%;margin:6px 0"></div>
+            <div class="skeleton" style="height:16px;width:70%;margin:6px 0"></div>
+          </div>
           <div class="w-foot muted">Stay motivated.</div>
         </div>
+
         <div id="weatherBox" class="widget card">
           <div class="w-head">Kolkata Weather</div>
           <div class="w-body">
@@ -43,11 +87,16 @@
             <div class="w-small" id="clock">🕒 <span>—:—</span> IST</div>
           </div>
         </div>
+
         <div id="historyBox" class="widget card">
           <div class="w-head">This Day in History</div>
-          <div class="w-body"><div class="skeleton" style="height:16px;width:80%;margin:6px 0"></div></div>
+          <div class="w-body">
+            <div class="skeleton" style="height:16px;width:80%;margin:6px 0"></div>
+            <div class="skeleton" style="height:16px;width:60%;margin:6px 0"></div>
+          </div>
           <div class="w-foot muted">Wikipedia</div>
         </div>
+
         <div id="airBox" class="widget card">
           <div class="w-head">Kolkata Air Quality</div>
           <div class="w-body">
@@ -55,15 +104,22 @@
             <div class="w-small" id="aqiDesc">Loading…</div>
             <div class="w-range" id="aqiNote">PM2.5: — μg/m³</div>
           </div>
+          <div class="w-foot muted">Open-Meteo AQI</div>
         </div>
+
         <div id="calendarBox" class="widget card">
           <div class="w-head">Exam Calendar (Next 60 days)</div>
-          <div class="w-body"><ul id="calList" class="cal-list"><li class="muted">Parsing new posts…</li></ul></div>
+          <div class="w-body">
+            <ul id="calList" class="cal-list">
+              <li class="muted">Parsing dates from new posts…</li>
+            </ul>
+          </div>
+          <div class="w-foot muted">Auto-extracted</div>
         </div>
       </div>
     </section>
 
-    <!-- Ad placeholders (auto-injected) -->
+    <!-- Ad placeholders (will be replaced by components/ads-*.html via JS) -->
     <ins class="ad-slot" data-variant="display"></ins>
 
     <!-- Tabs -->
@@ -79,6 +135,7 @@
       </div>
     </section>
 
+    <!-- Top news (horizontal auto-scroll) -->
     <section class="section">
       <h2>Top News</h2>
       <div id="top-scroll" class="scroller-x autoscroll-x"></div>
@@ -88,33 +145,44 @@
     <ins class="ad-slot" data-variant="display"></ins>
     <ins class="ad-slot" data-variant="multiplex"></ins>
 
+    <!-- Notifications (vertical auto-scroll) -->
     <section class="section">
       <h2>Notifications</h2>
-      <div class="vscroll" id="notices-wrap"><div id="notices" class="vlist"></div></div>
+      <div class="vscroll" id="notices-wrap">
+        <div id="notices" class="vlist"></div>
+      </div>
     </section>
 
+    <!-- Trending (horizontal auto-scroll) -->
     <section class="section">
       <h2>Trending</h2>
       <div id="trending" class="scroller-x autoscroll-x"></div>
     </section>
 
+    <!-- Keyword chip cloud (optional, built from feeds.json categories) -->
     <section class="section">
       <h2>Trending Keywords</h2>
       <div id="keywordCloud" class="cloud"></div>
     </section>
 
+    <!-- Categories (from data/feeds.json) -->
     <section class="section">
       <h2>Categories</h2>
       <div id="categories" class="scroller-x"></div>
     </section>
   </div>
 
+  <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- Main JS MUST be a module -->
+  <!-- Main app (MUST be a module) -->
   <script type="module" src="/assets/js/main.js"></script>
+
+  <!-- Service Worker -->
   <script>
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(()=>{});
+    }
   </script>
 </body>
 </html>
