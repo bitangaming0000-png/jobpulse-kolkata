@@ -2,32 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Contact Us — JobPulse Kolkata</title>
+  <meta name="description" content="Contact JobPulse Kolkata for feedback, corrections, or partnership enquiries.">
+  <script src="/assets/js/theme-boot.js"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
   <div class="container">
     <h1>Contact Us</h1>
+    <p class="muted">We’d love to hear from you. Use the form below or email us via this form.</p>
 
-    <p>We value your feedback, questions, and suggestions. Whether you’re a job seeker needing clarification, an organization wanting to share an opportunity, or a visitor reporting an issue — we’d love to hear from you.</p>
+    <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/pages/thanks.html" class="card" style="max-width:640px">
+      <input type="hidden" name="form-name" value="contact">
+      <p style="display:none">
+        <label>Don’t fill this out if you’re human: <input name="bot-field"></label>
+      </p>
+      <p>
+        <label>Name<br>
+          <input required name="name" class="search-input" placeholder="Your full name">
+        </label>
+      </p>
+      <p>
+        <label>Email<br>
+          <input required type="email" name="email" class="search-input" placeholder="you@example.com">
+        </label>
+      </p>
+      <p>
+        <label>Subject<br>
+          <input required name="subject" class="search-input" placeholder="Subject">
+        </label>
+      </p>
+      <p>
+        <label>Message<br>
+          <textarea required name="message" class="search-input" rows="6" placeholder="Write your message…"></textarea>
+        </label>
+      </p>
+      <p>
+        <button class="theme-toggle" type="submit">Send message</button>
+      </p>
+    </form>
 
-    <h2>Get in Touch</h2>
-    <p><strong>Email:</strong> <a href="mailto:contact@yourdomain.com">contact@yourdomain.com</a></p>
-    <p><strong>Support Hours:</strong> Monday to Saturday, 10:00 AM – 6:00 PM IST</p>
-
-    <h2>What You Can Contact Us For</h2>
-    <ul>
-      <li>❓ Queries about job updates or articles published on our site.</li>
-      <li>📢 Reporting incorrect or outdated information.</li>
-      <li>🤝 Business or advertising inquiries.</li>
-      <li>⚖️ Takedown requests (if you are the content owner).</li>
-    </ul>
-
-    <h2>Response Time</h2>
-    <p>We aim to respond to all emails within <strong>24–48 hours</strong>. For urgent corrections, we prioritize updates as quickly as possible.</p>
-
-    <p style="margin-top:20px;color:var(--muted)">Your trust matters to us — we are here to help you stay updated and make informed career decisions.</p>
+    <p class="muted" style="margin-top:12px">We usually reply within 2–3 business days.</p>
   </div>
+  <script type="module" src="/assets/js/main.js"></script>
 </body>
 </html>
