@@ -1,127 +1,106 @@
-// netlify/functions/rss.js (CommonJS)
-const { XMLParser } = require('fast-xml-parser');
-const { readFile } = require('fs/promises');
-const path = require('path');
+// api/rss.js
+// Merge multiple RSS/Atom feeds listed in /data/feeds.json, filter to WB items, return JSON.
+
 const fs = require('fs');
-const fetch = global.fetch;
+const path = require('path');
 
-const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '@_',
-  allowBooleanAttributes: true,
-  trimValues: true
-});
+const WB_RE = /\b(West Bengal|WB|Kolkata|Howrah|Hooghly|Nadia|Siliguri|Durgapur|Kharagpur|Haldia|Medinipur|Bardhaman|Burdwan)\b/i;
 
-function rewriteText(text) {
-  if (!text) return '';
-  const t = String(text).replace(/\s+/g, ' ').trim();
-  return t.length > 220 ? t.slice(0, 220) + '...' : t;
+function strip(s = '') {
+  return String(s)
+    .replace(/<!\[CDATA\[(.*?)\]\]>/gs, '$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
-
-function normalizeFeed(json, sourceUrl) {
+function getTag(xml, tag) {
+  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i');
+  const m = xml.match(re);
+  return m ? m[1].trim() : '';
+}
+function parseItems(xml) {
   const items = [];
-  if (json?.rss?.channel) {
-    const ch = json.rss.channel;
-    const arr = Array.isArray(ch.item) ? ch.item : (ch.item ? [ch.item] : []);
-    for (const it of arr) {
-      items.push({
-        title: it.title || '',
-        link: it.link || '',
-        description: it.description || it.summary || '',
-        pubDate: it.pubDate || it['dc:date'] || it['updated'] || '',
-        source: sourceUrl
-      });
-    }
+  // RSS <item>
+  const re = /<item\b[\s\S]*?<\/item>/gi;
+  let m;
+  while ((m = re.exec(xml)) !== null) {
+    const block = m[0];
+    const title = strip(getTag(block, 'title'));
+    const link  = strip(getTag(block, 'link'));
+    const desc  = strip(getTag(block, 'description'));
+    const pub   = strip(getTag(block, 'pubDate'));
+    items.push({ title, link, description: desc, pubDate: pub });
   }
-  if (json?.feed?.entry) {
-    const arr = Array.isArray(json.feed.entry) ? json.feed.entry : [json.feed.entry];
-    for (const it of arr) {
-      const link = Array.isArray(it.link)
-        ? (it.link.find(l => l['@_rel'] === 'alternate')?.['@_href'] || it.link[0]['@_href'])
-        : (it.link?.['@_href'] || '');
-      items.push({
-        title: (it.title && (it.title._text || it.title)) || '',
-        link,
-        description: (it.summary && (it.summary._text || it.summary)) || (it.content && (it.content._text || it.content)) || '',
-        pubDate: it.updated || it.published || '',
-        source: sourceUrl
-      });
+  // Atom <entry>
+  if (!items.length) {
+    const reA = /<entry\b[\s\S]*?<\/entry>/gi; let ma;
+    while ((ma = reA.exec(xml)) !== null) {
+      const block = ma[0];
+      const title = strip(getTag(block, 'title'));
+      const lm = block.match(/<link[^>]*href="([^"]+)"/i);
+      const link = lm ? lm[1] : strip(getTag(block, 'id'));
+      const desc = strip(getTag(block, 'summary')) || strip(getTag(block, 'content'));
+      const pub  = strip(getTag(block, 'updated')) || strip(getTag(block, 'published'));
+      items.push({ title, link, description: desc, pubDate: pub });
     }
   }
   return items;
 }
-
-function includesAny(haystack, needles) {
-  const h = (haystack || '').toLowerCase();
-  return needles.some(n => h.includes(String(n).toLowerCase()));
+function isWB({ title = '', description = '', link = '' }) {
+  return WB_RE.test(`${title} ${description} ${link}`);
 }
 
-async function readFeedsConfig() {
-  const candidates = [
-    path.join(process.env.LAMBDA_TASK_ROOT || process.cwd(), 'data', 'feeds.json'),
-    path.join(__dirname, '..', '..', 'data', 'feeds.json'),
-    path.resolve(process.cwd(), 'data', 'feeds.json')
-  ];
-  for (const p of candidates) {
-    if (fs.existsSync(p)) {
-      const raw = await readFile(p, 'utf8');
-      return JSON.parse(raw);
-    }
-  }
-  throw new Error('feeds.json not found. Ensure [functions].included_files=["data/feeds.json"] and the file is committed.');
+function readFeedsConfig() {
+  const feedsPath = path.join(process.cwd(), 'data', 'feeds.json');
+  const raw = fs.readFileSync(feedsPath, 'utf8');
+  const j = JSON.parse(raw);
+  return Array.isArray(j) ? j : (j.sources || []);
 }
 
-module.exports.handler = async () => {
+module.exports = async (req, res) => {
   try {
-    const cfg = await readFeedsConfig();
-    const FEEDS = Array.isArray(cfg) ? cfg : (cfg.sources || []);
-    const KEYWORDS = (Array.isArray(cfg) ? [] : (cfg.filter_keywords_any || []))
-      .concat(['West Bengal','WB','Kolkata','Howrah','Hooghly','Hugli','Nadia','North 24 Parganas','South 24 Parganas','Darjeeling','Jalpaiguri','Alipurduar','Cooch Behar','Malda','Murshidabad','Bankura','Birbhum','Purulia','Paschim Medinipur','Purba Medinipur','Jhargram','Asansol','Durgapur','Siliguri','Kharagpur','Haldia','Bardhaman','Burdwan']);
+    const feeds = readFeedsConfig();
+    if (!feeds || !feeds.length) throw new Error('No feeds in data/feeds.json');
 
-    const fetches = FEEDS.map(async (s) => {
-      try {
-        const resp = await fetch(s.url, {
-          headers: {
-            'Accept': 'application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (NetlifyFunction; +rss-jobpulse-kolkata)'
-          }
-        });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const xml = await resp.text();
-        const json = parser.parse(xml);
-        let items = normalizeFeed(json, s.url);
-        items = items.map(it => ({ ...it, category: s.category || 'news' }));
-        items = items
-          .filter(it => includesAny(`${it.title} ${it.description}`, KEYWORDS))
-          .map(it => ({ ...it, description: rewriteText(it.description) }));
+    const results = await Promise.allSettled(
+      feeds.map(async (f) => {
+        const r = await fetch(f.url, { headers: { 'user-agent': 'jobpulse-rss-bot' } });
+        const xml = await r.text();
+        const items = parseItems(xml).map(x => ({
+          ...x,
+          _category: f.category || 'news',
+          _source: f.url
+        }));
         return items;
-      } catch (e) {
-        console.error('Feed error', s.url, e.message);
-        return [];
-      }
-    });
+      })
+    );
 
-    const results = (await Promise.all(fetches)).flat();
-
-    const seen = new Set();
-    const deduped = [];
-    for (const it of results) {
-      const key = (it.link || '') + '|' + (it.title || '');
-      if (!seen.has(key)) { seen.add(key); deduped.push(it); }
+    let all = [];
+    for (const r of results) {
+      if (r.status === 'fulfilled') all = all.concat(r.value);
     }
-    deduped.sort((a,b) => {
-      const da = Date.parse(a.pubDate) || 0;
-      const db = Date.parse(b.pubDate) || 0;
-      return db - da || a.title.localeCompare(b.title);
+
+    // WB filter + dedupe
+    const seen = new Set();
+    const filtered = [];
+    for (const it of all) {
+      if (!it.link) continue;
+      if (!isWB(it)) continue;
+      if (seen.has(it.link)) continue;
+      seen.add(it.link);
+      filtered.push(it);
+    }
+
+    filtered.sort((a, b) => {
+      const da = Date.parse(a.pubDate || '') || 0;
+      const db = Date.parse(b.pubDate || '') || 0;
+      if (db !== da) return db - da;
+      return (b.title || '').localeCompare(a.title || '');
     });
 
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=300' },
-      body: JSON.stringify({ items: deduped })
-    };
-  } catch (err) {
-    console.error('RSS function error', err);
-    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    return res.status(200).json({ ok: true, count: filtered.length, items: filtered.slice(0, 200) });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
   }
 };
