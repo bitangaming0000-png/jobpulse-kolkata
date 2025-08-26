@@ -1,7 +1,7 @@
-// netlify/functions/sitemap.js
-const fetchFn = global.fetch;
+// api/sitemap.js
+// Dynamic sitemap using the same /api/rss endpoint.
 
-function xmlEscape(s=''){
+function xmlEscape(s = '') {
   return String(s)
     .replace(/&/g,'&amp;')
     .replace(/</g,'&lt;')
@@ -10,45 +10,38 @@ function xmlEscape(s=''){
     .replace(/'/g,'&apos;');
 }
 
-module.exports.handler = async () => {
+module.exports = async (req, res) => {
   try {
-    const host = process.env.URL || 'https://jobpulse-kolkata.netlify.app';
-
-    // fetch your RSS aggregator endpoint
-    const rr = await fetchFn(`${host}/api/rss`, { headers: { 'user-agent':'jobpulse-sitemap-bot' } });
-    if(!rr.ok) throw new Error(`RSS fetch failed: ${rr.status}`);
+    const host = `https://${req.headers.host}`;
+    const rr = await fetch(`${host}/api/rss`, { headers: { 'user-agent':'jobpulse-sitemap-bot' } });
+    if (!rr.ok) throw new Error(`RSS fetch failed: ${rr.status}`);
     const data = await rr.json();
     const items = Array.isArray(data.items) ? data.items : [];
 
-    // static pages
     const urls = [
       `${host}/`,
       `${host}/pages/saved.html`,
-      `${host}/pages/privacy.html`
+      `${host}/pages/privacy.html`,
+      `${host}/pages/about.html`,
+      `${host}/pages/terms.html`,
+      `${host}/pages/disclaimer.html`,
+      `${host}/pages/contact.html`
     ];
 
-    // dynamic posts (cap to 500)
-    for(const it of items.slice(0,500)){
-      const loc = `${host}/pages/post.html?title=${encodeURIComponent(it.title||'')}&link=${encodeURIComponent(it.link||'')}`;
-      urls.push(loc);
+    for (const it of items.slice(0, 500)) {
+      urls.push(`${host}/pages/post.html?title=${encodeURIComponent(it.title || '')}&link=${encodeURIComponent(it.link || '')}`);
     }
 
-    const today = new Date().toISOString().slice(0,10);
-
+    const today = new Date().toISOString().slice(0, 10);
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(u => `<url><loc>${xmlEscape(u)}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>`).join('\n')}
 </urlset>`;
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=600'
-      },
-      body: xml
-    };
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=600');
+    return res.status(200).send(xml);
   } catch (e) {
-    return { statusCode: 500, headers: {'Content-Type':'text/plain'}, body: 'Error generating sitemap: ' + e.message };
+    return res.status(500).send('Error generating sitemap: ' + e.message);
   }
 };
