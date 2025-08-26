@@ -18,7 +18,7 @@ function readCache(){ try{ const j = JSON.parse(localStorage.getItem(CACHE_KEY)|
   }catch{}
 })();
 
-// --- Helpers for thumbnails (Unsplash via function) ---
+// --- Helpers for thumbnails (serverless image) ---
 function hashTitle(s){ let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return 'h'+Math.abs(h); }
 async function getAIThumb(prompt){
   const key = 'jp-thumb:'+hashTitle(prompt);
@@ -29,6 +29,17 @@ async function getAIThumb(prompt){
     if(j && j.dataUrl){ try{ localStorage.setItem(key, j.dataUrl); }catch{} return j.dataUrl; }
   }catch{}
   return null;
+}
+
+// --- Summaries (no AI needed) ---
+function makeSnippet(title='', desc=''){
+  const txt = (desc || '').replace(/\s+/g,' ').trim();
+  if(txt && txt.length > 40) return truncate(txt, 180);
+  // fallback from title keywords
+  let t = String(title);
+  t = t.replace(/\b(Recruitment|Notification|Apply Online|Vacancy|Vacancies)\b/gi,'').trim();
+  const base = `Latest update: ${t}. Check eligibility, dates and how to apply below.`;
+  return base;
 }
 
 function showEmpty(id, msg){
@@ -141,7 +152,10 @@ async function mountShell(){
 // ---------------- Data ----------------
 async function getRSS(){
   try{
-    const r = await fetch('/api/rss'); if(!r.ok) throw new Error('RSS API failed');
+    // pretty path (toml redirect). If it 404s, fallback to direct function path.
+    let r = await fetch('/api/rss');
+    if(!r.ok) r = await fetch('/.netlify/functions/rss');
+    if(!r.ok) throw new Error('RSS API failed');
     const j = await r.json(); const items = j.items || [];
     if(items.length) saveCache(items);
     if(items.length) return items;
@@ -183,14 +197,17 @@ function cardForPost(p){
   const date = p.pubDate ? new Date(p.pubDate) : null;
   const post = { title:p.title, link:p.link, description:p.description||'', pubDate:p.pubDate||'' };
 
+  const snippet = makeSnippet(p.title, p.description);
+
   c.innerHTML = `
     <div class="thumb-wrap"><img class="thumb" alt="" loading="lazy" /></div>
     <div class="meta"><span class="badge">${date? new Intl.DateTimeFormat('en-IN',{dateStyle:'medium'}).format(date):'New'}</span>
     <span class="badge">WB Only</span></div>
-    <h3><a href="/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description)}&date=${encodeURIComponent(p.pubDate||'')}" target="_self">${p.title}</a></h3>
-    <p>${truncate(p.description, 160)}</p>
+    <h3><a href="/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description||'')}&date=${encodeURIComponent(p.pubDate||'')}" target="_self">${p.title}</a></h3>
+    <p>${snippet}</p>
     <div class="card-actions">
       <a class="badge" href="${safeURL(p.link)}" target="_blank" rel="noopener">Source ↗</a>
+      <a class="badge" href="/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description||'')}&date=${encodeURIComponent(p.pubDate||'')}" target="_self">Read full →</a>
     </div>
   `;
   c.dataset.title = (p.title||'').toLowerCase();
@@ -227,24 +244,39 @@ function matchCategory(item, cat){
   return rule ? rule.test(text) : true;
 }
 
-function renderSections(items){
+// -------------- Render with robust fallbacks --------------
+function renderSections(all){
   const top=document.getElementById('top-scroll');
   const trending=document.getElementById('trending');
   const notices=document.getElementById('notices');
   for(const cont of [top,trending,notices]) if(cont) cont.innerHTML='';
 
-  items.slice(0,10).forEach(p=> top.appendChild(cardForPost(p)));
-  const notif=items.filter(p=>/admit|call letter|result/i.test((p.title||'')+(p.description||''))).slice(0,8);
+  const wb = all.filter(isWestBengalItem);
+  const base = wb.length ? wb : all; // if nothing matches WB, show general items so page is never empty
+
+  // Top
+  base.slice(0,12).forEach(p=> top.appendChild(cardForPost(p)));
+
+  // Notifications = items mentioning admit/result OR fall back to latest
+  let notif = base.filter(p=>/admit|call letter|result|hall ticket|answer key/i.test((p.title||'')+(p.description||''))).slice(0,12);
+  if(!notif.length) notif = base.slice(0,12);
   notif.forEach(p=> notices.appendChild(cardForPost(p)));
-  const byHost={}; for(const it of items){ try{const h=new URL(it.link).host.replace('www.',''); byHost[h]=(byHost[h]||0)+1;}catch{} }
+
+  // Trending = by popular host; if empty, take next slice
+  const byHost={};
+  for(const it of base){ try{const h=new URL(it.link).host.replace('www.',''); byHost[h]=(byHost[h]||0)+1;}catch{} }
+  let trend = [];
   const popularHosts=Object.entries(byHost).sort((a,b)=>b[1]-a[1]).map(e=>e[0]).slice(0,3);
-  const trend=items.filter(p=>{try{return popularHosts.includes(new URL(p.link).host.replace('www.',''))}catch{return false}}).slice(0,12);
+  if(popularHosts.length){
+    trend = base.filter(p=>{try{return popularHosts.includes(new URL(p.link).host.replace('www.',''))}catch{return false}}).slice(0,12);
+  }
+  if(!trend.length) trend = base.slice(12,24);
   trend.forEach(p=> trending.appendChild(cardForPost(p)));
 
-  // thumbs for first cards
-  loadAIThumbs(top,6); loadAIThumbs(notices,4); loadAIThumbs(trending,6);
+  // thumbs
+  loadAIThumbs(top,8); loadAIThumbs(notices,6); loadAIThumbs(trending,8);
 
-  // start auto-scroll for Top News and Trending
+  // auto-scroll
   startAutoScrollX('top-scroll', 1, 35);
   startAutoScrollX('trending',   1, 35);
 }
@@ -255,8 +287,8 @@ function mountTabs(allItems){
     const btn = e.target.closest('.tab'); if(!btn || !btn.dataset.filter) return;
     for(const b of tabs.querySelectorAll('.tab')) b.classList.remove('active');
     btn.classList.add('active');
-    const filtered = allItems.filter(it=> isWestBengalItem(it) && matchCategory(it, btn.dataset.filter));
-    renderSections(filtered);
+    const items = allItems.filter(it=> matchCategory(it, btn.dataset.filter));
+    renderSections(items);
   });
 }
 
@@ -284,18 +316,16 @@ function buildKeywordCloud(items){
 function buildTicker(items){
   const wrap = document.getElementById('notify-ticker');
   if(!wrap) return;
-  const filtered = items.filter(isWestBengalItem);
-  if(!filtered.length){ wrap.outerHTML = '<div class="notice">No new West Bengal updates yet.</div>'; return; }
+  const subset = (items && items.length ? items : []).slice(0,18);
+  if(!subset.length){ wrap.outerHTML = '<div class="notice">No updates yet.</div>'; return; }
 
-  const subset = filtered.slice(0,18);
   const track = document.createElement('div'); track.className = 'ticker-track';
-
   const makeRun = () => {
     const span = document.createElement('span'); span.className = 'ticker';
     subset.forEach(p=>{
       const bullet = el('span','bullet','');
       const a=document.createElement('a');
-      a.href=`/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description)}&date=${encodeURIComponent(p.pubDate||'')}`;
+      a.href=`/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description||'')}&date=${encodeURIComponent(p.pubDate||'')}`;
       a.textContent=p.title;
       span.appendChild(bullet); span.appendChild(a);
     });
@@ -383,7 +413,6 @@ function buildCalendar(items){
 
   const events = [];
   for(const it of items){
-    if(!isWestBengalItem(it)) continue;
     const text = [it.title, it.description].filter(Boolean).join(' — ');
     const dt = tryParseDate(text);
     if(!dt) continue;
@@ -420,15 +449,14 @@ async function loadCategories(){
 let ALL_ITEMS = [];
 function applySearch(q){
   q = (q||'').trim().toLowerCase();
+  if(!q){ renderSections(ALL_ITEMS); return; }
   const top=document.getElementById('top-scroll');
-  const notices=document.getElementById('notices');
   const trending=document.getElementById('trending');
-  if(!q){
-    renderSections(ALL_ITEMS.filter(isWestBengalItem));
-    return;
-  }
+  const notices=document.getElementById('notices');
+  for(const cont of [top,trending,notices]) if(cont) cont.innerHTML='';
+
   const words = q.split(/\s+/).filter(Boolean);
-  const scored = ALL_ITEMS.filter(isWestBengalItem).map(p=>{
+  const scored = ALL_ITEMS.map(p=>{
     const hay = ((p.title||'')+' '+(p.description||'')).toLowerCase();
     let score = 0;
     for(const w of words){ if(hay.includes(w)) score += 2; }
@@ -436,29 +464,26 @@ function applySearch(q){
     return {p,score};
   }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).map(x=>x.p);
 
-  for(const cont of [top,trending,notices]) if(cont) cont.innerHTML='';
   scored.slice(0,12).forEach(p=> top.appendChild(cardForPost(p)));
   loadAIThumbs(top, 8);
   showToast(`Found ${scored.length} results for “${q}”`, 2500);
-
-  // keep auto-scroll running on Top News list
   startAutoScrollX('top-scroll', 1, 35);
 }
 
-// ---------- Auto refresh (5 min) to detect NEW posts ----------
+// ---------- Auto refresh (5 min) ----------
 function watchForNew(){
   setInterval(async ()=>{
     try{
       const latest = await getRSS();
       const old = readCache();
       const oldLinks = new Set((old||[]).map(i=>i.link));
-      const fresh = (latest||[]).filter(i=> !oldLinks.has(i.link) && isWestBengalItem(i));
+      const fresh = (latest||[]).filter(i=> !oldLinks.has(i.link));
       if(fresh.length){
         saveCache(latest);
         const a = document.createElement('a');
         a.href = `/pages/post.html?title=${encodeURIComponent(fresh[0].title)}&link=${encodeURIComponent(fresh[0].link)}&desc=${encodeURIComponent(fresh[0].description||'')}&date=${encodeURIComponent(fresh[0].pubDate||'')}`;
         a.textContent = fresh[0].title;
-        showToast(`🔔 New WB job posted: ${a.outerHTML}`, 6000);
+        showToast(`🔔 New job posted: ${a.outerHTML}`, 6000);
       }
     }catch{}
   }, 5*60*1000);
@@ -473,17 +498,16 @@ async function mountHome(){
   mountQuote(); mountWeather(); mountHistory(); mountAir();
 
   buildTicker(items);
-  buildKeywordCloud(items);
   await loadCategories();
   buildCalendar(items);
 
-  // initial render (All)
-  renderSections(items.filter(isWestBengalItem));
+  // render & tabs
+  renderSections(items);
   mountTabs(items);
 
-  // thumbs for first load
+  // thumbs for first load (extra)
   const top=document.getElementById('top-scroll'); const notices=document.getElementById('notices'); const trending=document.getElementById('trending');
-  loadAIThumbs(top,6); loadAIThumbs(notices,4); loadAIThumbs(trending,6);
+  loadAIThumbs(top,8); loadAIThumbs(notices,6); loadAIThumbs(trending,8);
 
   // Search events
   const q = document.getElementById('siteSearch');
@@ -493,10 +517,6 @@ async function mountHome(){
 
   // watch for new posts
   watchForNew();
-
-  // ensure auto-scroll running
-  startAutoScrollX('top-scroll', 1, 35);
-  startAutoScrollX('trending',   1, 35);
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
