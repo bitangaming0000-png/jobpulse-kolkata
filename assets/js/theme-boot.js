@@ -1,11 +1,8 @@
-// assets/js/theme-boot.js
 (function(){
   try{
-    var key = 'jp-theme';
-    var saved = localStorage.getItem(key);
-    var theme = saved === 'light' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
-  }catch(e){
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
+    const pref = localStorage.getItem('jp-theme');
+    if (pref) { document.documentElement.setAttribute('data-theme', pref); return; }
+    const hrs = Number(new Intl.DateTimeFormat('en-IN',{hour:'2-digit',hour12:false,timeZone:'Asia/Kolkata'}).format(new Date()));
+    document.documentElement.setAttribute('data-theme', (hrs>=6 && hrs<18)?'light':'dark');
+  }catch{}
 })();
