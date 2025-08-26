@@ -3,190 +3,137 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Post — JobPulse Kolkata</title>
-
-  <!-- Keep your theme + base styles -->
+  <title id="pgTitle">Job Details — JobPulse Kolkata</title>
+  <meta name="description" content="Full job details, eligibility, dates and how to apply.">
   <script src="/assets/js/theme-boot.js"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
-
-  <!-- Page-specific typography to make articles look great -->
   <style>
-    /* Layout */
-    .wrap { max-width: 900px; margin: 0 auto; padding: 0 12px; }
-
-    /* Hero image */
-    .hero-img{
-      width:100%; max-height:460px; object-fit:cover;
-      border-radius:14px; border:1px solid var(--border); margin:10px 0 18px; display:none;
-    }
-
-    /* Readable article typography */
-    .article {
-      background: var(--card); border:1px solid var(--border); border-radius:16px;
-      padding: 18px 16px; font-size: 17px; line-height: 1.75;
-      text-align: justify;
-    }
-    .article h2 { font-size: 22px; margin: 16px 0 8px; line-height: 1.35; font-weight: 800; }
-    .article h3 { font-size: 18px; margin: 12px 0 6px; line-height: 1.35; font-weight: 700; }
-    .article p  { margin: 8px 0; }
-    .article strong, .article b { font-weight: 800; }
-    .article ul, .article ol { padding-left: 1.4rem; margin: 8px 0; }
-    .article li { margin: 4px 0; }
-    .article table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 16px; }
-    .article th, .article td { border: 1px solid var(--border); padding: 8px; text-align: left; }
-    .article blockquote {
-      margin: 10px 0; padding: 8px 12px; border-left: 4px solid var(--accent);
-      background: rgba(94,234,212,0.06);
-    }
-
-    /* Tiny info row */
-    .meta-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; color:var(--muted); }
-    .meta-row .chip{ display:inline-block; border:1px solid var(--border); border-radius:999px; padding:4px 10px; }
-
-    /* Inline gallery */
-    .img-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-top:8px }
-    .img-grid img{ width:100%; border-radius:12px; border:1px solid var(--border) }
-
-    /* Skeleton while loading */
-    .skeleton{ border:1px solid var(--border); border-radius:12px;
-      background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-      background-size:200% 100%; animation:shimmer 1.2s infinite linear;
-    }
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .post-wrap{max-width:900px;margin:0 auto}
+    .hero{width:100%;height:220px;border-radius:14px;border:1px solid var(--border);overflow:hidden;background:#0e1628;margin:10px 0}
+    .hero img{width:100%;height:100%;object-fit:cover;display:block}
+    .post h1{font-size:26px;margin:8px 0 4px}
+    .post .meta{color:var(--muted);font-size:14px;margin-bottom:10px}
+    .post .content h2{margin-top:16px}
+    .post .content p{line-height:1.6}
+    .key{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:8px 0}
+    .key .card{min-width:auto}
+    .cta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
   </style>
 </head>
 <body>
-  <div class="container wrap">
-    <h1 id="ptitle" style="margin-top:8px;margin-bottom:6px"></h1>
+  <div class="container post-wrap">
+    <article class="post card">
+      <div class="hero"><img id="hero" alt=""></div>
+      <h1 id="title">Loading…</h1>
+      <div class="meta"><span id="date">—</span> · <a id="source" href="#" target="_blank" rel="noopener">View source ↗</a></div>
 
-    <div class="meta-row" style="margin-bottom:10px">
-      <a id="src" class="chip" href="#" target="_blank" rel="noopener">Source ↗</a>
-      <span class="chip">West Bengal jobs</span>
-      <span id="pdate" class="chip" style="display:none"></span>
-    </div>
+      <div class="cta">
+        <a id="applyBtn" class="badge" href="#" target="_blank" rel="noopener">Apply / Official Link ↗</a>
+        <a class="badge" href="/" rel="noopener">← Back to Home</a>
+      </div>
 
-    <!-- Hero/banner -->
-    <img id="hero" class="hero-img" alt="Article banner" />
+      <div class="key">
+        <div class="card"><strong>Organization</strong><div id="org" class="w-small">—</div></div>
+        <div class="card"><strong>Post / Role</strong><div id="role" class="w-small">—</div></div>
+        <div class="card"><strong>Category</strong><div id="cat" class="w-small">Job Update</div></div>
+        <div class="card"><strong>Location</strong><div id="loc" class="w-small">West Bengal</div></div>
+      </div>
 
-    <!-- Article content -->
-    <div id="content" class="article">
-      <div class="skeleton" style="height:16px;width:90%;margin:8px 0"></div>
-      <div class="skeleton" style="height:16px;width:95%;margin:8px 0"></div>
-      <div class="skeleton" style="height:16px;width:80%;margin:8px 0"></div>
-      <p class="muted" id="status">Formatting a clean, easy-to-read article…</p>
-    </div>
+      <div class="content" id="content">
+        <h2>Overview</h2>
+        <p id="ov">We’re preparing a clean summary from the source. Key eligibility and dates are listed below. Always verify on the official site before applying.</p>
 
-    <!-- Inline images / gallery -->
-    <div id="moreimg" class="img-grid"></div>
+        <h2>Eligibility</h2>
+        <p id="elig">Eligibility details will vary based on the department. Please review the official notification linked above.</p>
+
+        <h2>Important Dates</h2>
+        <ul id="dates">
+          <li>Application start / end dates will be available on the official website.</li>
+        </ul>
+
+        <h2>How to Apply</h2>
+        <ol id="howto">
+          <li>Visit the official link using the “Apply / Official Link ↗” button.</li>
+          <li>Read the notification thoroughly.</li>
+          <li>Register / log in and complete the form.</li>
+          <li>Upload documents and pay fee (if applicable).</li>
+          <li>Submit and save acknowledgement.</li>
+        </ol>
+      </div>
+    </article>
   </div>
 
-  <!-- Page script -->
   <script type="module">
-    import { getQuery, truncate, safeURL } from '/assets/js/utils.js';
+    import { truncate, safeURL } from '/assets/js/utils.js';
 
-    // --- read query params from card link
-    const title = decodeURIComponent(getQuery('title')||'');
-    const link  = decodeURIComponent(getQuery('link')||'');
-    const desc  = decodeURIComponent(getQuery('desc')||'');
-    const date  = decodeURIComponent(getQuery('date')||'');
+    function getParam(k){ const u=new URL(location.href); return u.searchParams.get(k)||''; }
+    const title = decodeURIComponent(getParam('title'));
+    const link  = decodeURIComponent(getParam('link'));
+    const desc  = decodeURIComponent(getParam('desc')||'');
+    const date  = decodeURIComponent(getParam('date')||'');
 
-    // --- DOM refs
-    const $title   = document.getElementById('ptitle');
-    const $src     = document.getElementById('src');
-    const $hero    = document.getElementById('hero');
-    const $content = document.getElementById('content');
-    const $status  = document.getElementById('status');
-    const $grid    = document.getElementById('moreimg');
-    const $pdate   = document.getElementById('pdate');
+    // Basic fill
+    document.getElementById('title').textContent = title || 'Job Details';
+    document.getElementById('pgTitle').textContent = (title? title + ' — ' : '') + 'JobPulse Kolkata';
+    document.getElementById('source').href = safeURL(link);
+    document.getElementById('applyBtn').href = safeURL(link);
+    document.getElementById('date').textContent = date ? new Date(date).toLocaleString('en-IN',{dateStyle:'medium', timeStyle:'short'}) : 'Recently updated';
+    document.getElementById('ov').textContent = desc ? truncate(desc.replace(/<[^>]+>/g,''), 500) : `Latest update: ${title}. Details below.`;
 
-    // --- heading + source/date chips
-    $title.textContent = title || 'Article';
-    $src.href = safeURL(link);
-    if (date) { $pdate.textContent = new Date(date).toLocaleString('en-IN'); $pdate.style.display='inline-block'; }
+    // Extract small fields from title/desc
+    const lower = (title+' '+desc).toLowerCase();
+    const org = (title.match(/^(.*?)\s*[:-]/)||[])[1] || (lower.includes('wbpsc')?'WBPSC':'—');
+    document.getElementById('org').textContent = org || '—';
+    const role = (title.replace(org,'').replace(/[:-]\s*/,'').trim()) || '—';
+    document.getElementById('role').textContent = role || '—';
 
-    // --- helpers
-    function renderFallback() {
-      $content.innerHTML = `
-        <h2><strong>Overview</strong></h2>
-        <p>${desc ? truncate(desc, 800) : 'We could not load the full article right now.'}</p>
-        <h3><strong>How to apply</strong></h3>
-        <p>Visit the official website and follow the instructions in the notification.</p>
-        <h3><strong>Important links</strong></h3>
-        <p><a href="${safeURL(link)}" target="_blank" rel="noopener">Official notification / source</a></p>
-      `;
+    // Parse dates present in text
+    const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','sept','oct','nov','dec'];
+    function tryParseDates(s){
+      const out = new Set();
+      const dmy = s.match(/\b([0-3]?\d)[\/\-]([01]?\d)[\/\-](20\d{2})\b/g) || [];
+      dmy.forEach(x=>out.add(x));
+      const long = s.match(/\b([0-3]?\d)\s+[A-Za-z]{3,9}\.?,?\s+(20\d{2})\b/g) || [];
+      long.forEach(x=>out.add(x));
+      const alt = s.match(/\b[A-Za-z]{3,9}\.?\s+[0-3]?\d,\s*(20\d{2})\b/g) || [];
+      alt.forEach(x=>out.add(x));
+      return [...out].slice(0,6);
+    }
+    const list = tryParseDates(title+' '+desc);
+    if(list.length){
+      const ul = document.getElementById('dates'); ul.innerHTML='';
+      list.forEach(x=> { const li=document.createElement('li'); li.textContent = x; ul.appendChild(li); });
     }
 
-    // Returns true if string looks like a full http(s) URL
-    const isUrl = (s)=>/^https?:\/\//i.test(s||'');
-
-    // ensure an image element shows (from direct URL or by calling ai-image function)
-    async function showImageInto(imgEl, source) {
-      try {
-        if (!source) return;
-        if (isUrl(source)) {
-          imgEl.src = source;
-          imgEl.style.display = 'block';
-          return;
-        }
-        // else treat as prompt → call our free Unsplash proxy
-        const r = await fetch('/.netlify/functions/ai-image?prompt=' + encodeURIComponent(source));
+    // Hero image from serverless generator (no paid API)
+    async function loadHero(){
+      try{
+        const r = await fetch('/.netlify/functions/ai-image?prompt='+encodeURIComponent('West Bengal job news: '+title));
         const j = await r.json();
-        if (j && j.dataUrl) {
-          imgEl.src = j.dataUrl;
-          imgEl.style.display = 'block';
-        }
-      } catch(_) {}
+        if(j && j.dataUrl){ document.getElementById('hero').src = j.dataUrl; document.getElementById('hero').alt = title; }
+      }catch{}
     }
+    loadHero();
 
-    async function addInlineImage(source) {
-      const img = new Image();
-      img.alt = 'Related illustration';
-      $grid.appendChild(img);
-      await showImageInto(img, source);
-    }
-
-    // --- main: fetch article + images from our function
-    async function renderArticle() {
-      if (!link) { renderFallback(); return; }
-
-      try {
-        const r = await fetch('/.netlify/functions/ai-post?link=' + encodeURIComponent(link));
+    // Try to fetch expanded article from function; fallback to template
+    async function tryExpanded(){
+      try{
+        const url = '/.netlify/functions/ai-post?link=' + encodeURIComponent(link);
+        const r = await fetch(url);
+        if(!r.ok) throw new Error('expand failed');
         const j = await r.json();
-
-        if (!r.ok || !j) throw new Error(j?.error || 'Post function failed');
-
-        // 1) Article HTML (from free fallback or AI when configured)
-        if (j.html) {
-          $content.innerHTML = j.html;
-        } else {
-          renderFallback();
+        const html = j && (j.html || j.content || '');
+        if(html){
+          const box = document.getElementById('content');
+          box.innerHTML = html + box.innerHTML; // keep our sections below as extra
         }
-
-        // 2) Images:
-        //    - With the free setup, ai-post returns **URLs** in j.images
-        //    - If they happen to be prompts, we call ai-image to fetch Unsplash
-        if (Array.isArray(j.images) && j.images.length) {
-          // Hero/banner
-          await showImageInto($hero, j.images[0]);
-          // Up to 2 inline
-          for (const src of j.images.slice(1,3)) {
-            await addInlineImage(src);
-          }
-        } else {
-          // Always try to show at least one generic Unsplash banner
-          await showImageInto($hero, 'job,kolkata');
-        }
-      } catch (e) {
-        console.error('post page error:', e);
-        renderFallback();
-        await showImageInto($hero, 'job,kolkata');
+      }catch{
+        // keep the structured template; no crash
       }
     }
-
-    renderArticle();
+    tryExpanded();
   </script>
 
-  <!-- global app script (header, ticker etc.) -->
   <script type="module" src="/assets/js/main.js"></script>
 </body>
 </html>
