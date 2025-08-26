@@ -2,32 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About Us — JobPulse Kolkata</title>
+  <meta name="description" content="About JobPulse Kolkata — a clean, fast, ad-safe portal curating West Bengal job updates from trusted sources.">
+  <script src="/assets/js/theme-boot.js"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
   <div class="container">
     <h1>About JobPulse Kolkata</h1>
+    <p class="muted">Last updated: <span id="dt"></span></p>
 
-    <p><strong>JobPulse Kolkata</strong> is an independent career and job information platform focused on opportunities in West Bengal.  
-    We understand how challenging it can be for students, graduates, and job seekers to stay updated with the latest notifications, so our mission is to make this process simple, reliable, and accessible to everyone.</p>
+    <p><strong>JobPulse Kolkata</strong> is an independent, fast and distraction-free site focused on <strong>West Bengal jobs, exams, and admit card/result updates</strong>. We aggregate official announcements and trusted job portals via RSS, then rewrite and reformat them so they’re easier to scan on mobile. Our goal is simple: help candidates in Kolkata and across WB discover relevant vacancies quickly and apply at the official source.</p>
 
-    <h2>What We Do</h2>
+    <h2>What we publish</h2>
     <ul>
-      <li>📢 Curate job notifications from trusted government and private sources.</li>
-      <li>📰 Provide exam updates, admit card releases, and result announcements.</li>
-      <li>🔎 Summarize information clearly with direct source links for verification.</li>
-      <li>💡 Offer a clean, ad-supported experience with light and dark themes.</li>
+      <li>Government jobs (WBPSC, WB Police, Health, Education, Panchayat, etc.)</li>
+      <li>Bank & Rail updates relevant to candidates in West Bengal</li>
+      <li>Private and IT openings located in WB or remote roles open to WB residents</li>
+      <li>Exam dates, admit cards, results, and official notices</li>
     </ul>
 
-    <h2>Why Choose Us</h2>
-    <p>Our platform focuses on <strong>West Bengal–specific opportunities</strong>. Unlike general job portals, we filter and highlight only those openings relevant to Kolkata and the state of West Bengal, ensuring you don’t miss important local updates.</p>
+    <h2>How we curate content</h2>
+    <p>We monitor multiple trusted sources using RSS feeds and official websites. Each item is <strong>rewritten</strong> to avoid duplication and to add value—clear headings, important dates, eligibility and application steps. We always link back to the <strong>official website</strong> so candidates can verify details and apply safely.</p>
 
-    <h2>Our Commitment</h2>
-    <p>We are committed to transparency and accuracy. While we summarize content for easy reading, we always encourage candidates to visit official websites before making decisions or applications. We are not affiliated with any government body — we are here to help you stay informed.</p>
+    <h2>Quality & transparency</h2>
+    <ul>
+      <li><strong>No paywall</strong>: the website is free to access.</li>
+      <li><strong>Source links</strong>: every post includes the source URL where possible.</li>
+      <li><strong>Corrections</strong>: if something looks wrong, <a href="/pages/contact.html">contact us</a> and we’ll fix it.</li>
+    </ul>
 
-    <p style="margin-top:20px;color:var(--muted)">Thank you for trusting JobPulse Kolkata. Together, let’s make job searching more efficient and stress-free.</p>
+    <h2>Revenue & ads</h2>
+    <p>We use Google AdSense for basic display ads. Ads help us keep the site free and maintain hosting. We don’t sell personal data; see our <a href="/pages/privacy.html">Privacy Policy</a>.</p>
+
+    <h2>Our promise</h2>
+    <p>We keep the UI clean, fast and accessible. Features like dark mode, live ticker, auto-scrolling lists, “Save Job”, weather/clock widgets and an exam calendar are designed to make browsing efficient without getting in your way.</p>
+
+    <h2>Get in touch</h2>
+    <p>We welcome feedback and new feed suggestions. Please reach out via the <a href="/pages/contact.html">Contact page</a>.</p>
   </div>
+  <script>document.getElementById('dt').textContent = new Date().toLocaleDateString('en-IN',{dateStyle:'medium'});</script>
+  <script type="module" src="/assets/js/main.js"></script>
 </body>
 </html>
