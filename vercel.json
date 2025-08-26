@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/api/rss", "destination": "/api/rss.js" },
+    { "source": "/api/ai-image", "destination": "/api/ai-image.js" },
+    { "source": "/api/ai-post", "destination": "/api/ai-post.js" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap.js" }
+  ]
+}
