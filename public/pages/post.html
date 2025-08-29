@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Post — JobPulse Kolkata</title>
+  <script src="/assets/js/theme-boot.js?v=13"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=13">
+</head>
+<body>
+  <div class="container">
+    <a href="/">← Back</a>
+    <article class="card">
+      <h1 id="title">Loading…</h1>
+      <p class="muted"><a id="source" href="#" target="_blank" rel="noopener">View Source ↗</a></p>
+      <div class="thumb-wrap"><img id="hero" class="thumb" alt=""></div>
+      <p id="desc"></p>
+    </article>
+  </div>
+  <script type="module">
+    function param(k){ const u=new URL(location.href); return u.searchParams.get(k)||''; }
+    const title = decodeURIComponent(param('title'));
+    const link  = decodeURIComponent(param('link'));
+    const desc  = decodeURIComponent(param('desc'));
+    const date  = decodeURIComponent(param('date'));
+    document.getElementById('title').textContent = title || 'Post';
+    document.getElementById('desc').textContent = desc || '';
+    document.getElementById('source').href = link || '#';
+    const q = encodeURIComponent('kolkata jobs '+title);
+    document.getElementById('hero').src = 'https://source.unsplash.com/800x450/?'+q;
+  </script>
+</body>
+</html>
