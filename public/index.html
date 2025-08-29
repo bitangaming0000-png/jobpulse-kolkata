@@ -18,12 +18,9 @@
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- AdSense (once per page) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
-
   <!-- Theme & CSS -->
-  <script src="/assets/js/theme-boot.js?v=15"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=15">
+  <script src="/assets/js/theme-boot.js?v=16"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=16">
   <style>html,body{background:#0d0f14;color:#e7eaf3}</style>
 </head>
 <body class="home">
@@ -41,15 +38,14 @@
   </header>
 
   <div class="container">
-    <!-- Top Display Ad -->
-    <div class="ads card" style="margin-bottom:12px">
+    <!-- Top Display Ad (auto-hidden if not filled) -->
+    <div class="ads card" data-ad="display-top" style="margin-bottom:12px">
       <ins class="adsbygoogle"
            style="display:block"
            data-ad-client="ca-pub-5732778753912461"
            data-ad-slot="2400432399"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
     </div>
 
     <h1>Latest Updates</h1>
@@ -95,15 +91,14 @@
       <div id="top-scroll" class="scroller-x autoscroll-x"></div>
     </section>
 
-    <!-- In-article Ad -->
-    <div class="ads card" style="margin:12px 0">
+    <!-- In-article Ad (auto-hidden) -->
+    <div class="ads card" data-ad="in-article" style="margin:12px 0">
       <ins class="adsbygoogle"
            style="display:block; text-align:center;"
            data-ad-layout="in-article"
            data-ad-format="fluid"
            data-ad-client="ca-pub-5732778753912461"
            data-ad-slot="2400400574"></ins>
-      <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
     </div>
 
     <section class="section">
@@ -118,14 +113,13 @@
       <div id="trending" class="scroller-x autoscroll-x"></div>
     </section>
 
-    <!-- Bottom Multiplex Ad -->
-    <div class="ads card" style="margin-top:12px">
+    <!-- Bottom Multiplex Ad (auto-hidden) -->
+    <div class="ads card" data-ad="multiplex-bottom" style="margin-top:12px">
       <ins class="adsbygoogle"
            style="display:block"
            data-ad-format="autorelaxed"
            data-ad-client="ca-pub-5732778753912461"
            data-ad-slot="7381264518"></ins>
-      <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
     </div>
   </div>
 
@@ -134,6 +128,32 @@
   </footer>
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 
-  <script type="module" src="/assets/js/main.js?v=15"></script>
+  <!-- Sticky anchor ad holder (auto-hidden if no fill) -->
+  <div id="anchor-ad" class="anchor-ad" hidden>
+    <button class="anchor-close" aria-label="Close ad">×</button>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-5732778753912461"
+         data-ad-slot="2400432399"
+         data-ad-format="auto"></ins>
+  </div>
+
+  <!-- Consent banner (loads AdSense only after Accept) -->
+  <div id="consent-banner" class="consent-banner" hidden>
+    <div class="consent-inner">
+      <div class="consent-text">
+        We use cookies and Google AdSense to improve your experience and show relevant ads. See our
+        <a href="/pages/privacy.html">Privacy</a>.
+      </div>
+      <div class="consent-actions">
+        <button id="consent-decline" class="btn ghost">Decline</button>
+        <button id="consent-accept" class="btn">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS: site + ads/consent manager -->
+  <script type="module" src="/assets/js/main.js?v=16"></script>
+  <script type="module" src="/assets/js/ads.js?v=16"></script>
 </body>
 </html>
