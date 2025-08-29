@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#0d0f14" />
   <link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192" />
 
-  <!-- Open Graph / Twitter -->
+  <!-- OG/Twitter -->
   <meta property="og:title" content="JobPulse Kolkata — West Bengal Jobs & Exams" />
   <meta property="og:description" content="Daily West Bengal job news, exams, admit cards, results, notifications." />
   <meta property="og:url" content="https://jobpulse-kolkata.vercel.app/" />
@@ -19,15 +19,19 @@
   <meta name="twitter:card" content="summary_large_image" />
 
   <!-- Theme & CSS -->
-  <script src="/assets/js/theme-boot.js?v=16"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=16">
+  <script src="/assets/js/theme-boot.js?v=18"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=17">
   <style>html,body{background:#0d0f14;color:#e7eaf3}</style>
+
+  <!-- ✅ DEV: auto-accept consent so popup never shows -->
+  <script>try{localStorage.setItem('jp-consent','granted');}catch(e){}</script>
 </head>
 <body class="home">
   <header class="site-header" style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px">
     <div class="logo" style="font-weight:700">JobPulse Kolkata</div>
     <nav style="display:flex;gap:12px;align-items:center">
       <a href="/pages/about.html">About</a>
+      <a href="/pages/saved.html">Saved <span id="savedCount" class="saved-badge">0</span></a>
       <a href="/pages/privacy.html">Privacy</a>
       <a href="/pages/terms.html">Terms</a>
       <a href="/pages/disclaimer.html">Disclaimer</a>
@@ -38,7 +42,7 @@
   </header>
 
   <div class="container">
-    <!-- Top Display Ad (auto-hidden if not filled) -->
+    <!-- Top Display Ad (auto-hidden via ads.js) -->
     <div class="ads card" data-ad="display-top" style="margin-bottom:12px">
       <ins class="adsbygoogle"
            style="display:block"
@@ -68,6 +72,21 @@
         <h2 style="margin:0 0 8px 0">🔎 Search</h2>
         <input id="searchInput" class="search-input" type="search" placeholder="Search jobs, exams, results…" />
       </section>
+
+      <!-- Poll of the Day -->
+      <section class="widget card">
+        <h2 style="margin:0 0 8px 0">🗳️ Poll of the Day</h2>
+        <div id="pollBox">
+          <p id="pollQ">Which updates do you check most?</p>
+          <div class="poll-options">
+            <button class="btn pill" data-opt="Govt Jobs">Govt Jobs</button>
+            <button class="btn pill" data-opt="Exams">Exams</button>
+            <button class="btn pill" data-opt="Results">Results</button>
+            <button class="btn pill" data-opt="Admit Cards">Admit Cards</button>
+          </div>
+          <div id="pollThanks" class="muted" style="display:none;margin-top:6px">Thanks for voting!</div>
+        </div>
+      </section>
     </div>
 
     <!-- Category chips -->
@@ -91,7 +110,7 @@
       <div id="top-scroll" class="scroller-x autoscroll-x"></div>
     </section>
 
-    <!-- In-article Ad (auto-hidden) -->
+    <!-- In-article Ad -->
     <div class="ads card" data-ad="in-article" style="margin:12px 0">
       <ins class="adsbygoogle"
            style="display:block; text-align:center;"
@@ -113,7 +132,7 @@
       <div id="trending" class="scroller-x autoscroll-x"></div>
     </section>
 
-    <!-- Bottom Multiplex Ad (auto-hidden) -->
+    <!-- Bottom Multiplex Ad -->
     <div class="ads card" data-ad="multiplex-bottom" style="margin-top:12px">
       <ins class="adsbygoogle"
            style="display:block"
@@ -138,22 +157,8 @@
          data-ad-format="auto"></ins>
   </div>
 
-  <!-- Consent banner (loads AdSense only after Accept) -->
-  <div id="consent-banner" class="consent-banner" hidden>
-    <div class="consent-inner">
-      <div class="consent-text">
-        We use cookies and Google AdSense to improve your experience and show relevant ads. See our
-        <a href="/pages/privacy.html">Privacy</a>.
-      </div>
-      <div class="consent-actions">
-        <button id="consent-decline" class="btn ghost">Decline</button>
-        <button id="consent-accept" class="btn">Accept</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- JS: site + ads/consent manager -->
-  <script type="module" src="/assets/js/main.js?v=16"></script>
+  <!-- JS -->
+  <script type="module" src="/assets/js/main.js?v=17"></script>
   <script type="module" src="/assets/js/ads.js?v=16"></script>
 </body>
 </html>
