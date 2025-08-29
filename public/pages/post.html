@@ -3,13 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Post — JobPulse Kolkata</title>
+  <title id="docTitle">Post — JobPulse Kolkata</title>
 
-  <!-- AdSense once per page -->
+  <!-- Canonical -->
+  <link rel="canonical" href="">
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelector('link[rel=canonical]').href = window.location.href;
+      document.title = new URL(location.href).searchParams.get("title") || "JobPulse Kolkata";
+      document.getElementById("docTitle").textContent = document.title;
+    });
+  </script>
+
+  <!-- ✅ AdSense once per page -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 
+  <!-- Theme + CSS -->
   <script src="/assets/js/theme-boot.js?v=14"></script>
   <link rel="stylesheet" href="/assets/css/style.css?v=14">
+
+  <!-- ✅ Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"NewsArticle",
+    "headline": "JobPulse Kolkata Article",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": ""
+    },
+    "datePublished": "",
+    "dateModified": "",
+    "author": {"@type":"Organization","name":"JobPulse Kolkata"},
+    "publisher": {
+      "@type":"Organization",
+      "name":"JobPulse Kolkata",
+      "logo":{"@type":"ImageObject","url":"/assets/icons/icon-192.png"}
+    },
+    "image": ["https://source.unsplash.com/900x500/?kolkata%20jobs"],
+    "description": "West Bengal jobs update and details."
+  }
+  </script>
 </head>
 <body>
   <div class="container">
@@ -32,7 +66,7 @@
 
       <div class="thumb-wrap"><img id="hero" class="thumb" alt=""></div>
 
-      <!-- Gallery (extra free images) -->
+      <!-- Gallery -->
       <div id="gallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0"></div>
 
       <!-- In-article Ad -->
@@ -49,7 +83,7 @@
       <div id="article" style="line-height:1.6"></div>
 
       <p style="margin-top:16px;font-size:12px;color:var(--muted)">
-        Note: We show an extended summary with key points and references. Visit the source for full details and official information.
+        Note: This is an extended summary with key points and references. Visit the source for full official details.
       </p>
 
       <!-- Bottom Multiplex Ad -->
@@ -69,17 +103,20 @@
     const title = decodeURIComponent(param('title'));
     const link  = decodeURIComponent(param('link'));
     const desc  = decodeURIComponent(param('desc'));
+    const date  = decodeURIComponent(param('date'));
 
-    // Basic header content
+    // Set header info
     document.getElementById('title').textContent = title || 'Post';
     document.getElementById('source').href = link || '#';
+    document.querySelector("meta[name='description']")?.setAttribute("content", desc || "WB jobs update");
 
-    // Hero + gallery from free Unsplash placeholders (no API key)
+    // Hero image
     const q = encodeURIComponent('kolkata jobs ' + (title||''));
     document.getElementById('hero').src = 'https://source.unsplash.com/900x500/?'+q;
 
+    // Gallery
     const gallery = document.getElementById('gallery');
-    ['office','exam','resume','interview','city kolkata','government office'].forEach((kw,i)=>{
+    ['office','exam','resume','interview','city kolkata','government office'].forEach(kw=>{
       const img = document.createElement('img');
       img.loading='lazy'; img.alt=kw;
       img.style.width='100%'; img.style.height='120px'; img.style.objectFit='cover'; img.style.borderRadius='10px';
@@ -87,25 +124,38 @@
       gallery.appendChild(img);
     });
 
-    // Try to fetch long article excerpt from our serverless
+    // Fetch extended content from API
     async function loadArticle(url){
       const box = document.getElementById('article');
       try{
-        if(!url){ throw new Error('Missing URL'); }
+        if(!url) throw new Error('Missing URL');
         const r = await fetch('/api/article?url='+encodeURIComponent(url));
         if(!r.ok) throw new Error('HTTP '+r.status);
         const j = await r.json();
         if(j?.contentHtml){
-          box.innerHTML = j.contentHtml;  // already sanitized server-side
-        }else{
-          // Fallback: extended summary using provided desc
-          box.innerHTML = '<p>'+ (desc||'Details available at the source link above.') +'</p>';
+          box.innerHTML = j.contentHtml;
+        } else {
+          box.innerHTML = '<p>'+(desc||'Details available at the source.')+'</p>';
         }
       }catch(e){
-        box.innerHTML = '<p>'+ (desc||'Open the source for full details.') +'</p>';
+        box.innerHTML = '<p>'+(desc||'Open the source for full details.')+'</p>';
       }
     }
     loadArticle(link);
+
+    // Update structured data dynamically
+    document.addEventListener("DOMContentLoaded", () => {
+      const jsonld = document.querySelector("script[type='application/ld+json']");
+      if(jsonld){
+        const data = JSON.parse(jsonld.textContent);
+        data.headline = title || "JobPulse Kolkata Article";
+        data.mainEntityOfPage["@id"] = window.location.href;
+        data.datePublished = date || new Date().toISOString();
+        data.dateModified = new Date().toISOString();
+        data.description = desc || "West Bengal job update and details.";
+        jsonld.textContent = JSON.stringify(data);
+      }
+    });
   </script>
 </body>
 </html>
