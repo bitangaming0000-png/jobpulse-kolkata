@@ -9,9 +9,12 @@
   <meta name="theme-color" content="#0d0f14" />
   <link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192" />
 
+  <!-- AdSense (once per page) -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
+
   <!-- Theme first to avoid white flash -->
-  <script src="/assets/js/theme-boot.js?v=13"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=13">
+  <script src="/assets/js/theme-boot.js?v=14"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=14">
   <style>html,body{background:#0d0f14;color:#e7eaf3}</style>
 </head>
 <body class="home">
@@ -24,7 +27,33 @@
   </header>
 
   <div class="container">
+    <!-- Top Display Ad -->
+    <div class="ads card" style="margin-bottom:12px">
+      <!-- Display -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5732778753912461"
+           data-ad-slot="2400432399"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
+
     <h1>Latest Updates</h1>
+
+    <div class="widgets">
+      <!-- Weather -->
+      <section class="widget card">
+        <h2 style="margin:0 0 8px 0">🌤 Kolkata Temperature</h2>
+        <div id="wx">Loading current temperature…</div>
+      </section>
+
+      <!-- Quote of the day -->
+      <section class="widget card">
+        <h2 style="margin:0 0 8px 0">💡 Daily Motivation</h2>
+        <blockquote id="quoteBox" style="margin:0"></blockquote>
+      </section>
+    </div>
 
     <!-- Live ticker -->
     <div class="ticker-wrap" title="Hover to pause">
@@ -37,6 +66,18 @@
       <div id="top-scroll" class="scroller-x autoscroll-x"></div>
     </section>
 
+    <!-- In-article Ad -->
+    <div class="ads card" style="margin:12px 0">
+      <!-- In-article -->
+      <ins class="adsbygoogle"
+           style="display:block; text-align:center;"
+           data-ad-layout="in-article"
+           data-ad-format="fluid"
+           data-ad-client="ca-pub-5732778753912461"
+           data-ad-slot="2400400574"></ins>
+      <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
+
     <section class="section">
       <h2>Notifications</h2>
       <div class="vscroll" id="notices-wrap">
@@ -48,6 +89,17 @@
       <h2>Trending</h2>
       <div id="trending" class="scroller-x autoscroll-x"></div>
     </section>
+
+    <!-- Bottom Multiplex Ad -->
+    <div class="ads card" style="margin-top:12px">
+      <!-- Multiplex -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-format="autorelaxed"
+           data-ad-client="ca-pub-5732778753912461"
+           data-ad-slot="7381264518"></ins>
+      <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
   </div>
 
   <footer class="site-footer" style="padding:16px;text-align:center;color:var(--muted)">
@@ -59,6 +111,6 @@
   </footer>
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 
-  <script type="module" src="/assets/js/main.js?v=13"></script>
+  <script type="module" src="/assets/js/main.js?v=14"></script>
 </body>
-    </html>
+</html>
