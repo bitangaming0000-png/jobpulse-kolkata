@@ -3,30 +3,41 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>JobPulse Kolkata — West Bengal Jobs, Exams, Updates</title>
-  <meta name="description" content="Curated West Bengal job updates. Clean UI, dark mode, fast." />
+
+  <title>JobPulse Kolkata — West Bengal Jobs, Exams, Results & Updates</title>
+  <meta name="description" content="Daily West Bengal job news, exams, admit cards, results, notifications. Clean UI, fast, dark mode." />
   <link rel="canonical" href="https://jobpulse-kolkata.vercel.app/" />
   <meta name="theme-color" content="#0d0f14" />
   <link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192" />
 
-  <!-- ✅ Google Search Console Verification -->
-  <meta name="google-site-verification" content="hVq9oYel2Sp4jK72WVA8hugxBexcKwOS1Tr6HH6Is9o" />
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="JobPulse Kolkata — West Bengal Jobs & Exams" />
+  <meta property="og:description" content="Daily West Bengal job news, exams, admit cards, results, notifications." />
+  <meta property="og:url" content="https://jobpulse-kolkata.vercel.app/" />
+  <meta property="og:image" content="https://source.unsplash.com/1200x630/?kolkata,city" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- ✅ AdSense (once per page) -->
+  <!-- AdSense (once per page) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
 
-  <!-- ✅ Theme first to avoid white flash -->
-  <script src="/assets/js/theme-boot.js?v=14"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=14">
+  <!-- Theme & CSS -->
+  <script src="/assets/js/theme-boot.js?v=15"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=15">
   <style>html,body{background:#0d0f14;color:#e7eaf3}</style>
 </head>
 <body class="home">
   <header class="site-header" style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px">
     <div class="logo" style="font-weight:700">JobPulse Kolkata</div>
-    <div class="meta">
+    <nav style="display:flex;gap:12px;align-items:center">
+      <a href="/pages/about.html">About</a>
+      <a href="/pages/privacy.html">Privacy</a>
+      <a href="/pages/terms.html">Terms</a>
+      <a href="/pages/disclaimer.html">Disclaimer</a>
+      <a href="/pages/contact.html">Contact</a>
       <span id="dateTime">🕒 —</span>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme" style="margin-left:8px">🌓</button>
-    </div>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
+    </nav>
   </header>
 
   <div class="container">
@@ -46,15 +57,31 @@
     <div class="widgets">
       <!-- Weather -->
       <section class="widget card">
-        <h2 style="margin:0 0 8px 0">🌤 Kolkata Temperature</h2>
+        <h2 style="margin:0 0 8px 0">🌤 Weather</h2>
         <div id="wx">Loading current temperature…</div>
       </section>
 
-      <!-- Quote of the day -->
+      <!-- Quote -->
       <section class="widget card">
         <h2 style="margin:0 0 8px 0">💡 Daily Motivation</h2>
         <blockquote id="quoteBox" style="margin:0"></blockquote>
       </section>
+
+      <!-- Search -->
+      <section class="widget card">
+        <h2 style="margin:0 0 8px 0">🔎 Search</h2>
+        <input id="searchInput" class="search-input" type="search" placeholder="Search jobs, exams, results…" />
+      </section>
+    </div>
+
+    <!-- Category chips -->
+    <div class="chips card" id="chips">
+      <button data-cat="all" class="chip chip-active">All</button>
+      <button data-cat="govt" class="chip">Govt Jobs</button>
+      <button data-cat="exam" class="chip">Exams</button>
+      <button data-cat="admit" class="chip">Admit Cards</button>
+      <button data-cat="result" class="chip">Results</button>
+      <button data-cat="notice" class="chip">Notifications</button>
     </div>
 
     <!-- Live ticker -->
@@ -103,14 +130,10 @@
   </div>
 
   <footer class="site-footer" style="padding:16px;text-align:center;color:var(--muted)">
-    © <span id="year"></span> JobPulse Kolkata · West Bengal Jobs & Updates ·
-    <a href="/pages/privacy.html">Privacy</a> ·
-    <a href="/pages/terms.html">Terms</a> ·
-    <a href="/pages/disclaimer.html">Disclaimer</a> ·
-    <a href="/pages/contact.html">Contact</a>
+    © <span id="year"></span> JobPulse Kolkata · West Bengal Jobs & Updates
   </footer>
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 
-  <script type="module" src="/assets/js/main.js?v=14"></script>
+  <script type="module" src="/assets/js/main.js?v=15"></script>
 </body>
 </html>
