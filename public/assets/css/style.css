@@ -18,6 +18,7 @@ h2{font-size:18px;margin:0 0 10px 6px;color:var(--muted)}
 .scroller-x{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory}
 .autoscroll-x{scrollbar-width:none} .autoscroll-x::-webkit-scrollbar{display:none}
 
+/* Ticker */
 .ticker-wrap{position:relative;overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--card);margin:6px 0 12px;border-radius:10px;min-height:36px}
 .ticker-head{position:absolute;left:8px;top:6px;font-size:11px;line-height:20px;color:var(--muted);background:#0e1628;border:1px solid var(--border);padding:0 8px;border-radius:999px}
 :root[data-theme="light"] .ticker-head{background:#eef2ff;color:#334155}
@@ -26,9 +27,21 @@ h2{font-size:18px;margin:0 0 10px 6px;color:var(--muted)}
 .ticker-wrap:hover .ticker-track{animation-play-state:paused}
 @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
+/* Notices list */
 .vscroll{position:relative;height:360px;overflow:hidden;border:1px solid var(--border);border-radius:12px;padding:10px;background:var(--card)}
 .vlist{display:flex;flex-direction:column;gap:12px}
 
 /* Ads */
 .ads{background:var(--card);border:1px dashed var(--border)}
-.site-footer a{color:var(--muted)} .site-footer a:hover{color:var(--text)}
+
+/* Search + chips */
+.search-input{
+  width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--border);
+  outline:none; background:var(--bg); color:var(--text);
+}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{
+  border:1px solid var(--border); background:var(--card); color:var(--text);
+  padding:6px 10px; border-radius:999px; cursor:pointer; font-size:13px;
+}
+.chip-active{outline:2px solid var(--accent)}
