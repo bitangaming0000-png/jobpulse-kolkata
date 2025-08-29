@@ -16,8 +16,11 @@
   </script>
 
   <!-- Theme + CSS -->
-  <script src="/assets/js/theme-boot.js?v=16"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=16">
+  <script src="/assets/js/theme-boot.js?v=18"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=17">
+
+  <!-- ✅ DEV: auto-accept consent so popup never shows -->
+  <script>try{localStorage.setItem('jp-consent','granted');}catch(e){}</script>
 
   <!-- JSON-LD -->
   <script type="application/ld+json">
@@ -93,20 +96,6 @@
          data-ad-client="ca-pub-5732778753912461"
          data-ad-slot="2400432399"
          data-ad-format="auto"></ins>
-  </div>
-
-  <!-- Consent banner -->
-  <div id="consent-banner" class="consent-banner" hidden>
-    <div class="consent-inner">
-      <div class="consent-text">
-        We use cookies and Google AdSense to improve your experience and show relevant ads. See our
-        <a href="/pages/privacy.html">Privacy</a>.
-      </div>
-      <div class="consent-actions">
-        <button id="consent-decline" class="btn ghost">Decline</button>
-        <button id="consent-accept" class="btn">Accept</button>
-      </div>
-    </div>
   </div>
 
   <script type="module">
