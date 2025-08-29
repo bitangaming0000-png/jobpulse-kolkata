@@ -4,30 +4,108 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Post — JobPulse Kolkata</title>
-  <script src="/assets/js/theme-boot.js?v=13"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=13">
+
+  <!-- AdSense once per page -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
+
+  <script src="/assets/js/theme-boot.js?v=14"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=14">
 </head>
 <body>
   <div class="container">
     <a href="/">← Back</a>
+
+    <!-- Top Display Ad -->
+    <div class="ads card" style="margin:10px 0">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5732778753912461"
+           data-ad-slot="2400432399"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
+
     <article class="card">
       <h1 id="title">Loading…</h1>
-      <p class="muted"><a id="source" href="#" target="_blank" rel="noopener">View Source ↗</a></p>
+      <p class="muted"><a id="source" href="#" target="_blank" rel="noopener">View Original Source ↗</a></p>
+
       <div class="thumb-wrap"><img id="hero" class="thumb" alt=""></div>
-      <p id="desc"></p>
+
+      <!-- Gallery (extra free images) -->
+      <div id="gallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0"></div>
+
+      <!-- In-article Ad -->
+      <div class="ads card" style="margin:12px 0">
+        <ins class="adsbygoogle"
+             style="display:block; text-align:center;"
+             data-ad-layout="in-article"
+             data-ad-format="fluid"
+             data-ad-client="ca-pub-5732778753912461"
+             data-ad-slot="2400400574"></ins>
+        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+      </div>
+
+      <div id="article" style="line-height:1.6"></div>
+
+      <p style="margin-top:16px;font-size:12px;color:var(--muted)">
+        Note: We show an extended summary with key points and references. Visit the source for full details and official information.
+      </p>
+
+      <!-- Bottom Multiplex Ad -->
+      <div class="ads card" style="margin-top:12px">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-format="autorelaxed"
+             data-ad-client="ca-pub-5732778753912461"
+             data-ad-slot="7381264518"></ins>
+        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+      </div>
     </article>
   </div>
+
   <script type="module">
     function param(k){ const u=new URL(location.href); return u.searchParams.get(k)||''; }
     const title = decodeURIComponent(param('title'));
     const link  = decodeURIComponent(param('link'));
     const desc  = decodeURIComponent(param('desc'));
-    const date  = decodeURIComponent(param('date'));
+
+    // Basic header content
     document.getElementById('title').textContent = title || 'Post';
-    document.getElementById('desc').textContent = desc || '';
     document.getElementById('source').href = link || '#';
-    const q = encodeURIComponent('kolkata jobs '+title);
-    document.getElementById('hero').src = 'https://source.unsplash.com/800x450/?'+q;
+
+    // Hero + gallery from free Unsplash placeholders (no API key)
+    const q = encodeURIComponent('kolkata jobs ' + (title||''));
+    document.getElementById('hero').src = 'https://source.unsplash.com/900x500/?'+q;
+
+    const gallery = document.getElementById('gallery');
+    ['office','exam','resume','interview','city kolkata','government office'].forEach((kw,i)=>{
+      const img = document.createElement('img');
+      img.loading='lazy'; img.alt=kw;
+      img.style.width='100%'; img.style.height='120px'; img.style.objectFit='cover'; img.style.borderRadius='10px';
+      img.src = 'https://source.unsplash.com/600x400/?'+encodeURIComponent(kw);
+      gallery.appendChild(img);
+    });
+
+    // Try to fetch long article excerpt from our serverless
+    async function loadArticle(url){
+      const box = document.getElementById('article');
+      try{
+        if(!url){ throw new Error('Missing URL'); }
+        const r = await fetch('/api/article?url='+encodeURIComponent(url));
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const j = await r.json();
+        if(j?.contentHtml){
+          box.innerHTML = j.contentHtml;  // already sanitized server-side
+        }else{
+          // Fallback: extended summary using provided desc
+          box.innerHTML = '<p>'+ (desc||'Details available at the source link above.') +'</p>';
+        }
+      }catch(e){
+        box.innerHTML = '<p>'+ (desc||'Open the source for full details.') +'</p>';
+      }
+    }
+    loadArticle(link);
   </script>
 </body>
 </html>
