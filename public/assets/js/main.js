@@ -34,13 +34,8 @@ async function fetchPlaceName(lat, lon){
 async function loadWeather(){
   const box = document.getElementById('wx');
   if(!box) return;
-
   const show = (label, t) => { box.textContent = (t!==undefined && t!==null) ? `${label}: ${t} °C` : `${label}: —`; };
-
-  // Kolkata fallback coords
   const KOL = { lat: 22.5726, lon: 88.3639, label: 'Kolkata' };
-
-  // Try geolocation
   if('geolocation' in navigator){
     const opts = { enableHighAccuracy:true, timeout:8000, maximumAge:60000 };
     navigator.geolocation.getCurrentPosition(async pos=>{
@@ -64,7 +59,7 @@ async function loadWeather(){
   }
 }
 
-// ===== Quotes (local rotation) =====
+// ===== Quotes =====
 const QUOTES = [
   "Little progress each day adds up to big results.",
   "Stay consistent. Results will follow.",
@@ -95,16 +90,38 @@ async function getRSS(){
   }
 }
 
-function card(p){
+// ===== Categorization & filtering =====
+function inferCategory(p){
+  const s = `${p.title||''} ${p.description||''}`.toLowerCase();
+  if(/admit\s*card|hall\s*ticket/.test(s)) return 'admit';
+  if(/\bresult(s)?\b|scorecard|merit\s*list/.test(s)) return 'result';
+  if(/\bexam(s)?\b|syllabus|exam\s*date|answer\s*key/.test(s)) return 'exam';
+  if(/recruitment|vacancy|apply\s*online|notification|wbpsc|kmc|wbtc|kolkata\s*police|west\s*Bengal\s*health|govt/.test(s)) return 'govt';
+  if(/notice|notification|update|announcement/.test(s)) return 'notice';
+  return 'govt';
+}
+let STATE = { raw:[], filtered:[], q:'', cat:'all' };
+
+function filterItems(){
+  const q = STATE.q.trim().toLowerCase();
+  STATE.filtered = STATE.raw.filter(p=>{
+    const c = inferCategory(p);
+    const okCat = (STATE.cat==='all') || (c===STATE.cat);
+    if(!okCat) return false;
+    if(!q) return true;
+    const s = `${p.title||''} ${p.description||''}`.toLowerCase();
+    return s.includes(q);
+  });
+}
+
+function elCard(p){
   const c=el('article','card');
   c.innerHTML = `
     <div class="thumb-wrap"><img class="thumb" alt="" loading="lazy"></div>
     <h3><a href="/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description||'')}&date=${encodeURIComponent(p.pubDate||'')}" target="_self">${p.title}</a></h3>
-    <p>${truncate(p.description||'',180)}</p>
-  `;
+    <p>${truncate(p.description||'',180)}</p>`;
   const img=c.querySelector('img.thumb');
-  const q=encodeURIComponent('kolkata jobs '+(p.title||''));
-  img.src=`https://source.unsplash.com/800x450/?${q}`; img.alt=p.title||'thumbnail';
+  const q=encodeURIComponent('kolkata jobs '+(p.title||'')); img.src=`https://source.unsplash.com/800x450/?${q}`; img.alt=p.title||'thumbnail';
   return c;
 }
 
@@ -125,25 +142,55 @@ function autoScroll(el,speed=0.35){
   el.addEventListener('mouseenter',()=>paused=true); el.addEventListener('mouseleave',()=>paused=false); step();
 }
 
-function render(items){
+function render(){
   const top=document.getElementById('top-scroll');
   const noti=document.getElementById('notices');
   const trend=document.getElementById('trending');
   [top,noti,trend].forEach(n=>n&&(n.innerHTML=''));
 
-  items.slice(0,12).forEach(p=> top.appendChild(card(p)));
-  items.slice(0,12).forEach(p=> noti.appendChild(card(p)));
-  items.slice(12,24).forEach(p=> trend.appendChild(card(p)));
+  const items = STATE.filtered;
+  items.slice(0,12).forEach(p=> top.appendChild(elCard(p)));
+  items.slice(0,12).forEach(p=> noti.appendChild(elCard(p)));
+  items.slice(12,24).forEach(p=> trend.appendChild(elCard(p)));
 
   autoScroll(top,0.35); autoScroll(trend,0.35);
 }
 
+function bindSearchAndChips(){
+  const input = document.getElementById('searchInput');
+  const chips = document.getElementById('chips');
+  if(input){
+    input.addEventListener('input', e=>{
+      STATE.q = e.target.value || '';
+      filterItems(); render();
+    });
+  }
+  if(chips){
+    chips.addEventListener('click', e=>{
+      const btn = e.target.closest('button[data-cat]');
+      if(!btn) return;
+      chips.querySelectorAll('.chip').forEach(b=>b.classList.remove('chip-active'));
+      btn.classList.add('chip-active');
+      STATE.cat = btn.dataset.cat || 'all';
+      filterItems(); render();
+    });
+  }
+}
+
+// ---- Main ----
 async function main(){
   if(!document.body.classList.contains('home')) return;
   loadQuote();
   loadWeather();
-  const items=await getRSS();
+
+  const items = await getRSS();
+  STATE.raw = items;
+  STATE.cat = 'all';
+  STATE.q = '';
+  filterItems();
+
   buildTicker(items);
-  render(items);
+  bindSearchAndChips();
+  render();
 }
 document.addEventListener('DOMContentLoaded', main);
