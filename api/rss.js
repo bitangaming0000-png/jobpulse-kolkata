@@ -7,6 +7,7 @@ const FEEDS = [
   { url: 'https://www.employmentnews.gov.in/RSS.aspx', category: 'govt' }
 ];
 
+// West Bengal-only filter (title/desc/link)
 const WB_RE = /\b(West Bengal|WB|Kolkata|Howrah|Hooghly|Nadia|Siliguri|Durgapur|Kharagpur|Haldia|Medinipur|Midnapore|Bardhaman|Burdwan|Asansol|Bankura|Purulia|Malda|Murshidabad|Jalpaiguri|Cooch Behar|Alipurduar)\b/i;
 
 function strip(s = '') {
@@ -23,7 +24,7 @@ function getTag(xml, tag) {
 }
 function parseRSS(xml) {
   const out = [];
-  // RSS <item>
+  // RSS 2.0 <item>
   let m; const re = /<item\b[\s\S]*?<\/item>/gi;
   while ((m = re.exec(xml)) !== null) {
     const b = m[0];
@@ -34,7 +35,7 @@ function parseRSS(xml) {
       pubDate: strip(getTag(b, 'pubDate'))
     });
   }
-  // Atom <entry>
+  // Atom <entry> fallback
   if (!out.length) {
     let ma; const reA = /<entry\b[\s\S]*?<\/entry>/gi;
     while ((ma = reA.exec(xml)) !== null) {
@@ -50,6 +51,7 @@ function parseRSS(xml) {
   }
   return out;
 }
+
 function isWB(it) {
   const s = `${it.title || ''} ${it.description || ''} ${it.link || ''}`;
   return WB_RE.test(s);
@@ -65,10 +67,11 @@ module.exports = async (req, res) => {
       })
     );
 
+    // Merge fulfilled feeds
     let all = [];
     for (const r of results) if (r.status === 'fulfilled') all = all.concat(r.value);
 
-    // WB filter + dedupe by link
+    // WB filter + dedupe
     const seen = new Set();
     const filtered = [];
     for (const it of all) {
@@ -79,7 +82,7 @@ module.exports = async (req, res) => {
       filtered.push(it);
     }
 
-    // Sort newest first
+    // Sort newest first using pubDate; tie-breaker by title
     filtered.sort((a, b) => {
       const da = Date.parse(a.pubDate || '') || 0;
       const db = Date.parse(b.pubDate || '') || 0;
@@ -87,14 +90,14 @@ module.exports = async (req, res) => {
       return (b.title || '').localeCompare(a.title || '');
     });
 
-    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.setHeader('Cache-Control', 'public, max-age=300'); // cache 5 mins
     return res.status(200).json({
       ok: true,
       count: filtered.length,
       items: filtered.slice(0, 200)
     });
   } catch (e) {
-    // Always return some content so homepage isn't empty
+    // Never return empty — homepage should always have content
     return res.status(200).json({
       ok: true,
       error: e.message,
@@ -107,7 +110,7 @@ module.exports = async (req, res) => {
         },
         {
           title: 'KMC Notification for Candidates',
-          link: 'https://www.kmcgov.in',
+          link: 'https://www.kmc.gov.in',
           description: 'Latest from Kolkata Municipal Corporation.',
           pubDate: new Date().toUTCString()
         }
