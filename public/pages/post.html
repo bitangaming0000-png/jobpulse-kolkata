@@ -15,31 +15,21 @@
     });
   </script>
 
-  <!-- ✅ AdSense once per page -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461" crossorigin="anonymous"></script>
-
   <!-- Theme + CSS -->
-  <script src="/assets/js/theme-boot.js?v=14"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=14">
+  <script src="/assets/js/theme-boot.js?v=16"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=16">
 
-  <!-- ✅ Structured Data (JSON-LD) -->
+  <!-- JSON-LD -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
     "@type":"NewsArticle",
     "headline": "JobPulse Kolkata Article",
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": ""
-    },
+    "mainEntityOfPage": {"@type":"WebPage","@id": ""},
     "datePublished": "",
     "dateModified": "",
     "author": {"@type":"Organization","name":"JobPulse Kolkata"},
-    "publisher": {
-      "@type":"Organization",
-      "name":"JobPulse Kolkata",
-      "logo":{"@type":"ImageObject","url":"/assets/icons/icon-192.png"}
-    },
+    "publisher": {"@type":"Organization","name":"JobPulse Kolkata","logo":{"@type":"ImageObject","url":"/assets/icons/icon-192.png"}},
     "image": ["https://source.unsplash.com/900x500/?kolkata%20jobs"],
     "description": "West Bengal jobs update and details."
   }
@@ -49,7 +39,7 @@
   <div class="container">
     <a href="/">← Back</a>
 
-    <!-- Top Display Ad -->
+    <!-- Top Display Ad (auto-hidden) -->
     <div class="ads card" style="margin:10px 0">
       <ins class="adsbygoogle"
            style="display:block"
@@ -57,7 +47,6 @@
            data-ad-slot="2400432399"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
     </div>
 
     <article class="card">
@@ -69,7 +58,7 @@
       <!-- Gallery -->
       <div id="gallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0"></div>
 
-      <!-- In-article Ad -->
+      <!-- In-article Ad (auto-hidden) -->
       <div class="ads card" style="margin:12px 0">
         <ins class="adsbygoogle"
              style="display:block; text-align:center;"
@@ -77,25 +66,47 @@
              data-ad-format="fluid"
              data-ad-client="ca-pub-5732778753912461"
              data-ad-slot="2400400574"></ins>
-        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
       </div>
 
       <div id="article" style="line-height:1.6"></div>
 
       <p style="margin-top:16px;font-size:12px;color:var(--muted)">
-        Note: This is an extended summary with key points and references. Visit the source for full official details.
+        Note: This is an extended summary. Visit the source for official details.
       </p>
 
-      <!-- Bottom Multiplex Ad -->
+      <!-- Bottom Multiplex Ad (auto-hidden) -->
       <div class="ads card" style="margin-top:12px">
         <ins class="adsbygoogle"
              style="display:block"
              data-ad-format="autorelaxed"
              data-ad-client="ca-pub-5732778753912461"
              data-ad-slot="7381264518"></ins>
-        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
       </div>
     </article>
+  </div>
+
+  <!-- Sticky anchor ad holder (auto-hidden if no fill) -->
+  <div id="anchor-ad" class="anchor-ad" hidden>
+    <button class="anchor-close" aria-label="Close ad">×</button>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-5732778753912461"
+         data-ad-slot="2400432399"
+         data-ad-format="auto"></ins>
+  </div>
+
+  <!-- Consent banner -->
+  <div id="consent-banner" class="consent-banner" hidden>
+    <div class="consent-inner">
+      <div class="consent-text">
+        We use cookies and Google AdSense to improve your experience and show relevant ads. See our
+        <a href="/pages/privacy.html">Privacy</a>.
+      </div>
+      <div class="consent-actions">
+        <button id="consent-decline" class="btn ghost">Decline</button>
+        <button id="consent-accept" class="btn">Accept</button>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -105,16 +116,11 @@
     const desc  = decodeURIComponent(param('desc'));
     const date  = decodeURIComponent(param('date'));
 
-    // Set header info
     document.getElementById('title').textContent = title || 'Post';
     document.getElementById('source').href = link || '#';
-    document.querySelector("meta[name='description']")?.setAttribute("content", desc || "WB jobs update");
-
-    // Hero image
     const q = encodeURIComponent('kolkata jobs ' + (title||''));
     document.getElementById('hero').src = 'https://source.unsplash.com/900x500/?'+q;
 
-    // Gallery
     const gallery = document.getElementById('gallery');
     ['office','exam','resume','interview','city kolkata','government office'].forEach(kw=>{
       const img = document.createElement('img');
@@ -124,7 +130,6 @@
       gallery.appendChild(img);
     });
 
-    // Fetch extended content from API
     async function loadArticle(url){
       const box = document.getElementById('article');
       try{
@@ -132,18 +137,13 @@
         const r = await fetch('/api/article?url='+encodeURIComponent(url));
         if(!r.ok) throw new Error('HTTP '+r.status);
         const j = await r.json();
-        if(j?.contentHtml){
-          box.innerHTML = j.contentHtml;
-        } else {
-          box.innerHTML = '<p>'+(desc||'Details available at the source.')+'</p>';
-        }
-      }catch(e){
-        box.innerHTML = '<p>'+(desc||'Open the source for full details.')+'</p>';
-      }
+        if(j?.contentHtml){ box.innerHTML = j.contentHtml; }
+        else { box.innerHTML = '<p>'+(desc||'Details available at the source.')+'</p>'; }
+      }catch(e){ box.innerHTML = '<p>'+(desc||'Open the source for full details.')+'</p>'; }
     }
     loadArticle(link);
 
-    // Update structured data dynamically
+    // Update JSON-LD
     document.addEventListener("DOMContentLoaded", () => {
       const jsonld = document.querySelector("script[type='application/ld+json']");
       if(jsonld){
@@ -157,5 +157,8 @@
       }
     });
   </script>
+
+  <!-- Site JS + ads/consent manager -->
+  <script type="module" src="/assets/js/ads.js?v=16"></script>
 </body>
 </html>
