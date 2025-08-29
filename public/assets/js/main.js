@@ -14,16 +14,54 @@ function truncate(s='',n=160){ s=String(s); return s.length>n ? s.slice(0,n-1)+'
   const y=document.getElementById('year'); if(y) y.textContent=new Date().getFullYear();
 })();
 
-// ===== Weather (Open-Meteo; no API key) =====
-async function loadWeather(){
+// ===== Weather (visitor location → fallback Kolkata) =====
+async function fetchWeather(lat, lon){
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&forecast_days=1&timezone=auto`;
+  const r = await fetch(url);
+  return r.json();
+}
+async function fetchPlaceName(lat, lon){
   try{
-    // Kolkata: 22.5726, 88.3639
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=22.5726&longitude=88.3639&current=temperature_2m&forecast_days=1&timezone=Asia%2FKolkata';
-    const r = await fetch(url);
+    const u = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=en&format=json`;
+    const r = await fetch(u);
     const j = await r.json();
-    const t = j?.current?.temperature_2m;
-    document.getElementById('wx').textContent = (t!==undefined) ? `${t} °C` : '—';
-  }catch(e){ document.getElementById('wx').textContent='—'; }
+    const name = j?.results?.[0]?.name;
+    const admin1 = j?.results?.[0]?.admin1;
+    const country = j?.results?.[0]?.country;
+    return name ? [name, admin1, country].filter(Boolean).join(', ') : '';
+  }catch{ return ''; }
+}
+async function loadWeather(){
+  const box = document.getElementById('wx');
+  if(!box) return;
+
+  const show = (label, t) => { box.textContent = (t!==undefined && t!==null) ? `${label}: ${t} °C` : `${label}: —`; };
+
+  // Kolkata fallback coords
+  const KOL = { lat: 22.5726, lon: 88.3639, label: 'Kolkata' };
+
+  // Try geolocation
+  if('geolocation' in navigator){
+    const opts = { enableHighAccuracy:true, timeout:8000, maximumAge:60000 };
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      try{
+        const {latitude:lat, longitude:lon} = pos.coords || {};
+        if(typeof lat!=='number' || typeof lon!=='number') throw new Error('bad coords');
+        const [w, place] = await Promise.all([fetchWeather(lat,lon), fetchPlaceName(lat,lon)]);
+        const t = w?.current?.temperature_2m;
+        show(place || 'Your area', t);
+      }catch{
+        const w = await fetchWeather(KOL.lat, KOL.lon);
+        show(KOL.label, w?.current?.temperature_2m);
+      }
+    }, async _err=>{
+      const w = await fetchWeather(KOL.lat, KOL.lon);
+      show(KOL.label, w?.current?.temperature_2m);
+    }, opts);
+  }else{
+    const w = await fetchWeather(KOL.lat, KOL.lon);
+    show(KOL.label, w?.current?.temperature_2m);
+  }
 }
 
 // ===== Quotes (local rotation) =====
