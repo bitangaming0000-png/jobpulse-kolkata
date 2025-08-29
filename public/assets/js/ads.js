@@ -1,10 +1,10 @@
-/* ads.js — consent + AdSense loader + auto-hide empty ad blocks + sticky anchor ad */
+/* ads.js — auto-consent (no popup), AdSense loader, auto-hide empty ad blocks, sticky anchor ad */
 
 const ADS_CLIENT = "ca-pub-5732778753912461";
-const CONSENT_KEY = "jp-consent"; // "granted" | "denied"
+const CONSENT_KEY = "jp-consent"; // "granted"
 const HIDE_THRESHOLD = 40; // px height below which we consider "no fill"
 
-/** Inject AdSense script only after consent */
+/** Inject AdSense script exactly once */
 function loadAdSense() {
   if (document.getElementById("adsbygoogle-js")) return;
   const s = document.createElement("script");
@@ -15,7 +15,7 @@ function loadAdSense() {
   document.head.appendChild(s);
 }
 
-/** Try to fill all existing ins.adsbygoogle blocks */
+/** Attempt to render all current ad slots */
 function pushAllAds() {
   if (!window.adsbygoogle) window.adsbygoogle = [];
   document.querySelectorAll("ins.adsbygoogle:not(.jp-pushed)").forEach(ins => {
@@ -23,7 +23,7 @@ function pushAllAds() {
   });
 }
 
-/** Hide ad containers that didn't fill (after a delay) */
+/** Hide ad containers that didn't fill (saves layout space) */
 function collapseEmptyAds() {
   const tryHide = () => {
     document.querySelectorAll(".ads").forEach(box => {
@@ -34,19 +34,20 @@ function collapseEmptyAds() {
       else box.classList.remove("hidden");
     });
   };
-  // try a couple of times to give ads time to render
+  // give Google time to render
   setTimeout(tryHide, 3000);
   setTimeout(tryHide, 7000);
 }
 
-/** Sticky anchor ad (optional, dismissible) */
+/** Sticky anchor ad (dismissible, auto-hide if no fill) */
 function setupAnchorAd() {
   const anchor = document.getElementById("anchor-ad");
   if (!anchor) return;
-  const close = anchor.querySelector(".anchor-close");
-  if (close) close.addEventListener("click", () => anchor.hidden = true);
 
-  // Try to show; if no fill, hide
+  const close = anchor.querySelector(".anchor-close");
+  if (close) close.addEventListener("click", () => { anchor.hidden = true; });
+
+  // Show attempt; hide if no fill
   const showAttempt = () => {
     anchor.hidden = false;
     pushAllAds();
@@ -59,40 +60,29 @@ function setupAnchorAd() {
   showAttempt();
 }
 
-/** Consent banner UI */
-function showConsentBanner() {
-  const banner = document.getElementById("consent-banner");
-  if (!banner) return;
-  banner.hidden = false;
-  const accept = document.getElementById("consent-accept");
-  const decline = document.getElementById("consent-decline");
-  accept?.addEventListener("click", () => {
-    localStorage.setItem(CONSENT_KEY, "granted");
-    banner.hidden = true;
-    loadAdSense();
-    pushAllAds();
-    collapseEmptyAds();
-    setupAnchorAd();
-  });
-  decline?.addEventListener("click", () => {
-    localStorage.setItem(CONSENT_KEY, "denied");
-    banner.hidden = true;
-    // Hide all ad boxes immediately if declined
-    document.querySelectorAll(".ads, #anchor-ad").forEach(el => el.classList?.add("hidden"));
-  });
+/** Remove any leftover consent banner markup (if present) */
+function nukeConsentBannerIfAny() {
+  const b = document.getElementById("consent-banner");
+  if (b && b.parentNode) b.parentNode.removeChild(b);
 }
 
-/** Init on load */
 document.addEventListener("DOMContentLoaded", () => {
-  const consent = localStorage.getItem(CONSENT_KEY);
-  if (consent === "granted") {
-    loadAdSense();
+  // ✅ Always auto-grant consent (no popup)
+  try { localStorage.setItem(CONSENT_KEY, "granted"); } catch {}
+
+  // If any old banner HTML exists in the page, remove it
+  nukeConsentBannerIfAny();
+
+  // Load ads and manage layout
+  loadAdSense();
+  pushAllAds();
+  collapseEmptyAds();
+  setupAnchorAd();
+
+  // In case new ad slots are injected later (e.g., client-side nav)
+  const mo = new MutationObserver(() => {
     pushAllAds();
     collapseEmptyAds();
-    setupAnchorAd();
-  } else if (consent === "denied") {
-    document.querySelectorAll(".ads, #anchor-ad").forEach(el => el.classList?.add("hidden"));
-  } else {
-    showConsentBanner();
-  }
+  });
+  mo.observe(document.body, { childList: true, subtree: true });
 });
