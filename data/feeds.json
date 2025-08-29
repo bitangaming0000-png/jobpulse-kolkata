@@ -1,0 +1,31 @@
+{
+  "feeds": [
+    "https://remotive.com/feed",
+    "https://remotive.com/remote-jobs/software-dev/feed",
+    "https://remotive.com/remote-jobs/design/feed",
+    "https://remotive.com/remote-jobs/marketing/feed",
+    "https://remotive.com/remote-jobs/sales/feed",
+    "https://remotive.com/remote-jobs/customer-support/feed",
+    "https://remotive.com/remote-jobs/product/feed",
+    "https://remotive.com/remote-jobs/hr/feed",
+    "https://remotive.com/remote-jobs/finance/feed",
+    "https://remotive.com/remote-jobs/legal/feed",
+    "https://hnrss.org/jobs",
+    "https://hnrss.org/whoishiring",
+    "https://hnrss.org/whoishiring/jobs",
+    "https://hnrss.org/whoishiring/hired",
+    "https://hnrss.org/whoishiring/freelance",
+    "https://www.bls.gov/feed/news.release.cpi.rss",
+    "https://www.bls.gov/feed/news.release.jolts.rss",
+    "https://www.bls.gov/feed/news.release.empsit.rss",
+    "https://www.bls.gov/feed/news.release.eci.rss",
+    "https://www.bls.gov/feed/news.release.ooh.rss",
+    "https://www.higheredjobs.com/rss/default.cfm",
+    "https://www.higheredjobs.com/rss/institution.cfm",
+    "https://www.higheredjobs.com/rss/discipline.cfm",
+    "https://jobcenterofwisconsin.com/services/rss.aspx",
+    "https://employee.hr.lacounty.gov/rss-feed/",
+    "https://www.hrexchangenetwork.com/rss-feeds"
+    // … plus FeedSpot Career RSS #1 to #94
+  ]
+}
