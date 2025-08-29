@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jobpulse-kolkata.vercel.app/sitemap.xml
