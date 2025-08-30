@@ -1,15 +1,17 @@
-// ✅ Load AdSense script if not already loaded
+// ✅ Load AdSense script safely
 (function() {
-  if (!document.querySelector('script[src*="adsbygoogle.js"]')) {
-    const s = document.createElement("script");
-    s.async = true;
-    s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461";
-    s.crossOrigin = "anonymous";
-    document.head.appendChild(s);
-  }
+  try {
+    if (!document.querySelector('script[src*="adsbygoogle.js"]')) {
+      const s = document.createElement("script");
+      s.async = true;
+      s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5732778753912461";
+      s.crossOrigin = "anonymous";
+      document.head.appendChild(s);
+    }
+  } catch(e) { console.warn("AdSense script load error", e); }
 })();
 
-// ✅ Initialize all ads
+// ✅ Initialize ads safely
 function initAds() {
   document.querySelectorAll(".adsbygoogle").forEach(ad => {
     try {
@@ -18,39 +20,40 @@ function initAds() {
   });
 }
 
-// ✅ Hide empty ad slots (if not filled by Google)
+// ✅ Auto-hide empty ad slots
 function watchAds() {
   document.querySelectorAll(".adsbygoogle").forEach(ad => {
-    const check = setInterval(()=>{
-      if (ad && ad.offsetHeight === 0) {
-        ad.parentElement.style.display="none";
-        clearInterval(check);
-      }
-    }, 4000);
+    try {
+      const check = setInterval(()=>{
+        if (ad && ad.offsetHeight === 0) {
+          ad.parentElement.style.display="none";
+          clearInterval(check);
+        }
+      }, 4000);
+    } catch(e) { console.warn("Ad hide error", e); }
   });
 }
 
 // ✅ Sticky Anchor Ad
-const anchorAd = document.getElementById("anchor-ad");
-if (anchorAd) {
-  const closeBtn = anchorAd.querySelector(".anchor-close");
-  if (closeBtn) closeBtn.addEventListener("click", ()=> anchorAd.remove());
+try {
+  const anchorAd = document.getElementById("anchor-ad");
+  if (anchorAd) {
+    const closeBtn = anchorAd.querySelector(".anchor-close");
+    if (closeBtn) closeBtn.addEventListener("click", ()=> anchorAd.remove());
 
-  // Show anchor after delay
-  setTimeout(()=>{
-    anchorAd.hidden=false;
-    initAds();
-  }, 5000);
-}
+    setTimeout(()=>{
+      try {
+        anchorAd.hidden=false;
+        initAds();
+      } catch(e){ console.warn("Anchor ad error", e); }
+    }, 5000);
+  }
+} catch(e) { console.warn("AnchorAd setup error", e); }
 
-// ✅ Run on load
+// ✅ Run
 window.addEventListener("load", ()=>{
-  initAds();
-  watchAds();
+  try { initAds(); watchAds(); } catch(e){ console.warn("Ad load error", e); }
 });
-
-// In case of SPA navigation
 document.addEventListener("DOMContentLoaded", ()=>{
-  initAds();
-  watchAds();
+  try { initAds(); watchAds(); } catch(e){ console.warn("Ad DOM error", e); }
 });
