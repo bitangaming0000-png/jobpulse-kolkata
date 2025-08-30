@@ -6,13 +6,6 @@
   <title id="docTitle">Post — JobPulse Kolkata</title>
 
   <link rel="canonical" href="">
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelector('link[rel=canonical]').href = window.location.href;
-      document.title = new URL(location.href).searchParams.get("title") || "JobPulse Kolkata";
-      document.getElementById("docTitle").textContent = document.title;
-    });
-  </script>
 
   <!-- ✅ Open Graph / Twitter (dynamic) -->
   <meta property="og:title" content="" id="ogTitle">
@@ -37,23 +30,14 @@
         "description": "",
         "datePublished": "",
         "dateModified": "",
-        "author": {
-          "@type": "Organization",
-          "name": "JobPulse Kolkata"
-        },
+        "author": { "@type": "Organization", "name": "JobPulse Kolkata" },
         "publisher": {
           "@type": "Organization",
           "name": "JobPulse Kolkata",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://jobpulse-kolkata.vercel.app/assets/logo-512.png"
-          }
+          "logo": { "@type": "ImageObject", "url": "https://jobpulse-kolkata.vercel.app/assets/logo-512.png" }
         },
         "image": ["https://jobpulse-kolkata.vercel.app/assets/logo-512.png"],
-        "mainEntityOfPage": {
-          "@type": "WebPage",
-          "@id": ""
-        }
+        "mainEntityOfPage": { "@type": "WebPage", "@id": "" }
       },
       {
         "@type": "JobPosting",
@@ -70,35 +54,15 @@
         },
         "jobLocation": {
           "@type": "Place",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Kolkata",
-            "addressRegion": "West Bengal",
-            "addressCountry": "IN"
-          }
+          "address": { "@type": "PostalAddress", "addressLocality": "Kolkata", "addressRegion": "West Bengal", "addressCountry": "IN" }
         }
       },
       {
         "@type": "BreadcrumbList",
         "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://jobpulse-kolkata.vercel.app/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Jobs",
-            "item": "https://jobpulse-kolkata.vercel.app/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "",
-            "item": ""
-          }
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jobpulse-kolkata.vercel.app/" },
+          { "@type": "ListItem", "position": 2, "name": "Jobs", "item": "https://jobpulse-kolkata.vercel.app/" },
+          { "@type": "ListItem", "position": 3, "name": "", "item": "" }
         ]
       }
     ]
@@ -106,47 +70,58 @@
   </script>
 
   <!-- Theme & CSS -->
-  <script src="/assets/js/theme-boot.js?v=25"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=25">
+  <script src="/assets/js/theme-boot.js?v=26"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=26">
 </head>
 <body>
   <div class="container">
     <a href="/">← Back</a>
 
-    <article class="card">
-      <h1 id="title">Loading…</h1>
-      <p class="muted"><a id="source" href="#" target="_blank" rel="noopener">View Original Source ↗</a></p>
+    <div class="post-layout">
+      <!-- ✅ Article -->
+      <article class="card">
+        <h1 id="title">Loading…</h1>
+        <p class="muted"><a id="source" href="#" target="_blank" rel="noopener">View Original Source ↗</a></p>
 
-      <!-- Hero -->
-      <div class="thumb-wrap">
-        <img id="hero" class="thumb" alt="Job update image"
-             src="https://via.placeholder.com/900x500.png?text=JobPulse+Kolkata" />
-      </div>
+        <!-- Hero -->
+        <div class="thumb-wrap">
+          <img id="hero" class="thumb" alt="Job update image"
+               src="https://via.placeholder.com/900x500.png?text=JobPulse+Kolkata" />
+        </div>
 
-      <!-- Gallery -->
-      <div id="gallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0"></div>
+        <!-- Gallery -->
+        <div id="gallery" class="gallery"></div>
 
-      <!-- Article -->
-      <div id="article" style="line-height:1.6"></div>
+        <!-- Article -->
+        <div id="article" class="article"></div>
 
-      <!-- Last updated -->
-      <p id="lastUpdated" style="margin-top:16px;font-size:13px;color:var(--muted)">
-        Last updated: <span></span>
-      </p>
+        <!-- Last updated -->
+        <p id="lastUpdated" class="last-updated">Last updated: <span></span></p>
 
-      <!-- Share bar -->
-      <div class="share-bar">
-        <a id="share-wa" class="share-wa" target="_blank">WhatsApp</a>
-        <a id="share-tg" class="share-tg" target="_blank">Telegram</a>
-        <a id="share-copy" class="share-copy">Copy Link</a>
-      </div>
-    </article>
+        <!-- Share bar -->
+        <div class="share-bar">
+          <a id="share-wa" class="share-wa" target="_blank">WhatsApp</a>
+          <a id="share-tg" class="share-tg" target="_blank">Telegram</a>
+          <a id="share-copy" class="share-copy">Copy Link</a>
+        </div>
+      </article>
+
+      <!-- ✅ Sidebar Ad -->
+      <aside class="sidebar-ad">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-5732778753912461"
+             data-ad-slot="2400432399"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </aside>
+    </div>
   </div>
 
   <!-- ✅ Footer -->
-  <footer class="site-footer" style="padding:20px;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--border)">
+  <footer class="site-footer">
     <p>© <span id="year"></span> JobPulse Kolkata — All Rights Reserved</p>
-    <p style="margin-top:6px;">
+    <p>
       <a href="/pages/about.html">About</a> • 
       <a href="/pages/privacy.html">Privacy Policy</a> • 
       <a href="/pages/terms.html">Terms & Conditions</a> • 
@@ -156,17 +131,7 @@
   </footer>
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 
-  <!-- Sticky ad -->
-  <div id="anchor-ad" class="anchor-ad" hidden>
-    <button class="anchor-close" aria-label="Close ad">×</button>
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-5732778753912461"
-         data-ad-slot="2400432399"
-         data-ad-format="auto"></ins>
-  </div>
-
-  <!-- ✅ Main Post Script -->
+  <!-- ✅ Main Script -->
   <script type="module">
     const param = (k) => (new URL(location.href)).searchParams.get(k) || '';
     const title = decodeURIComponent(param('title'));
@@ -181,7 +146,7 @@
     const source = document.getElementById('source');
     if (link) source.href = link;
 
-    // Hero
+    // Hero image
     const hero = document.getElementById('hero');
     const q = encodeURIComponent('kolkata jobs ' + (title||''));
     hero.src = 'https://source.unsplash.com/900x500/?'+q;
@@ -193,13 +158,12 @@
     keywords.forEach(kw=>{
       const img = document.createElement('img');
       img.loading='lazy'; img.alt=kw;
-      img.style.width='100%'; img.style.height='120px'; img.style.objectFit='cover'; img.style.borderRadius='10px';
       img.src = 'https://source.unsplash.com/600x400/?'+encodeURIComponent(kw);
       img.onerror = () => { img.src = "https://via.placeholder.com/600x400.png?text=Job+Image"; };
       gallery.appendChild(img);
     });
 
-    // Article
+    // Article with ads
     async function loadArticle(url){
       const box = document.getElementById('article');
       try{
@@ -207,23 +171,49 @@
         const r = await fetch('/api/article?url='+encodeURIComponent(url));
         if(!r.ok) throw new Error('HTTP '+r.status);
         const j = await r.json();
-        box.innerHTML = j?.contentHtml || `<p>${desc||'Details at the source.'}</p>`;
-      }catch{ box.innerHTML = `<p>${desc||'Open the source for details.'}</p>`; }
+        let content = j?.contentHtml || `<p>${desc||'Details at the source.'}</p>`;
+
+        // ✅ In-article Ad (after first paragraph)
+        const adBlock = `
+          <div class="ads-in-article">
+            <ins class="adsbygoogle"
+                 style="display:block; text-align:center;"
+                 data-ad-layout="in-article"
+                 data-ad-format="fluid"
+                 data-ad-client="ca-pub-5732778753912461"
+                 data-ad-slot="2400400574"></ins>
+          </div>
+        `;
+        content = content.replace(/<\/p>/i, `</p>${adBlock}`);
+
+        // ✅ End-of-article Ad
+        const endAd = `
+          <div class="ads-in-article end-ad">
+            <ins class="adsbygoogle"
+                 style="display:block; text-align:center;"
+                 data-ad-client="ca-pub-5732778753912461"
+                 data-ad-slot="7381264518"
+                 data-ad-format="autorelaxed"></ins>
+          </div>
+        `;
+        box.innerHTML = content + endAd;
+
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      }catch{
+        box.innerHTML = `<p>${desc||'Open the source for details.'}</p>`;
+      }
     }
     loadArticle(link);
 
     // Last updated
-    const lastUpdatedEl = document.querySelector('#lastUpdated span');
-    lastUpdatedEl.textContent = (date ? new Date(date).toLocaleString('en-IN') : new Date().toLocaleString('en-IN')) + ' IST';
+    document.querySelector('#lastUpdated span').textContent = 
+      (date ? new Date(date).toLocaleString('en-IN') : new Date().toLocaleString('en-IN')) + ' IST';
 
     // Share bar
     const shareUrl=location.href;
-    const wa=document.getElementById('share-wa');
-    const tg=document.getElementById('share-tg');
-    const cp=document.getElementById('share-copy');
-    if(wa) wa.href='https://wa.me/?text='+encodeURIComponent(title+' - '+shareUrl);
-    if(tg) tg.href='https://t.me/share/url?url='+encodeURIComponent(shareUrl)+'&text='+encodeURIComponent(title);
-    if(cp) cp.addEventListener('click',()=>{ navigator.clipboard.writeText(shareUrl); alert('Link copied!'); });
+    document.getElementById('share-wa').href='https://wa.me/?text='+encodeURIComponent(title+' - '+shareUrl);
+    document.getElementById('share-tg').href='https://t.me/share/url?url='+encodeURIComponent(shareUrl)+'&text='+encodeURIComponent(title);
+    document.getElementById('share-copy').addEventListener('click',()=>{ navigator.clipboard.writeText(shareUrl); alert('Link copied!'); });
 
     // ✅ Update OG + JSON-LD dynamically
     const siteUrl = "https://jobpulse-kolkata.vercel.app";
@@ -240,22 +230,18 @@
       const descText = desc || "West Bengal latest job update from JobPulse Kolkata.";
       const dynamicImg = `https://og-image.vercel.app/${encodeURIComponent(title)}.png?theme=dark&md=1&fontSize=36px&images=${encodeURIComponent(siteUrl + "/assets/logo.png")}`;
 
-      // OpenGraph
+      // OG/Twitter
       ogTitle.content = title + " — JobPulse Kolkata";
       ogDesc.content = descText;
       ogImage.content = dynamicImg;
       ogUrl.content = siteUrl + location.pathname + location.search;
-
-      // Twitter
       twTitle.content = ogTitle.content;
       twDesc.content = descText;
       twImage.content = dynamicImg;
 
-      // JSON-LD update
+      // JSON-LD
       if (combinedLd) {
         const schema = JSON.parse(combinedLd.textContent);
-
-        // NewsArticle
         schema["@graph"][0].headline = title;
         schema["@graph"][0].description = descText;
         schema["@graph"][0].datePublished = date || new Date().toISOString();
@@ -263,15 +249,12 @@
         schema["@graph"][0].image = [hero.src];
         schema["@graph"][0].mainEntityOfPage["@id"] = location.href;
 
-        // JobPosting
         schema["@graph"][1].title = title;
         schema["@graph"][1].description = descText;
         schema["@graph"][1].datePosted = date || new Date().toISOString();
-        const expiry = new Date();
-        expiry.setDate(expiry.getDate() + 30);
+        const expiry = new Date(); expiry.setDate(expiry.getDate() + 30);
         schema["@graph"][1].validThrough = expiry.toISOString();
 
-        // Breadcrumb
         schema["@graph"][2].itemListElement[2].name = title;
         schema["@graph"][2].itemListElement[2].item = location.href;
 
@@ -280,6 +263,6 @@
     }
   </script>
 
-  <script type="module" src="/assets/js/ads.js?v=25"></script>
+  <script type="module" src="/assets/js/ads.js?v=26"></script>
 </body>
 </html>
