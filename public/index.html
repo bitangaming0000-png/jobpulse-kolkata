@@ -19,8 +19,8 @@
   <meta name="twitter:card" content="summary_large_image" />
 
   <!-- Theme & CSS -->
-  <script src="/assets/js/theme-boot.js?v=20"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=20">
+  <script src="/assets/js/theme-boot.js?v=24"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=24">
 
   <!-- Auto-accept consent -->
   <script>try{localStorage.setItem('jp-consent','granted');}catch(e){}</script>
@@ -41,9 +41,9 @@
   </header>
 
   <div class="container">
-    <!-- Ads, widgets, ticker, trending etc remain unchanged -->
     <h1>Latest Updates</h1>
 
+    <!-- Widgets -->
     <div class="widgets">
       <section class="widget card"><h2>🌤 Weather</h2><div id="wx">Loading…</div></section>
       <section class="widget card"><h2>💡 Daily Motivation</h2><blockquote id="quoteBox"></blockquote></section>
@@ -63,7 +63,7 @@
       </section>
     </div>
 
-    <!-- category chips, ticker, notifications, trending, ads… -->
+    <!-- Categories -->
     <div class="chips card" id="chips">
       <button data-cat="all" class="chip chip-active">All</button>
       <button data-cat="govt" class="chip">Govt Jobs</button>
@@ -73,14 +73,28 @@
       <button data-cat="notice" class="chip">Notifications</button>
     </div>
 
-    <div class="ticker-wrap" title="Hover to pause"><span class="ticker-head">Live</span><div id="notify-ticker" class="ticker"></div></div>
+    <!-- Live ticker -->
+    <div class="ticker-wrap" title="Hover to pause">
+      <span class="ticker-head">Live</span>
+      <div id="notify-ticker" class="ticker"></div>
+    </div>
+
+    <!-- Sections -->
     <section class="section"><h2>Top News</h2><div id="top-scroll" class="scroller-x autoscroll-x"></div></section>
     <section class="section"><h2>Notifications</h2><div class="vscroll"><div id="notices" class="vlist"></div></div></section>
     <section class="section"><h2>Trending</h2><div id="trending" class="scroller-x autoscroll-x"></div></section>
   </div>
 
-  <footer class="site-footer" style="padding:16px;text-align:center;color:var(--muted)">
-    © <span id="year"></span> JobPulse Kolkata
+  <!-- ✅ Legal Footer -->
+  <footer class="site-footer" style="padding:20px;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--border)">
+    <p>© <span id="year"></span> JobPulse Kolkata — All Rights Reserved</p>
+    <p style="margin-top:6px;">
+      <a href="/pages/about.html">About</a> • 
+      <a href="/pages/privacy.html">Privacy Policy</a> • 
+      <a href="/pages/terms.html">Terms & Conditions</a> • 
+      <a href="/pages/disclaimer.html">Disclaimer</a> • 
+      <a href="/pages/contact.html">Contact</a>
+    </p>
   </footer>
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 
@@ -95,7 +109,7 @@
   </div>
 
   <!-- JS -->
-  <script type="module" src="/assets/js/main.js?v=20"></script>
-  <script type="module" src="/assets/js/ads.js?v=20"></script>
+  <script type="module" src="/assets/js/main.js?v=24"></script>
+  <script type="module" src="/assets/js/ads.js?v=24"></script>
 </body>
-  </html>
+</html>
