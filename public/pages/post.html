@@ -1,158 +1,28 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title id="docTitle">Post — JobPulse Kolkata</title>
+<script type="module">
+try {
+  const param = (k) => (new URL(location.href)).searchParams.get(k) || '';
+  const title = decodeURIComponent(param('title'));
+  const link  = decodeURIComponent(param('link'));
+  const desc  = decodeURIComponent(param('desc'));
+  const date  = decodeURIComponent(param('date'));
 
-  <link rel="canonical" href="">
+  document.title = title || 'JobPulse Kolkata';
+  document.getElementById('docTitle').textContent = document.title;
+  document.getElementById('title').textContent = title || 'Post';
 
-  <!-- ✅ Open Graph / Twitter (dynamic) -->
-  <meta property="og:title" content="" id="ogTitle">
-  <meta property="og:description" content="" id="ogDesc">
-  <meta property="og:image" content="" id="ogImage">
-  <meta property="og:url" content="" id="ogUrl">
-  <meta property="og:type" content="article">
+  const source = document.getElementById('source');
+  if (link) source.href = link;
 
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="" id="twTitle">
-  <meta name="twitter:description" content="" id="twDesc">
-  <meta name="twitter:image" content="" id="twImage">
-
-  <!-- ✅ Combined Structured Data -->
-  <script type="application/ld+json" id="jsonLdCombined">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "NewsArticle",
-        "headline": "",
-        "description": "",
-        "datePublished": "",
-        "dateModified": "",
-        "author": { "@type": "Organization", "name": "JobPulse Kolkata" },
-        "publisher": {
-          "@type": "Organization",
-          "name": "JobPulse Kolkata",
-          "logo": { "@type": "ImageObject", "url": "https://jobpulse-kolkata.vercel.app/assets/logo-512.png" }
-        },
-        "image": ["https://jobpulse-kolkata.vercel.app/assets/logo-512.png"],
-        "mainEntityOfPage": { "@type": "WebPage", "@id": "" }
-      },
-      {
-        "@type": "JobPosting",
-        "title": "",
-        "description": "",
-        "datePosted": "",
-        "validThrough": "",
-        "employmentType": "FULL_TIME",
-        "hiringOrganization": {
-          "@type": "Organization",
-          "name": "JobPulse Kolkata",
-          "sameAs": "https://jobpulse-kolkata.vercel.app/",
-          "logo": "https://jobpulse-kolkata.vercel.app/assets/logo-512.png"
-        },
-        "jobLocation": {
-          "@type": "Place",
-          "address": { "@type": "PostalAddress", "addressLocality": "Kolkata", "addressRegion": "West Bengal", "addressCountry": "IN" }
-        }
-      },
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jobpulse-kolkata.vercel.app/" },
-          { "@type": "ListItem", "position": 2, "name": "Jobs", "item": "https://jobpulse-kolkata.vercel.app/" },
-          { "@type": "ListItem", "position": 3, "name": "", "item": "" }
-        ]
-      }
-    ]
-  }
-  </script>
-
-  <!-- Theme & CSS -->
-  <script src="/assets/js/theme-boot.js?v=26"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=26">
-</head>
-<body>
-  <div class="container">
-    <a href="/">← Back</a>
-
-    <div class="post-layout">
-      <!-- ✅ Article -->
-      <article class="card">
-        <h1 id="title">Loading…</h1>
-        <p class="muted"><a id="source" href="#" target="_blank" rel="noopener">View Original Source ↗</a></p>
-
-        <!-- Hero -->
-        <div class="thumb-wrap">
-          <img id="hero" class="thumb" alt="Job update image"
-               src="https://via.placeholder.com/900x500.png?text=JobPulse+Kolkata" />
-        </div>
-
-        <!-- Gallery -->
-        <div id="gallery" class="gallery"></div>
-
-        <!-- Article -->
-        <div id="article" class="article"></div>
-
-        <!-- Last updated -->
-        <p id="lastUpdated" class="last-updated">Last updated: <span></span></p>
-
-        <!-- Share bar -->
-        <div class="share-bar">
-          <a id="share-wa" class="share-wa" target="_blank">WhatsApp</a>
-          <a id="share-tg" class="share-tg" target="_blank">Telegram</a>
-          <a id="share-copy" class="share-copy">Copy Link</a>
-        </div>
-      </article>
-
-      <!-- ✅ Sidebar Ad -->
-      <aside class="sidebar-ad">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-5732778753912461"
-             data-ad-slot="2400432399"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-      </aside>
-    </div>
-  </div>
-
-  <!-- ✅ Footer -->
-  <footer class="site-footer">
-    <p>© <span id="year"></span> JobPulse Kolkata — All Rights Reserved</p>
-    <p>
-      <a href="/pages/about.html">About</a> • 
-      <a href="/pages/privacy.html">Privacy Policy</a> • 
-      <a href="/pages/terms.html">Terms & Conditions</a> • 
-      <a href="/pages/disclaimer.html">Disclaimer</a> • 
-      <a href="/pages/contact.html">Contact</a>
-    </p>
-  </footer>
-  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
-
-  <!-- ✅ Main Script -->
-  <script type="module">
-    const param = (k) => (new URL(location.href)).searchParams.get(k) || '';
-    const title = decodeURIComponent(param('title'));
-    const link  = decodeURIComponent(param('link'));
-    const desc  = decodeURIComponent(param('desc'));
-    const date  = decodeURIComponent(param('date'));
-
-    document.title = title || 'JobPulse Kolkata';
-    document.getElementById('docTitle').textContent = document.title;
-    document.getElementById('title').textContent = title || 'Post';
-
-    const source = document.getElementById('source');
-    if (link) source.href = link;
-
-    // Hero image
-    const hero = document.getElementById('hero');
+  // ✅ Hero image
+  const hero = document.getElementById('hero');
+  try {
     const q = encodeURIComponent('kolkata jobs ' + (title||''));
     hero.src = 'https://source.unsplash.com/900x500/?'+q;
     hero.onerror = () => { hero.src = "https://via.placeholder.com/900x500.png?text=JobPulse+Kolkata"; };
+  } catch(e){ console.warn("Hero image error", e); }
 
-    // Gallery
+  // ✅ Gallery
+  try {
     const gallery = document.getElementById('gallery');
     const keywords = ['office','interview','resume','exam','government building','kolkata city'];
     keywords.forEach(kw=>{
@@ -162,60 +32,67 @@
       img.onerror = () => { img.src = "https://via.placeholder.com/600x400.png?text=Job+Image"; };
       gallery.appendChild(img);
     });
+  } catch(e){ console.warn("Gallery error", e); }
 
-    // Article with ads
-    async function loadArticle(url){
-      const box = document.getElementById('article');
-      try{
-        if(!url) throw new Error('Missing URL');
-        const r = await fetch('/api/article?url='+encodeURIComponent(url));
-        if(!r.ok) throw new Error('HTTP '+r.status);
-        const j = await r.json();
-        let content = j?.contentHtml || `<p>${desc||'Details at the source.'}</p>`;
+  // ✅ Article with ads
+  async function loadArticle(url){
+    const box = document.getElementById('article');
+    try{
+      if(!url) throw new Error('Missing URL');
+      const r = await fetch('/api/article?url='+encodeURIComponent(url));
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const j = await r.json();
+      let content = j?.contentHtml || `<p>${desc||'Details at the source.'}</p>`;
 
-        // ✅ In-article Ad (after first paragraph)
-        const adBlock = `
-          <div class="ads-in-article">
-            <ins class="adsbygoogle"
-                 style="display:block; text-align:center;"
-                 data-ad-layout="in-article"
-                 data-ad-format="fluid"
-                 data-ad-client="ca-pub-5732778753912461"
-                 data-ad-slot="2400400574"></ins>
-          </div>
-        `;
-        content = content.replace(/<\/p>/i, `</p>${adBlock}`);
+      // In-article ad
+      const adBlock = `
+        <div class="ads-in-article">
+          <ins class="adsbygoogle"
+               style="display:block; text-align:center;"
+               data-ad-layout="in-article"
+               data-ad-format="fluid"
+               data-ad-client="ca-pub-5732778753912461"
+               data-ad-slot="2400400574"></ins>
+        </div>
+      `;
+      content = content.replace(/<\/p>/i, `</p>${adBlock}`);
 
-        // ✅ End-of-article Ad
-        const endAd = `
-          <div class="ads-in-article end-ad">
-            <ins class="adsbygoogle"
-                 style="display:block; text-align:center;"
-                 data-ad-client="ca-pub-5732778753912461"
-                 data-ad-slot="7381264518"
-                 data-ad-format="autorelaxed"></ins>
-          </div>
-        `;
-        box.innerHTML = content + endAd;
+      // End-of-article ad
+      const endAd = `
+        <div class="ads-in-article end-ad">
+          <ins class="adsbygoogle"
+               style="display:block; text-align:center;"
+               data-ad-client="ca-pub-5732778753912461"
+               data-ad-slot="7381264518"
+               data-ad-format="autorelaxed"></ins>
+        </div>
+      `;
+      box.innerHTML = content + endAd;
 
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      }catch{
-        box.innerHTML = `<p>${desc||'Open the source for details.'}</p>`;
-      }
+      try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e){}
+    }catch(err){
+      console.warn("Article load error", err);
+      box.innerHTML = `<p>${desc||'Open the source for details.'}</p>`;
     }
-    loadArticle(link);
+  }
+  loadArticle(link);
 
-    // Last updated
-    document.querySelector('#lastUpdated span').textContent = 
+  // ✅ Last updated
+  try {
+    document.querySelector('#lastUpdated span').textContent =
       (date ? new Date(date).toLocaleString('en-IN') : new Date().toLocaleString('en-IN')) + ' IST';
+  } catch(e){}
 
-    // Share bar
+  // ✅ Share bar
+  try {
     const shareUrl=location.href;
     document.getElementById('share-wa').href='https://wa.me/?text='+encodeURIComponent(title+' - '+shareUrl);
     document.getElementById('share-tg').href='https://t.me/share/url?url='+encodeURIComponent(shareUrl)+'&text='+encodeURIComponent(title);
     document.getElementById('share-copy').addEventListener('click',()=>{ navigator.clipboard.writeText(shareUrl); alert('Link copied!'); });
+  } catch(e){}
 
-    // ✅ Update OG + JSON-LD dynamically
+  // ✅ Update OG + JSON-LD
+  try {
     const siteUrl = "https://jobpulse-kolkata.vercel.app";
     const ogTitle = document.getElementById("ogTitle");
     const ogDesc = document.getElementById("ogDesc");
@@ -226,11 +103,10 @@
     const twImage = document.getElementById("twImage");
     const combinedLd = document.getElementById("jsonLdCombined");
 
-    if (title) {
-      const descText = desc || "West Bengal latest job update from JobPulse Kolkata.";
-      const dynamicImg = `https://og-image.vercel.app/${encodeURIComponent(title)}.png?theme=dark&md=1&fontSize=36px&images=${encodeURIComponent(siteUrl + "/assets/logo.png")}`;
+    const descText = desc || "West Bengal latest job update from JobPulse Kolkata.";
+    const dynamicImg = `https://og-image.vercel.app/${encodeURIComponent(title)}.png?theme=dark&md=1&fontSize=36px&images=${encodeURIComponent(siteUrl + "/assets/logo.png")}`;
 
-      // OG/Twitter
+    if (title) {
       ogTitle.content = title + " — JobPulse Kolkata";
       ogDesc.content = descText;
       ogImage.content = dynamicImg;
@@ -239,7 +115,6 @@
       twDesc.content = descText;
       twImage.content = dynamicImg;
 
-      // JSON-LD
       if (combinedLd) {
         const schema = JSON.parse(combinedLd.textContent);
         schema["@graph"][0].headline = title;
@@ -261,8 +136,8 @@
         combinedLd.textContent = JSON.stringify(schema, null, 2);
       }
     }
-  </script>
-
-  <script type="module" src="/assets/js/ads.js?v=26"></script>
-</body>
-</html>
+  } catch(e){ console.warn("Schema/OG error", e); }
+} catch(e) {
+  console.error("Fatal post.js error", e);
+}
+      </script>
