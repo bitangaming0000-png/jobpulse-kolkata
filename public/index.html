@@ -55,11 +55,11 @@
   </script>
 
   <!-- Theme & CSS -->
-  <script src="/assets/js/theme-boot.js?v=26"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=26">
+  <script src="/assets/js/theme-boot.js?v=27"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=27">
 
-  <!-- Auto-accept consent -->
-  <script>try{localStorage.setItem('jp-consent','granted');}catch(e){}</script>
+  <!-- ✅ Crash-safe auto-accept consent -->
+  <script>try{localStorage.setItem('jp-consent','granted');}catch(e){console.warn("Consent save error", e);}</script>
 </head>
 <body class="home">
   <!-- ✅ Header -->
@@ -136,9 +136,9 @@
   </div>
 
   <!-- ✅ Footer -->
-  <footer class="site-footer" style="padding:20px;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--border)">
+  <footer class="site-footer">
     <p>© <span id="year"></span> JobPulse Kolkata — All Rights Reserved</p>
-    <p style="margin-top:6px;">
+    <p>
       <a href="/pages/about.html">About</a> • 
       <a href="/pages/privacy.html">Privacy Policy</a> • 
       <a href="/pages/terms.html">Terms & Conditions</a> • 
@@ -146,7 +146,7 @@
       <a href="/pages/contact.html">Contact</a>
     </p>
   </footer>
-  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+  <script>try{document.getElementById('year').textContent=new Date().getFullYear();}catch(e){}</script>
 
   <!-- Sticky anchor ad -->
   <div id="anchor-ad" class="anchor-ad" hidden>
@@ -159,7 +159,7 @@
   </div>
 
   <!-- JS -->
-  <script type="module" src="/assets/js/main.js?v=26"></script>
-  <script type="module" src="/assets/js/ads.js?v=26"></script>
+  <script type="module" src="/assets/js/main.js?v=27"></script>
+  <script type="module" src="/assets/js/ads.js?v=27"></script>
 </body>
-</html>
+    </html>
