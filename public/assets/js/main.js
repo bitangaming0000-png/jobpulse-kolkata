@@ -14,65 +14,6 @@ function truncate(s='',n=160){ s=String(s); return s.length>n ? s.slice(0,n-1)+'
   const y=document.getElementById('year'); if(y) y.textContent=new Date().getFullYear();
 })();
 
-// ===== Weather (visitor location → fallback Kolkata) =====
-async function fetchWeather(lat, lon){
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&forecast_days=1&timezone=auto`;
-  const r = await fetch(url);
-  return r.json();
-}
-async function fetchPlaceName(lat, lon){
-  try{
-    const u = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=en&format=json`;
-    const r = await fetch(u);
-    const j = await r.json();
-    const name = j?.results?.[0]?.name;
-    const admin1 = j?.results?.[0]?.admin1;
-    const country = j?.results?.[0]?.country;
-    return name ? [name, admin1, country].filter(Boolean).join(', ') : '';
-  }catch{ return ''; }
-}
-async function loadWeather(){
-  const box = document.getElementById('wx');
-  if(!box) return;
-  const show = (label, t) => { box.textContent = (t!==undefined && t!==null) ? `${label}: ${t} °C` : `${label}: —`; };
-  const KOL = { lat: 22.5726, lon: 88.3639, label: 'Kolkata' };
-  if('geolocation' in navigator){
-    const opts = { enableHighAccuracy:true, timeout:8000, maximumAge:60000 };
-    navigator.geolocation.getCurrentPosition(async pos=>{
-      try{
-        const {latitude:lat, longitude:lon} = pos.coords || {};
-        if(typeof lat!=='number' || typeof lon!=='number') throw new Error('bad coords');
-        const [w, place] = await Promise.all([fetchWeather(lat,lon), fetchPlaceName(lat,lon)]);
-        const t = w?.current?.temperature_2m;
-        show(place || 'Your area', t);
-      }catch{
-        const w = await fetchWeather(KOL.lat, KOL.lon);
-        show(KOL.label, w?.current?.temperature_2m);
-      }
-    }, async _err=>{
-      const w = await fetchWeather(KOL.lat, KOL.lon);
-      show(KOL.label, w?.current?.temperature_2m);
-    }, opts);
-  }else{
-    const w = await fetchWeather(KOL.lat, KOL.lon);
-    show(KOL.label, w?.current?.temperature_2m);
-  }
-}
-
-// ===== Quotes =====
-const QUOTES = [
-  "Little progress each day adds up to big results.",
-  "Stay consistent. Results will follow.",
-  "Your future is created by what you do today.",
-  "Discipline beats motivation.",
-  "Dream big. Start small. Act now."
-];
-function loadQuote(){
-  const i = Math.floor(Math.random()*QUOTES.length);
-  const box = document.getElementById('quoteBox');
-  if(box) box.textContent = QUOTES[i];
-}
-
 // ===== News via API =====
 async function getRSS(){
   try{
@@ -90,41 +31,34 @@ async function getRSS(){
   }
 }
 
-// ===== Categorization & filtering =====
-function inferCategory(p){
-  const s = `${p.title||''} ${p.description||''}`.toLowerCase();
-  if(/admit\s*card|hall\s*ticket/.test(s)) return 'admit';
-  if(/\bresult(s)?\b|scorecard|merit\s*list/.test(s)) return 'result';
-  if(/\bexam(s)?\b|syllabus|exam\s*date|answer\s*key/.test(s)) return 'exam';
-  if(/recruitment|vacancy|apply\s*online|notification|wbpsc|kmc|wbtc|kolkata\s*police|west\s*Bengal\s*health|govt/.test(s)) return 'govt';
-  if(/notice|notification|update|announcement/.test(s)) return 'notice';
-  return 'govt';
-}
-let STATE = { raw:[], filtered:[], q:'', cat:'all' };
+// ===== Card builder (with Last Updated + Read More) =====
+function card(p){
+  const c = el('article','card');
+  const d = new Date(p.pubDate || Date.now());
+  const formattedDate = d.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'});
 
-function filterItems(){
-  const q = STATE.q.trim().toLowerCase();
-  STATE.filtered = STATE.raw.filter(p=>{
-    const c = inferCategory(p);
-    const okCat = (STATE.cat==='all') || (c===STATE.cat);
-    if(!okCat) return false;
-    if(!q) return true;
-    const s = `${p.title||''} ${p.description||''}`.toLowerCase();
-    return s.includes(q);
-  });
-}
+  const url = `/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description||'')}&date=${encodeURIComponent(p.pubDate||'')}`;
 
-function elCard(p){
-  const c=el('article','card');
   c.innerHTML = `
-    <div class="thumb-wrap"><img class="thumb" alt="" loading="lazy"></div>
-    <h3><a href="/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description||'')}&date=${encodeURIComponent(p.pubDate||'')}" target="_self">${p.title}</a></h3>
-    <p>${truncate(p.description||'',180)}</p>`;
+    <div class="thumb-wrap">
+      <img class="thumb" alt="" loading="lazy">
+    </div>
+    <h3><a href="${url}" target="_self">${p.title}</a></h3>
+    <p>${truncate(p.description||'',160)}</p>
+    <p class="muted">🕒 Last updated: ${formattedDate}</p>
+    <a href="${url}" class="readmore-btn">Read More →</a>
+  `;
+
   const img=c.querySelector('img.thumb');
-  const q=encodeURIComponent('kolkata jobs '+(p.title||'')); img.src=`https://source.unsplash.com/800x450/?${q}`; img.alt=p.title||'thumbnail';
+  const q=encodeURIComponent('kolkata jobs '+(p.title||''));
+  img.src=`https://source.unsplash.com/800x450/?${q}`;
+  img.alt=p.title||'thumbnail';
+  img.onerror = () => { img.src = "https://via.placeholder.com/800x450.png?text=JobPulse+Kolkata"; };
+
   return c;
 }
 
+// ===== Render sections =====
 function buildTicker(items){
   const wrap=document.getElementById('notify-ticker'); if(!wrap) return;
   const subset=(items||[]).slice(0,18);
@@ -142,55 +76,24 @@ function autoScroll(el,speed=0.35){
   el.addEventListener('mouseenter',()=>paused=true); el.addEventListener('mouseleave',()=>paused=false); step();
 }
 
-function render(){
+function render(items){
   const top=document.getElementById('top-scroll');
   const noti=document.getElementById('notices');
   const trend=document.getElementById('trending');
   [top,noti,trend].forEach(n=>n&&(n.innerHTML=''));
 
-  const items = STATE.filtered;
-  items.slice(0,12).forEach(p=> top.appendChild(elCard(p)));
-  items.slice(0,12).forEach(p=> noti.appendChild(elCard(p)));
-  items.slice(12,24).forEach(p=> trend.appendChild(elCard(p)));
+  items.slice(0,12).forEach(p=> top.appendChild(card(p)));
+  items.slice(0,12).forEach(p=> noti.appendChild(card(p)));
+  items.slice(12,24).forEach(p=> trend.appendChild(card(p)));
 
   autoScroll(top,0.35); autoScroll(trend,0.35);
 }
 
-function bindSearchAndChips(){
-  const input = document.getElementById('searchInput');
-  const chips = document.getElementById('chips');
-  if(input){
-    input.addEventListener('input', e=>{
-      STATE.q = e.target.value || '';
-      filterItems(); render();
-    });
-  }
-  if(chips){
-    chips.addEventListener('click', e=>{
-      const btn = e.target.closest('button[data-cat]');
-      if(!btn) return;
-      chips.querySelectorAll('.chip').forEach(b=>b.classList.remove('chip-active'));
-      btn.classList.add('chip-active');
-      STATE.cat = btn.dataset.cat || 'all';
-      filterItems(); render();
-    });
-  }
-}
-
-// ---- Main ----
+// ===== Main =====
 async function main(){
   if(!document.body.classList.contains('home')) return;
-  loadQuote();
-  loadWeather();
-
-  const items = await getRSS();
-  STATE.raw = items;
-  STATE.cat = 'all';
-  STATE.q = '';
-  filterItems();
-
+  const items=await getRSS();
   buildTicker(items);
-  bindSearchAndChips();
-  render();
+  render(items);
 }
 document.addEventListener('DOMContentLoaded', main);
