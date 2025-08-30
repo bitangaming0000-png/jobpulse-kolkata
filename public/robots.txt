@@ -2,4 +2,3 @@ User-agent: *
 Allow: /
 
 Sitemap: https://jobpulse-kolkata.vercel.app/sitemap.xml
-Sitemap: https://jobpulse-kolkata.vercel.app/news-sitemap.xml
