@@ -14,8 +14,8 @@
     });
   </script>
 
-  <script src="/assets/js/theme-boot.js?v=21"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=21">
+  <script src="/assets/js/theme-boot.js?v=23"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=23">
 
   <!-- Auto-accept consent -->
   <script>try{localStorage.setItem('jp-consent','granted');}catch(e){}</script>
@@ -44,6 +44,13 @@
       <p id="lastUpdated" style="margin-top:16px;font-size:13px;color:var(--muted)">
         Last updated: <span></span>
       </p>
+
+      <!-- ✅ Share bar -->
+      <div class="share-bar">
+        <a id="share-wa" class="share-wa" target="_blank">WhatsApp</a>
+        <a id="share-tg" class="share-tg" target="_blank">Telegram</a>
+        <a id="share-copy" class="share-copy">Copy Link</a>
+      </div>
     </article>
   </div>
 
@@ -71,13 +78,13 @@
     const source = document.getElementById('source');
     if (link) source.href = link;
 
-    // ✅ Hero image (with fallback)
+    // ✅ Hero image with fallback
     const hero = document.getElementById('hero');
     const q = encodeURIComponent('kolkata jobs ' + (title||''));
     hero.src = 'https://source.unsplash.com/900x500/?'+q;
     hero.onerror = () => { hero.src = "https://via.placeholder.com/900x500.png?text=JobPulse+Kolkata"; };
 
-    // ✅ Gallery (guaranteed job-related images)
+    // ✅ Gallery
     const gallery = document.getElementById('gallery');
     const keywords = ['office','interview','resume','exam','government building','kolkata city'];
     keywords.forEach(kw=>{
@@ -105,8 +112,17 @@
     // ✅ Last updated timestamp
     const lastUpdatedEl = document.querySelector('#lastUpdated span');
     lastUpdatedEl.textContent = (date ? new Date(date).toLocaleString('en-IN') : new Date().toLocaleString('en-IN')) + ' IST';
+
+    // ✅ Share bar setup
+    const shareUrl=location.href;
+    const wa=document.getElementById('share-wa');
+    const tg=document.getElementById('share-tg');
+    const cp=document.getElementById('share-copy');
+    if(wa) wa.href='https://wa.me/?text='+encodeURIComponent(title+' - '+shareUrl);
+    if(tg) tg.href='https://t.me/share/url?url='+encodeURIComponent(shareUrl)+'&text='+encodeURIComponent(title);
+    if(cp) cp.addEventListener('click',()=>{ navigator.clipboard.writeText(shareUrl); alert('Link copied!'); });
   </script>
 
-  <script type="module" src="/assets/js/ads.js?v=21"></script>
+  <script type="module" src="/assets/js/ads.js?v=23"></script>
 </body>
 </html>
