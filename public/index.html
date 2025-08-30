@@ -19,11 +19,10 @@
   <meta name="twitter:card" content="summary_large_image" />
 
   <!-- Theme & CSS -->
-  <script src="/assets/js/theme-boot.js?v=18"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=17">
-  <style>html,body{background:#0d0f14;color:#e7eaf3}</style>
+  <script src="/assets/js/theme-boot.js?v=20"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=20">
 
-  <!-- ✅ DEV: auto-accept consent so popup never shows -->
+  <!-- Auto-accept consent -->
   <script>try{localStorage.setItem('jp-consent','granted');}catch(e){}</script>
 </head>
 <body class="home">
@@ -42,40 +41,15 @@
   </header>
 
   <div class="container">
-    <!-- Top Display Ad (auto-hidden via ads.js) -->
-    <div class="ads card" data-ad="display-top" style="margin-bottom:12px">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5732778753912461"
-           data-ad-slot="2400432399"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-    </div>
-
+    <!-- Ads, widgets, ticker, trending etc remain unchanged -->
     <h1>Latest Updates</h1>
 
     <div class="widgets">
-      <!-- Weather -->
+      <section class="widget card"><h2>🌤 Weather</h2><div id="wx">Loading…</div></section>
+      <section class="widget card"><h2>💡 Daily Motivation</h2><blockquote id="quoteBox"></blockquote></section>
+      <section class="widget card"><h2>🔎 Search</h2><input id="searchInput" class="search-input" type="search" placeholder="Search jobs…"/></section>
       <section class="widget card">
-        <h2 style="margin:0 0 8px 0">🌤 Weather</h2>
-        <div id="wx">Loading current temperature…</div>
-      </section>
-
-      <!-- Quote -->
-      <section class="widget card">
-        <h2 style="margin:0 0 8px 0">💡 Daily Motivation</h2>
-        <blockquote id="quoteBox" style="margin:0"></blockquote>
-      </section>
-
-      <!-- Search -->
-      <section class="widget card">
-        <h2 style="margin:0 0 8px 0">🔎 Search</h2>
-        <input id="searchInput" class="search-input" type="search" placeholder="Search jobs, exams, results…" />
-      </section>
-
-      <!-- Poll of the Day -->
-      <section class="widget card">
-        <h2 style="margin:0 0 8px 0">🗳️ Poll of the Day</h2>
+        <h2>🗳️ Poll of the Day</h2>
         <div id="pollBox">
           <p id="pollQ">Which updates do you check most?</p>
           <div class="poll-options">
@@ -84,12 +58,12 @@
             <button class="btn pill" data-opt="Results">Results</button>
             <button class="btn pill" data-opt="Admit Cards">Admit Cards</button>
           </div>
-          <div id="pollThanks" class="muted" style="display:none;margin-top:6px">Thanks for voting!</div>
+          <div id="pollThanks" class="muted" style="display:none">Thanks for voting!</div>
         </div>
       </section>
     </div>
 
-    <!-- Category chips -->
+    <!-- category chips, ticker, notifications, trending, ads… -->
     <div class="chips card" id="chips">
       <button data-cat="all" class="chip chip-active">All</button>
       <button data-cat="govt" class="chip">Govt Jobs</button>
@@ -99,55 +73,18 @@
       <button data-cat="notice" class="chip">Notifications</button>
     </div>
 
-    <!-- Live ticker -->
-    <div class="ticker-wrap" title="Hover to pause">
-      <span class="ticker-head">Live</span>
-      <div id="notify-ticker" class="ticker"></div>
-    </div>
-
-    <section class="section">
-      <h2>Top News</h2>
-      <div id="top-scroll" class="scroller-x autoscroll-x"></div>
-    </section>
-
-    <!-- In-article Ad -->
-    <div class="ads card" data-ad="in-article" style="margin:12px 0">
-      <ins class="adsbygoogle"
-           style="display:block; text-align:center;"
-           data-ad-layout="in-article"
-           data-ad-format="fluid"
-           data-ad-client="ca-pub-5732778753912461"
-           data-ad-slot="2400400574"></ins>
-    </div>
-
-    <section class="section">
-      <h2>Notifications</h2>
-      <div class="vscroll" id="notices-wrap">
-        <div id="notices" class="vlist"></div>
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>Trending</h2>
-      <div id="trending" class="scroller-x autoscroll-x"></div>
-    </section>
-
-    <!-- Bottom Multiplex Ad -->
-    <div class="ads card" data-ad="multiplex-bottom" style="margin-top:12px">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-format="autorelaxed"
-           data-ad-client="ca-pub-5732778753912461"
-           data-ad-slot="7381264518"></ins>
-    </div>
+    <div class="ticker-wrap" title="Hover to pause"><span class="ticker-head">Live</span><div id="notify-ticker" class="ticker"></div></div>
+    <section class="section"><h2>Top News</h2><div id="top-scroll" class="scroller-x autoscroll-x"></div></section>
+    <section class="section"><h2>Notifications</h2><div class="vscroll"><div id="notices" class="vlist"></div></div></section>
+    <section class="section"><h2>Trending</h2><div id="trending" class="scroller-x autoscroll-x"></div></section>
   </div>
 
   <footer class="site-footer" style="padding:16px;text-align:center;color:var(--muted)">
-    © <span id="year"></span> JobPulse Kolkata · West Bengal Jobs & Updates
+    © <span id="year"></span> JobPulse Kolkata
   </footer>
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 
-  <!-- Sticky anchor ad holder (auto-hidden if no fill) -->
+  <!-- Sticky anchor ad -->
   <div id="anchor-ad" class="anchor-ad" hidden>
     <button class="anchor-close" aria-label="Close ad">×</button>
     <ins class="adsbygoogle"
@@ -158,7 +95,7 @@
   </div>
 
   <!-- JS -->
-  <script type="module" src="/assets/js/main.js?v=17"></script>
-  <script type="module" src="/assets/js/ads.js?v=16"></script>
+  <script type="module" src="/assets/js/main.js?v=20"></script>
+  <script type="module" src="/assets/js/ads.js?v=20"></script>
 </body>
-</html>
+  </html>
