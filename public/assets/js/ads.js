@@ -9,7 +9,7 @@
   }
 })();
 
-// ✅ Helper: initialize all ads
+// ✅ Initialize all ads
 function initAds() {
   document.querySelectorAll(".adsbygoogle").forEach(ad => {
     try {
@@ -18,7 +18,7 @@ function initAds() {
   });
 }
 
-// ✅ Auto-hide empty ad slots
+// ✅ Hide empty ad slots (if not filled by Google)
 function watchAds() {
   document.querySelectorAll(".adsbygoogle").forEach(ad => {
     const check = setInterval(()=>{
@@ -26,7 +26,7 @@ function watchAds() {
         ad.parentElement.style.display="none";
         clearInterval(check);
       }
-    }, 3000);
+    }, 4000);
   });
 }
 
@@ -36,20 +36,20 @@ if (anchorAd) {
   const closeBtn = anchorAd.querySelector(".anchor-close");
   if (closeBtn) closeBtn.addEventListener("click", ()=> anchorAd.remove());
 
-  // Show anchor after few seconds
+  // Show anchor after delay
   setTimeout(()=>{
     anchorAd.hidden=false;
     initAds();
   }, 5000);
 }
 
-// ✅ Refresh ads after navigation / async load
+// ✅ Run on load
 window.addEventListener("load", ()=>{
   initAds();
   watchAds();
 });
 
-// In case of SPA-style navigation
+// In case of SPA navigation
 document.addEventListener("DOMContentLoaded", ()=>{
   initAds();
   watchAds();
