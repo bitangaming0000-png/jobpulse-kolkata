@@ -14,10 +14,100 @@
     });
   </script>
 
-  <script src="/assets/js/theme-boot.js?v=24"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=24">
+  <!-- ✅ Open Graph / Twitter (dynamic) -->
+  <meta property="og:title" content="" id="ogTitle">
+  <meta property="og:description" content="" id="ogDesc">
+  <meta property="og:image" content="" id="ogImage">
+  <meta property="og:url" content="" id="ogUrl">
+  <meta property="og:type" content="article">
 
-  <script>try{localStorage.setItem('jp-consent','granted');}catch(e){}</script>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="" id="twTitle">
+  <meta name="twitter:description" content="" id="twDesc">
+  <meta name="twitter:image" content="" id="twImage">
+
+  <!-- ✅ Combined Structured Data -->
+  <script type="application/ld+json" id="jsonLdCombined">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "NewsArticle",
+        "headline": "",
+        "description": "",
+        "datePublished": "",
+        "dateModified": "",
+        "author": {
+          "@type": "Organization",
+          "name": "JobPulse Kolkata"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "JobPulse Kolkata",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://jobpulse-kolkata.vercel.app/assets/logo-512.png"
+          }
+        },
+        "image": ["https://jobpulse-kolkata.vercel.app/assets/logo-512.png"],
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": ""
+        }
+      },
+      {
+        "@type": "JobPosting",
+        "title": "",
+        "description": "",
+        "datePosted": "",
+        "validThrough": "",
+        "employmentType": "FULL_TIME",
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": "JobPulse Kolkata",
+          "sameAs": "https://jobpulse-kolkata.vercel.app/",
+          "logo": "https://jobpulse-kolkata.vercel.app/assets/logo-512.png"
+        },
+        "jobLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Kolkata",
+            "addressRegion": "West Bengal",
+            "addressCountry": "IN"
+          }
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://jobpulse-kolkata.vercel.app/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Jobs",
+            "item": "https://jobpulse-kolkata.vercel.app/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "",
+            "item": ""
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- Theme & CSS -->
+  <script src="/assets/js/theme-boot.js?v=25"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=25">
 </head>
 <body>
   <div class="container">
@@ -76,6 +166,7 @@
          data-ad-format="auto"></ins>
   </div>
 
+  <!-- ✅ Main Post Script -->
   <script type="module">
     const param = (k) => (new URL(location.href)).searchParams.get(k) || '';
     const title = decodeURIComponent(param('title'));
@@ -133,8 +224,62 @@
     if(wa) wa.href='https://wa.me/?text='+encodeURIComponent(title+' - '+shareUrl);
     if(tg) tg.href='https://t.me/share/url?url='+encodeURIComponent(shareUrl)+'&text='+encodeURIComponent(title);
     if(cp) cp.addEventListener('click',()=>{ navigator.clipboard.writeText(shareUrl); alert('Link copied!'); });
+
+    // ✅ Update OG + JSON-LD dynamically
+    const siteUrl = "https://jobpulse-kolkata.vercel.app";
+    const ogTitle = document.getElementById("ogTitle");
+    const ogDesc = document.getElementById("ogDesc");
+    const ogImage = document.getElementById("ogImage");
+    const ogUrl = document.getElementById("ogUrl");
+    const twTitle = document.getElementById("twTitle");
+    const twDesc = document.getElementById("twDesc");
+    const twImage = document.getElementById("twImage");
+    const combinedLd = document.getElementById("jsonLdCombined");
+
+    if (title) {
+      const descText = desc || "West Bengal latest job update from JobPulse Kolkata.";
+      const dynamicImg = `https://og-image.vercel.app/${encodeURIComponent(title)}.png?theme=dark&md=1&fontSize=36px&images=${encodeURIComponent(siteUrl + "/assets/logo.png")}`;
+
+      // OpenGraph
+      ogTitle.content = title + " — JobPulse Kolkata";
+      ogDesc.content = descText;
+      ogImage.content = dynamicImg;
+      ogUrl.content = siteUrl + location.pathname + location.search;
+
+      // Twitter
+      twTitle.content = ogTitle.content;
+      twDesc.content = descText;
+      twImage.content = dynamicImg;
+
+      // JSON-LD update
+      if (combinedLd) {
+        const schema = JSON.parse(combinedLd.textContent);
+
+        // NewsArticle
+        schema["@graph"][0].headline = title;
+        schema["@graph"][0].description = descText;
+        schema["@graph"][0].datePublished = date || new Date().toISOString();
+        schema["@graph"][0].dateModified = new Date().toISOString();
+        schema["@graph"][0].image = [hero.src];
+        schema["@graph"][0].mainEntityOfPage["@id"] = location.href;
+
+        // JobPosting
+        schema["@graph"][1].title = title;
+        schema["@graph"][1].description = descText;
+        schema["@graph"][1].datePosted = date || new Date().toISOString();
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + 30);
+        schema["@graph"][1].validThrough = expiry.toISOString();
+
+        // Breadcrumb
+        schema["@graph"][2].itemListElement[2].name = title;
+        schema["@graph"][2].itemListElement[2].item = location.href;
+
+        combinedLd.textContent = JSON.stringify(schema, null, 2);
+      }
+    }
   </script>
 
-  <script type="module" src="/assets/js/ads.js?v=24"></script>
+  <script type="module" src="/assets/js/ads.js?v=25"></script>
 </body>
 </html>
