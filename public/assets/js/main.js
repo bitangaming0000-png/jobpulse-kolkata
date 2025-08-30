@@ -25,18 +25,17 @@ async function getRSS(){
     const now=new Date().toUTCString();
     return [
       {title:'WBPSC Recruitment Update — New Vacancies',link:'https://wbpsc.gov.in',description:'West Bengal PSC latest updates.',pubDate:now},
-      {title:'KMC Notification for Candidates',link:'https://www.kmcgov.in',description:'Latest from KMC.',pubDate:now},
+      {title:'KMC Notification for Candidates',link:'https://www.kmc.gov.in',description:'Latest from KMC.',pubDate:now},
       {title:'Railway Update for WB Candidates',link:'https://indianrailways.gov.in',description:'Important railway info for WB.',pubDate:now}
     ];
   }
 }
 
-// ===== Card builder (with Last Updated + Read More) =====
+// ===== Card builder =====
 function card(p){
   const c = el('article','card');
   const d = new Date(p.pubDate || Date.now());
   const formattedDate = d.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'});
-
   const url = `/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description||'')}&date=${encodeURIComponent(p.pubDate||'')}`;
 
   c.innerHTML = `
@@ -97,3 +96,20 @@ async function main(){
   render(items);
 }
 document.addEventListener('DOMContentLoaded', main);
+
+// ===== Back to Top =====
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.createElement("button");
+  btn.className = "back-top";
+  btn.innerHTML = "↑";
+  document.body.appendChild(btn);
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) btn.classList.add("show");
+    else btn.classList.remove("show");
+  });
+
+  btn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
