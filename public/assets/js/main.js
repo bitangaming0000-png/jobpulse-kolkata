@@ -38,7 +38,7 @@ async function loadWeather() {
   try {
     let lat = 22.5726, lon = 88.3639; // Kolkata default
     if (navigator.geolocation) {
-      await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(
+      await new Promise((res)=>navigator.geolocation.getCurrentPosition(
         pos => { lat=pos.coords.latitude; lon=pos.coords.longitude; res(); },
         () => res()  // fallback silently
       ));
@@ -46,7 +46,7 @@ async function loadWeather() {
     const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
     const j = await r.json();
     const w = j.current_weather;
-    box.textContent = `${w.temperature}°C, ${w.weathercode}`;
+    box.textContent = `${w.temperature}°C, code ${w.weathercode}`;
   } catch { box.textContent = "Unable to fetch weather"; }
 }
 loadWeather();
@@ -87,7 +87,7 @@ if (ticker) {
 // ✅ Fetch RSS Feeds
 async function loadRSS() {
   const feeds = [
-    "/api/rss" // your Netlify/Vercel function proxying multiple feeds
+    "/api/rss" // serverless function aggregator
   ];
   const allItems = [];
   for (let f of feeds) {
