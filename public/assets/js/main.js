@@ -1,115 +1,162 @@
-// ===== Utilities =====
-function formatIST(d=new Date()){
-  return new Intl.DateTimeFormat('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'}).format(d);
+// ✅ Live Date/Time
+function updateDateTime() {
+  const el = document.getElementById("dateTime");
+  if (!el) return;
+  el.textContent = "🕒 " + new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
-function el(t,c='',tx=''){const e=document.createElement(t); if(c)e.className=c; if(tx!==undefined)e.textContent=tx; return e;}
-function truncate(s='',n=160){ s=String(s); return s.length>n ? s.slice(0,n-1)+'…' : s; }
+setInterval(updateDateTime, 60000);
+updateDateTime();
 
-// ===== Header bits =====
-(function(){
-  const root=document.documentElement;
-  const tbtn=document.getElementById('themeToggle');
-  if(tbtn){ tbtn.addEventListener('click',()=>{ const t=(root.getAttribute('data-theme')==='dark')?'light':'dark'; localStorage.setItem('jp-theme',t); root.setAttribute('data-theme',t); }); }
-  const dt=document.getElementById('dateTime'); if(dt){ const tick=()=> dt.textContent='🕒 '+formatIST(); tick(); setInterval(tick,30000); }
-  const y=document.getElementById('year'); if(y) y.textContent=new Date().getFullYear();
-})();
+// ✅ Theme toggle
+const themeToggle = document.getElementById("themeToggle");
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "light" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("jp-theme", next);
+  });
+}
+const savedTheme = localStorage.getItem("jp-theme");
+if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
 
-// ===== News via API =====
-async function getRSS(){
-  try{
-    const r=await fetch('/api/rss',{cache:'no-store'});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const j=await r.json();
-    return Array.isArray(j.items)?j.items:[];
-  }catch(e){
-    const now=new Date().toUTCString();
-    return [
-      {title:'WBPSC Recruitment Update — New Vacancies',link:'https://wbpsc.gov.in',description:'West Bengal PSC latest updates.',pubDate:now},
-      {title:'KMC Notification for Candidates',link:'https://www.kmc.gov.in',description:'Latest from KMC.',pubDate:now},
-      {title:'Railway Update for WB Candidates',link:'https://indianrailways.gov.in',description:'Important railway info for WB.',pubDate:now}
-    ];
+// ✅ Saved posts badge
+try {
+  const saved = JSON.parse(localStorage.getItem("jp-saved") || "[]");
+  document.getElementById("savedCount").textContent = saved.length;
+} catch {}
+
+// ✅ Weather (user location or Kolkata fallback)
+async function loadWeather() {
+  const box = document.getElementById("wx");
+  if (!box) return;
+  try {
+    let lat = 22.5726, lon = 88.3639; // Kolkata default
+    if (navigator.geolocation) {
+      await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(
+        pos => { lat=pos.coords.latitude; lon=pos.coords.longitude; res(); },
+        () => res()  // fallback silently
+      ));
+    }
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+    const j = await r.json();
+    const w = j.current_weather;
+    box.textContent = `${w.temperature}°C, ${w.weathercode}`;
+  } catch { box.textContent = "Unable to fetch weather"; }
+}
+loadWeather();
+
+// ✅ Daily Motivation
+async function loadQuote() {
+  const el = document.getElementById("quoteBox");
+  if (!el) return;
+  try {
+    const r = await fetch("https://api.quotable.io/random?tags=motivational|inspirational");
+    const q = await r.json();
+    el.textContent = `"${q.content}" — ${q.author}`;
+  } catch { el.textContent = "Stay positive and keep going!"; }
+}
+loadQuote();
+
+// ✅ Poll of the Day
+const pollBox = document.getElementById("pollBox");
+if (pollBox) {
+  pollBox.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      localStorage.setItem("jp-poll", btn.dataset.opt);
+      document.getElementById("pollThanks").style.display="block";
+    });
+  });
+  if (localStorage.getItem("jp-poll"))
+    document.getElementById("pollThanks").style.display="block";
+}
+
+// ✅ Live ticker (Notifications auto-scroll)
+const ticker = document.getElementById("notify-ticker");
+if (ticker) {
+  setInterval(()=>{
+    if(ticker.firstChild) ticker.appendChild(ticker.firstChild); // move first to end
+  }, 4000);
+}
+
+// ✅ Fetch RSS Feeds
+async function loadRSS() {
+  const feeds = [
+    "/api/rss" // your Netlify/Vercel function proxying multiple feeds
+  ];
+  const allItems = [];
+  for (let f of feeds) {
+    try {
+      const r = await fetch(f);
+      if (!r.ok) continue;
+      const j = await r.json();
+      allItems.push(...(j.items||[]));
+    } catch(e){ console.error("RSS error",e); }
+  }
+
+  if (!allItems.length) return;
+
+  // Deduplicate by link
+  const seen = new Set();
+  const items = allItems.filter(it => {
+    if (seen.has(it.link)) return false;
+    seen.add(it.link); return true;
+  }).slice(0,50);
+
+  // Top scroll
+  const topScroll = document.getElementById("top-scroll");
+  if (topScroll) {
+    topScroll.innerHTML = "";
+    items.slice(0,10).forEach(it=>{
+      const a = document.createElement("a");
+      a.href = `/pages/post.html?title=${encodeURIComponent(it.title)}&link=${encodeURIComponent(it.link)}&desc=${encodeURIComponent(it.contentSnippet||"")}&date=${encodeURIComponent(it.isoDate||"")}`;
+      a.className="card";
+      a.style.minWidth="220px";
+      a.textContent = it.title;
+      topScroll.appendChild(a);
+    });
+  }
+
+  // Notifications (list)
+  const notices = document.getElementById("notices");
+  if (notices) {
+    notices.innerHTML="";
+    items.slice(0,15).forEach(it=>{
+      const a = document.createElement("a");
+      a.href = `/pages/post.html?title=${encodeURIComponent(it.title)}&link=${encodeURIComponent(it.link)}&desc=${encodeURIComponent(it.contentSnippet||"")}&date=${encodeURIComponent(it.isoDate||"")}`;
+      a.textContent = it.title;
+      notices.appendChild(a);
+    });
+  }
+
+  // Trending
+  const trending = document.getElementById("trending");
+  if (trending) {
+    trending.innerHTML="";
+    items.slice(0,10).forEach(it=>{
+      const a = document.createElement("a");
+      a.href = `/pages/post.html?title=${encodeURIComponent(it.title)}&link=${encodeURIComponent(it.link)}&desc=${encodeURIComponent(it.contentSnippet||"")}&date=${encodeURIComponent(it.isoDate||"")}`;
+      a.className="card";
+      a.style.minWidth="200px";
+      a.textContent = it.title;
+      trending.appendChild(a);
+    });
+  }
+
+  // Live ticker
+  if (ticker) {
+    ticker.innerHTML="";
+    items.slice(0,20).forEach(it=>{
+      const span = document.createElement("span");
+      span.style.marginRight="30px";
+      span.innerHTML = `<a href="/pages/post.html?title=${encodeURIComponent(it.title)}&link=${encodeURIComponent(it.link)}">${it.title}</a>`;
+      ticker.appendChild(span);
+    });
   }
 }
-
-// ===== Card builder =====
-function card(p){
-  const c = el('article','card');
-  const d = new Date(p.pubDate || Date.now());
-  const formattedDate = d.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'});
-  const url = `/pages/post.html?title=${encodeURIComponent(p.title)}&link=${encodeURIComponent(p.link)}&desc=${encodeURIComponent(p.description||'')}&date=${encodeURIComponent(p.pubDate||'')}`;
-
-  c.innerHTML = `
-    <div class="thumb-wrap">
-      <img class="thumb" alt="" loading="lazy">
-    </div>
-    <h3><a href="${url}" target="_self">${p.title}</a></h3>
-    <p>${truncate(p.description||'',160)}</p>
-    <p class="muted">🕒 Last updated: ${formattedDate}</p>
-    <a href="${url}" class="readmore-btn">Read More →</a>
-  `;
-
-  const img=c.querySelector('img.thumb');
-  const q=encodeURIComponent('kolkata jobs '+(p.title||''));
-  img.src=`https://source.unsplash.com/800x450/?${q}`;
-  img.alt=p.title||'thumbnail';
-  img.onerror = () => { img.src = "https://via.placeholder.com/800x450.png?text=JobPulse+Kolkata"; };
-
-  return c;
-}
-
-// ===== Render sections =====
-function buildTicker(items){
-  const wrap=document.getElementById('notify-ticker'); if(!wrap) return;
-  const subset=(items||[]).slice(0,18);
-  const track=document.createElement('div'); track.className='ticker-track';
-  const run=()=>{ const span=document.createElement('span'); span.className='ticker';
-    subset.forEach(p=>{ const a=document.createElement('a'); a.href='/pages/post.html?title='+encodeURIComponent(p.title)+'&link='+encodeURIComponent(p.link); a.textContent=p.title; span.appendChild(a); });
-    return span; };
-  track.appendChild(run()); track.appendChild(run());
-  wrap.innerHTML=''; wrap.appendChild(track);
-}
-
-function autoScroll(el,speed=0.35){
-  if(!el) return; let paused=false;
-  const step=()=>{ if(!paused && el.scrollWidth>el.clientWidth){ el.scrollLeft+=speed; if(el.scrollLeft>=el.scrollWidth-el.clientWidth-1) el.scrollLeft=0; } requestAnimationFrame(step); };
-  el.addEventListener('mouseenter',()=>paused=true); el.addEventListener('mouseleave',()=>paused=false); step();
-}
-
-function render(items){
-  const top=document.getElementById('top-scroll');
-  const noti=document.getElementById('notices');
-  const trend=document.getElementById('trending');
-  [top,noti,trend].forEach(n=>n&&(n.innerHTML=''));
-
-  items.slice(0,12).forEach(p=> top.appendChild(card(p)));
-  items.slice(0,12).forEach(p=> noti.appendChild(card(p)));
-  items.slice(12,24).forEach(p=> trend.appendChild(card(p)));
-
-  autoScroll(top,0.35); autoScroll(trend,0.35);
-}
-
-// ===== Main =====
-async function main(){
-  if(!document.body.classList.contains('home')) return;
-  const items=await getRSS();
-  buildTicker(items);
-  render(items);
-}
-document.addEventListener('DOMContentLoaded', main);
-
-// ===== Back to Top =====
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.createElement("button");
-  btn.className = "back-top";
-  btn.innerHTML = "↑";
-  document.body.appendChild(btn);
-
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 300) btn.classList.add("show");
-    else btn.classList.remove("show");
-  });
-
-  btn.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-});
+loadRSS();
