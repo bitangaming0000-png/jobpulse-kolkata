@@ -1,52 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- Homepage -->
+  <!-- ✅ Homepage -->
   <url>
     <loc>https://jobpulse-kolkata.vercel.app/</loc>
-    <lastmod>2025-08-30</lastmod>
+    <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Legal pages -->
-  <url>
-    <loc>https://jobpulse-kolkata.vercel.app/pages/about.html</loc>
-    <lastmod>2025-08-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://jobpulse-kolkata.vercel.app/pages/privacy.html</loc>
-    <lastmod>2025-08-30</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://jobpulse-kolkata.vercel.app/pages/terms.html</loc>
-    <lastmod>2025-08-30</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://jobpulse-kolkata.vercel.app/pages/disclaimer.html</loc>
-    <lastmod>2025-08-30</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://jobpulse-kolkata.vercel.app/pages/contact.html</loc>
-    <lastmod>2025-08-30</lastmod>
-    <priority>0.7</priority>
-  </url>
+  <!-- ✅ Legal Pages -->
+  <url><loc>https://jobpulse-kolkata.vercel.app/pages/about.html</loc></url>
+  <url><loc>https://jobpulse-kolkata.vercel.app/pages/privacy.html</loc></url>
+  <url><loc>https://jobpulse-kolkata.vercel.app/pages/terms.html</loc></url>
+  <url><loc>https://jobpulse-kolkata.vercel.app/pages/disclaimer.html</loc></url>
+  <url><loc>https://jobpulse-kolkata.vercel.app/pages/contact.html</loc></url>
 
-  <!-- Saved page -->
-  <url>
-    <loc>https://jobpulse-kolkata.vercel.app/pages/saved.html</loc>
-    <lastmod>2025-08-30</lastmod>
-    <priority>0.5</priority>
-  </url>
+  <!-- ✅ Saved Page -->
+  <url><loc>https://jobpulse-kolkata.vercel.app/pages/saved.html</loc></url>
 
-  <!-- Example post page (dynamic: you can add generated ones if you want) -->
-  <url>
-    <loc>https://jobpulse-kolkata.vercel.app/pages/post.html</loc>
-    <lastmod>2025-08-30</lastmod>
-    <priority>0.5</priority>
-  </url>
-
+  <!-- ✅ Example Job Post (dynamic posts will be added via RSS fetch) -->
+  <!-- Add more manually if you want static pre-seeded posts -->
+  <url><loc>https://jobpulse-kolkata.vercel.app/pages/post.html</loc></url>
 </urlset>
