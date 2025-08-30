@@ -24,7 +24,6 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
 }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -38,12 +37,7 @@ h1,h2,h3 { margin: 0 0 .5em; }
 
 /* ✅ Logo */
 .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; }
-.logo-img {
-  width: 36px; height: 36px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 2px solid var(--border);
-}
+.logo-img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 2px solid var(--border); }
 
 /* ✅ Hero Banner */
 .hero-banner { position: relative; width: 100%; height: 260px; margin-bottom: 20px; }
@@ -90,9 +84,30 @@ h1,h2,h3 { margin: 0 0 .5em; }
 .btn.pill { border-radius: 20px; }
 
 /* ✅ Footer */
-.site-footer { background: var(--card); margin-top: 20px; }
+.site-footer { background: var(--card); margin-top: 20px; text-align: center; padding: 20px; font-size: 14px; color: var(--muted); border-top: 1px solid var(--border); }
 .site-footer a { color: var(--accent); font-size: 14px; }
 
+/* ✅ Gallery */
+.gallery { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 8px; margin: 10px 0; }
+.gallery img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; }
+
+/* ✅ Article */
+.article { line-height: 1.6; }
+.last-updated { margin-top: 16px; font-size: 13px; color: var(--muted); }
+
 /* ✅ Ads */
+.ads-in-article { margin: 20px 0; text-align: center; }
+.ads-in-article.end-ad { margin-top: 30px; padding-top: 12px; border-top: 1px dashed var(--border); }
+
+/* ✅ Sidebar Ad */
+.post-layout { display: flex; gap: 20px; }
+.post-layout article { flex: 3; }
+.sidebar-ad { flex: 1; position: sticky; top: 80px; height: fit-content; display: none; }
+.sidebar-ad ins { width: 100%; }
+@media(min-width: 992px) {
+  .sidebar-ad { display: block; }
+}
+
+/* ✅ Sticky Anchor Ad */
 .anchor-ad { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); padding: 4px; text-align: center; }
 .anchor-close { position: absolute; top: 4px; right: 8px; background: transparent; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
