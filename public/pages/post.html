@@ -5,67 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title id="docTitle">Post — JobPulse Kolkata</title>
 
-  <!-- Canonical gets set after DOM is ready -->
   <link rel="canonical" href="">
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelector('link[rel=canonical]').href = window.location.href;
+      document.title = new URL(location.href).searchParams.get("title") || "JobPulse Kolkata";
+      document.getElementById("docTitle").textContent = document.title;
+    });
+  </script>
 
-  <!-- Theme + CSS -->
-  <script src="/assets/js/theme-boot.js?v=18"></script>
-  <link rel="stylesheet" href="/assets/css/style.css?v=17">
+  <script src="/assets/js/theme-boot.js?v=20"></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=20">
 
-  <!-- DEV: auto-accept consent so popup never shows -->
+  <!-- Auto-accept consent -->
   <script>try{localStorage.setItem('jp-consent','granted');}catch(e){}</script>
 </head>
 <body>
   <div class="container">
     <a href="/">← Back</a>
 
-    <!-- Top Display Ad (auto-hidden) -->
-    <div class="ads card" style="margin:10px 0">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5732778753912461"
-           data-ad-slot="2400432399"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-    </div>
-
     <article class="card">
       <h1 id="title">Loading…</h1>
       <p class="muted"><a id="source" href="#" target="_blank" rel="noopener">View Original Source ↗</a></p>
-
       <div class="thumb-wrap"><img id="hero" class="thumb" alt=""></div>
-
-      <!-- Gallery -->
       <div id="gallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0"></div>
-
-      <!-- In-article Ad (auto-hidden) -->
-      <div class="ads card" style="margin:12px 0">
-        <ins class="adsbygoogle"
-             style="display:block; text-align:center;"
-             data-ad-layout="in-article"
-             data-ad-format="fluid"
-             data-ad-client="ca-pub-5732778753912461"
-             data-ad-slot="2400400574"></ins>
-      </div>
-
       <div id="article" style="line-height:1.6"></div>
-
-      <p style="margin-top:16px;font-size:12px;color:var(--muted)">
-        Note: This is an extended summary. Visit the source for official details.
-      </p>
-
-      <!-- Bottom Multiplex Ad (auto-hidden) -->
-      <div class="ads card" style="margin-top:12px">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-format="autorelaxed"
-             data-ad-client="ca-pub-5732778753912461"
-             data-ad-slot="7381264518"></ins>
-      </div>
     </article>
   </div>
 
-  <!-- Sticky anchor ad holder (auto-hidden if no fill) -->
+  <!-- Sticky anchor ad -->
   <div id="anchor-ad" class="anchor-ad" hidden>
     <button class="anchor-close" aria-label="Close ad">×</button>
     <ins class="adsbygoogle"
@@ -76,38 +44,29 @@
   </div>
 
   <script type="module">
-    // Helpers
     const param = (k) => (new URL(location.href)).searchParams.get(k) || '';
     const title = decodeURIComponent(param('title'));
     const link  = decodeURIComponent(param('link'));
     const desc  = decodeURIComponent(param('desc'));
     const date  = decodeURIComponent(param('date'));
 
-    // Title / Canonical
     document.title = title || 'JobPulse Kolkata';
     document.getElementById('docTitle').textContent = document.title;
-    const canon = document.querySelector('link[rel="canonical"]'); if (canon) canon.href = location.href;
-
-    // Header + hero
     document.getElementById('title').textContent = title || 'Post';
-    const srcA = document.getElementById('source');
-    if (link) { srcA.href = link; srcA.textContent = 'View Original Source ↗'; }
-    else { srcA.removeAttribute('href'); srcA.textContent = 'Original source not provided'; }
+    const source = document.getElementById('source');
+    if (link) source.href = link;
 
     const q = encodeURIComponent('kolkata jobs ' + (title||''));
     document.getElementById('hero').src = 'https://source.unsplash.com/900x500/?'+q;
 
-    // Gallery
-    const gallery = document.getElementById('gallery');
     ['office','exam','resume','interview','city kolkata','government office'].forEach(kw=>{
       const img = document.createElement('img');
       img.loading='lazy'; img.alt=kw;
       img.style.width='100%'; img.style.height='120px'; img.style.objectFit='cover'; img.style.borderRadius='10px';
       img.src = 'https://source.unsplash.com/600x400/?'+encodeURIComponent(kw);
-      gallery.appendChild(img);
+      document.getElementById('gallery').appendChild(img);
     });
 
-    // Article content
     async function loadArticle(url){
       const box = document.getElementById('article');
       try{
@@ -115,34 +74,12 @@
         const r = await fetch('/api/article?url='+encodeURIComponent(url));
         if(!r.ok) throw new Error('HTTP '+r.status);
         const j = await r.json();
-        if(j?.contentHtml){ box.innerHTML = j.contentHtml; }
-        else { box.innerHTML = '<p>'+(desc||'Details available at the source.')+'</p>'; }
-      }catch(e){
-        box.innerHTML = '<p>'+(desc||'Open the source for full details.')+'</p>';
-      }
+        box.innerHTML = j?.contentHtml || `<p>${desc||'Details at the source.'}</p>`;
+      }catch{ box.innerHTML = `<p>${desc||'Open the source for details.'}</p>`; }
     }
     loadArticle(link);
-
-    // JSON-LD (built dynamically)
-    const jsonld = {
-      "@context":"https://schema.org",
-      "@type":"NewsArticle",
-      "headline": title || "JobPulse Kolkata Article",
-      "mainEntityOfPage": {"@type":"WebPage","@id": location.href},
-      "datePublished": date || new Date().toISOString(),
-      "dateModified": new Date().toISOString(),
-      "author": {"@type":"Organization","name":"JobPulse Kolkata"},
-      "publisher": {"@type":"Organization","name":"JobPulse Kolkata","logo":{"@type":"ImageObject","url":"/assets/icons/icon-192.png"}},
-      "image": ["https://source.unsplash.com/900x500/?kolkata%20jobs"],
-      "description": desc || "West Bengal job update and details."
-    };
-    const s = document.createElement('script');
-    s.type = 'application/ld+json';
-    s.textContent = JSON.stringify(jsonld);
-    document.head.appendChild(s);
   </script>
 
-  <!-- Site JS + ads/consent manager (auto-hide blanks) -->
-  <script type="module" src="/assets/js/ads.js?v=16"></script>
+  <script type="module" src="/assets/js/ads.js?v=20"></script>
 </body>
 </html>
